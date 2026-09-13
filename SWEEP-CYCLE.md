@@ -28,7 +28,7 @@ One CC run; the parent is a **thin loop** that selects the day, runs its process
 
 ### Usage log
 
-**`python scripts/usage-log.py`, twice a night: the first act, before draining notes, and after the cycle manifest, before the last mirror** *(Bill, 2026-09-13)*. It appends `Date`, `Time (UTC)` and the weekly plan limit used, as a percentage, to `logs/usage-log.csv` — a record, not a budget: nothing reads it back, nothing is stopped by it, and it goes on no closing line. It never fails the night; an unreadable figure is written `n/a`. The closing row lands after the last commit, so it rides the next night's first commit — the mirror carries it either way.
+**`python scripts/usage-log.py`, twice a night: the first act, before draining notes, and after the cycle manifest, before the last mirror** *(Bill, 2026-09-13)*. It inserts `Date`, `Time (UTC)`, `7d usage` and `5h usage` — the weekly and 5-hour plan limits used, as percentages — at the top of `logs/usage-log.csv`, newest first — a record, not a budget: nothing reads it back, nothing is stopped by it, and it goes on no closing line. It never fails the night; an unreadable figure is written `n/a`. The closing row lands after the last commit, so it rides the next night's first commit — the mirror carries it either way.
 
 ### What every sub-agent prompt carries
 

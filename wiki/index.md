@@ -116,7 +116,7 @@ The domestic-state layer is **suspended**: `COUNTRY-BUDGET-BATCH`, `BUDGET-EXTRA
 | *(unwired)* | [scripts/build-catalogue.py](../scripts/build-catalogue.py) | Retired from the cycle — CORPUS builds its own catalogue from `raw/` and `wiki/`. Left standing. |
 | *(lint #26)* | [scripts/lint-output-freshness.py](../scripts/lint-output-freshness.py) | Newest mtime in `outputs\non-state-finance\` against the last cycle close in `logs/sweep-cycle_log.md`. Report-only. |
 | *(`SWEEP-CYCLE.md`'s close)* | [scripts/rotate-log.py](../scripts/rotate-log.py) | Truncates `logs/log.md` to its newest ~400 lines at an entry boundary, keeping the header. `--apply` acts, `--keep N` sets the budget. |
-| *(`SWEEP-CYCLE.md`, first act and before the last mirror)* | [scripts/usage-log.py](../scripts/usage-log.py) | Appends `Date`, `Time (UTC)` and the weekly plan limit used (%) to `logs/usage-log.csv`, from the endpoint `/usage` reads. Never blocks: a failed read writes `n/a`. |
+| *(`SWEEP-CYCLE.md`, first act and before the last mirror)* | [scripts/usage-log.py](../scripts/usage-log.py) | Inserts `Date`, `Time (UTC)`, `7d usage` and `5h usage` (plan limits used, %) at the top of `logs/usage-log.csv`, newest first, from the endpoint `/usage` reads. Never blocks: a failed read writes `n/a`. |
 | *(helper, by hand)* | [scripts/uncited-sources.py](../scripts/uncited-sources.py) | Lists admitted sources no `wiki/` page cites (finance and budget records excluded). `--recent 1` after a run should read 0. Read-only. |
 
 **Archived** ([archived-procs/](../archived-procs/) — kept for reference, not run)
