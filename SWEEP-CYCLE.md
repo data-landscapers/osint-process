@@ -26,6 +26,10 @@ One CC run; the parent is a **thin loop** that selects the day, runs its process
 
 **No step checks a budget, no step is stopped by one, and the night's cost is neither measured nor reported** *(Bill, 2026-09-08 — the 90-sub-agent brake, its `--nobrake` override and the run-cost line all removed; `scripts/budget-check.py` and `scripts/run-cost.py` are deleted)*. The night runs the day it selected to its close and reports the standing tally line (`STATUS.md`).
 
+### Usage log
+
+**`python scripts/usage-log.py`, twice a night: the first act, before draining notes, and after the cycle manifest, before the last mirror** *(Bill, 2026-09-13)*. It appends `Date`, `Time (UTC)` and the weekly plan limit used, as a percentage, to `logs/usage-log.csv` — a record, not a budget: nothing reads it back, nothing is stopped by it, and it goes on no closing line. It never fails the night; an unreadable figure is written `n/a`. The closing row lands after the last commit, so it rides the next night's first commit — the mirror carries it either way.
+
 ### What every sub-agent prompt carries
 
 **Pasted verbatim, never paraphrased or summarised**, and the containment line **names exact files, never a bare folder** — a boundary stated loosely is a boundary a slice reads generously.
@@ -63,6 +67,7 @@ Anything longer goes to a file the parent does not read. `context` is distinct f
 **Commit at each stage boundary, never once at the end**, each preceded by `python scripts/assert-containment.py --stage <sweep|ingest|lint|close>`; exit 1 = do not commit as it stands. Allowed prefixes and the absolute deny set (`CLAUDE.md`, `wiki/reference.md`, every root procedure) live in the script; `--list` prints them. To commit outside a stage's set, pass `--allow-extra <path>` and say why in the log line.
 
 ```
+usage-log.py                                        # first act of the night; see § Usage log
 drain X:\notes-for-osint.md — act on every open note, close to -resolved (X:\README.md -> Conventions)
 assert-containment.py --stage notes [--allow-extra <path> ...] ; git commit  # only if this repo changed
 
@@ -98,6 +103,7 @@ rules: drain reviews/rule-candidates.md — RULES.md, the parent's own work, no 
 assert-containment.py --stage rules [--allow-extra <each process file amended>] ; git commit
 
 cycle-manifest.py --pass "sweep cycle" --count ...  # after the night’s LAST commit, before the last mirror
+usage-log.py                                        # before the last mirror
 git push ; mirror to O:\
 export-process-mirror.py  # after the push; a refusal goes on the closing line and never blocks
 ```

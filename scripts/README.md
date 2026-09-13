@@ -112,6 +112,7 @@ A new script imports both rather than re-implementing either. The one duplicatio
 | `reflow-md.py` | `CLAUDE.md` → Writing | One line per paragraph. `--check` reports what still wraps. |
 | `prune-dated.py` | `PRUNE.md`, LINT #18 | The dated retention row: `sweep/*/` manifests and drop-logs at 60 days, never a folder's newest of either. Report by default; `--apply` acts. Its `logs/log.md` job moved to `rotate-log.py` on 2026-08-10. |
 | `rotate-log.py` | `SWEEP-CYCLE.md` close | Truncates `logs/log.md` to its newest ~400 lines at an entry boundary, keeping the header; git holds the rest. Report by default; `--apply` acts, `--keep N` sets the budget. |
+| `usage-log.py` | `SWEEP-CYCLE.md`, first act and before the last mirror | Appends `Date`, `Time (UTC)`, `7d usage` (weekly plan limit used, %) to `logs/usage-log.csv`, read from the endpoint `/usage` uses. Never blocks; a failed read writes `n/a`. |
 | `repair-eol.py` | by hand, after a sub-agent stage | Repairs line-ending flips against HEAD, preserving each file's own mixture — the defect `assert-containment.py` refuses a stage for. Listed here 2026-09-08; it was standing and unregistered. |
 | `pdf-geom-rows.py` | by hand, writing an extractor | Dumps a PDF's pages as geometry-bound rows (characters by baseline, columns by x-gap) — the generic form of the binding the `extractors/{ISO3}/` scripts each hard-code. Needs `pdfplumber`. |
 
