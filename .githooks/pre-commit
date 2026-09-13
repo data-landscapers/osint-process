@@ -1,0 +1,70 @@
+#!/bin/sh
+# Block any staged file over 90MB.
+#
+# Bill's rule, 2026-07-29: very large PDFs do not belong in git. They are budget
+# documents and reports, not distribution artefacts; the wiki cites them by filename,
+# and the bytes live on the local disk and its backups (FreeFileSync + Dropbox), which
+# is the actual backup path. Git LFS is not a way round this — LFS still uploads and
+# stores the bytes, and 2.4GB of them had accumulated before this rule existed.
+#
+# `.gitignore` cannot express a size rule, so the known offenders are listed there by
+# path and this hook enforces the bar itself for anything new.
+#
+# Install (once, per clone):   git config core.hooksPath .githooks
+#
+# NOTE: core.hooksPath replaces .git/hooks wholesale, which silently disables the
+# hooks git-lfs installs there — including pre-push, the one that uploads LFS
+# objects. GitHub then rejects the push with GH008 'unknown Git LFS object'. The
+# four git-lfs hooks are therefore kept alongside this one in .githooks/; if you
+# ever run `git lfs install` again it will write to .git/hooks and be ignored, so
+# copy them across.
+# Bypass deliberately:         git commit --no-verify
+
+LIMIT=94371840          # 90 * 1024 * 1024
+fail=0
+
+# One batched `cat-file` pass, not two subprocesses per staged file. The per-file
+# loop this replaced did not return inside two minutes on the 8,290-file raw/YYYY/
+# shard (housekeeping 18) — and it word-split its file list on whitespace, so the
+# ~500 raw/ filenames containing spaces were never actually sized. Both fixed here:
+# `read -r` keeps a path whole, and core.quotepath=false stops git escaping accents
+# into a name that ":path" cannot resolve.
+#
+# --diff-filter=d: ignore deletions; a staged removal has no blob to size.
+# cat-file emits one output line per input line and preserves order, including
+# "<input> missing" for anything unresolvable — so `paste` realigns sizes to paths,
+# and a non-numeric first field simply fails the comparison, as before.
+names=$(mktemp) || exit 1
+sizes=$(mktemp) || exit 1
+trap 'rm -f "$names" "$sizes"' EXIT
+
+git -c core.quotepath=false diff --cached --name-only --diff-filter=d > "$names"
+sed 's/^/:/' "$names" | git cat-file --batch-check='%(objectsize)' 2>/dev/null > "$sizes"
+
+while IFS=' ' read -r size path; do
+    case "$size" in ''|*[!0-9]*) continue ;; esac
+    [ "$size" -gt "$LIMIT" ] || continue
+    if [ "$fail" -eq 0 ]; then
+        echo "pre-commit: files over 90MB are not committed to this repo." >&2
+        echo "" >&2
+    fi
+    printf '  %5s MB  %s\n' "$((size / 1048576))" "$path" >&2
+    fail=1
+done <<EOF
+$(paste -d' ' "$sizes" "$names")
+EOF
+
+if [ "$fail" -eq 1 ]; then
+    cat >&2 <<'MSG'
+
+The file stays on disk and in your local backups; it is simply not tracked.
+To keep it out for good, add its path to .gitignore:
+
+    git reset HEAD -- <path>
+    printf '/%s\n' '<path>' >> .gitignore
+
+If you really mean to commit it, use:  git commit --no-verify
+MSG
+    exit 1
+fi
+exit 0

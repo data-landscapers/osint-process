@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://data-landscapers.com/schema/frontmatter.json",
+  "title": "Data Landscapers frontmatter",
+  "description": "The frontmatter schemas of the wiki/ specs (facets.md §1, layout.md §3, schemas.md §4–5) and finance-record-spec.md, machine-readable. Authored against BOTH the prose specs and the live corpus: every `required` key below is carried by 100% of the files of that type today, so the schema describes the vault as it is, not as a document once said it should be. Where the two disagreed the disagreement is recorded in the key's own description. `x-` members are this vault's extensions and are ignored by a standard validator; scripts/lint-deterministic.py reads them.",
+  "x-authority": {
+    "types": "wiki/schemas.md §4",
+    "facets": "wiki/facets.md §1",
+    "filenames": "wiki/layout.md §3",
+    "finance": "wiki/finance-record-spec.md",
+    "places": "lookups/countries.csv",
+    "topics": "lookups/taxonomy.md"
+  },
+  "x-dispatch": { "key": "type", "map": {
+    "source": "#/$defs/source",
+    "concept": "#/$defs/concept",
+    "place": "#/$defs/place",
+    "entity": "#/$defs/entity",
+    "intersection": "#/$defs/intersection",
+    "query": "#/$defs/query",
+    "query-result": "#/$defs/queryResult"
+  }},
+
+  "$defs": {
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "A full ISO date. Padded per §3 where precision is coarser, with the truth kept in date_precision."
+    },
+    "publishedDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?$",
+      "description": "§3 pads a partial date in the FILENAME; a handful of sources keep the unpadded truth in `published` itself (`2021-09`). Both forms are admissible here — date_precision is what carries the claim."
+    },
+    "placeCode": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "x-vocabulary": "lookups/countries.csv",
+      "description": "ISO-3 country code or X__ region code. §1: reject values outside the vocabulary; a genuinely new value is Bill's call, not lint's."
+    },
+    "topic": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*\\.[a-z0-9-]+$",
+      "x-vocabulary": "lookups/taxonomy.md",
+      "description": "Level-2 taxonomy slug, never the label. §1: `topics` is ORDERED and the order is load-bearing — the first non-finance.* slug is the primary subject. Never sort this list."
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "description": "An entity-page slug: lower-case kebab, no path, no extension."
+    },
+    "linkList": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Written `[[a], [b]]` — one bracket layer per item (§1). The pairing means a body-wikilink regex matches none of it; lint #12 polices the form."
+    },
+
+    "source": {
+      "type": "object",
+      "required": ["type", "title", "url", "publisher", "published", "date_precision",
+                   "date_source", "places", "topics", "entities", "body_completeness"],
+      "x-expected": ["ingested"],
+      "x-url-blank-note": "A blank url: is admissible ONLY with url_note: stating dated evidence the search was exhausted (schemas.md §5a). minLength was dropped for that case; a blank with no url_note is still a defect and lint #14 is what says so.",
+      "x-expected-note": "`ingested` is carried by every source in raw/ and by none of the budget-archive companions, which were archived rather than ingested. A real convention, not worth a defect, so it reports softly. (`lens` sat here too until 2026-09-08, when the facet was retired: schemas.md §4. It is written by nothing and is no longer a property of any type, so the 17,036 legacy values in the corpus validate as an unknown key — ignored, and left in place rather than cleared.)",
+      "x-required-in": { "raw/": ["ingested"] },
+      "x-filename": {
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}",
+        "note": "§3: every source in raw/ carries its true publication date as a prefix, and the prefix names the shard — raw/YYYY/ must equal the first four characters of the filename."
+      },
+      "properties": {
+        "type": { "const": "source" },
+        "title": { "type": "string", "minLength": 1 },
+        "url": { "type": "string",
+                 "description": "The document-specific URL. A bare domain cites nothing and breaks the dedup key (lint #14) — except on a standing-object capture of an organisation's own site, where it IS the document." },
+        "publisher": { "type": "string", "minLength": 1 },
+        "published": { "$ref": "#/$defs/publishedDate" },
+        "date_precision": { "enum": ["day", "month", "year"] },
+        "date_source": {
+          "enum": ["source", "proxy", "inferred", "derived"],
+          "description": "§3 documents `source` and `proxy` (the date fell back to ingested/created). `inferred` (83, all budget-archive companions — a fiscal year read off the document) and `derived` (4) are in use and carry a distinct meaning, so they are admitted here rather than rewritten. `proxy` on a finance record is forbidden outright by finance-record-spec.md → Dates and is lint #21's class 1."
+        },
+        "ingested": { "$ref": "#/$defs/date" },
+        "retrieved": { "$ref": "#/$defs/date" },
+        "accessed": { "$ref": "#/$defs/date" },
+        "last_reviewed": { "$ref": "#/$defs/date" },
+        "places": { "type": "array", "items": { "$ref": "#/$defs/placeCode" } },
+        "topics": { "type": "array", "items": { "$ref": "#/$defs/topic" } },
+        "entities": { "$ref": "#/$defs/linkList" },
+        "body_completeness": {
+          "enum": ["full", "excerpt", "paywalled"],
+          "description": "§4: missing means UNVERIFIED and blank asserts nothing — `full` is never assumed of a legacy source. A structured extract of a tabular document, a journal abstract with its citation, and anything the wiki generated rather than captured are `excerpt` and STAY `excerpt`; they are complete records, not defects awaiting repair."
+        },
+        "primary_subject": { "$ref": "#/$defs/topic" },
+        "catalogue_hero": {
+          "type": "string",
+          "maxLength": 120,
+          "minLength": 1,
+          "description": "§4: the record's subtitle in the public catalogue. Required on every source ingested from 2026-09-05; earlier sources carry none and are the backfill lane, which is why it is not in `required` here. One line, English, terse, no markdown, no terminal full stop, and complementing the title rather than repeating it. Lint #34 is what asserts all of that; #1 asserts only the length, because a hero over the cap is truncated by the catalogue page."
+        },
+        "origin_status": { "enum": ["hold", "cleared"] },
+        "origin_held": { "$ref": "#/$defs/date" },
+        "cite_through": { "type": "string" },
+        "artefact": { "type": ["string", "array"], "items": { "type": "string" },
+                      "description": "§4: one value or a list — an announcement publishing two PDFs has two artefacts and one companion page." },
+        "financier_slug": { "$ref": "#/$defs/slug" },
+        "recipient_slug": { "$ref": "#/$defs/slug" },
+        "deal_id": { "type": "string" },
+        "retired_deal_id": { "type": "string" },
+        "finance_origin": { "enum": ["non-state", "domestic-state"] }
+      }
+    },
+
+    "financeRecord": {
+      "description": "A source carrying finance_origin. Applied ON TOP of #/$defs/source, never instead of it.",
+      "type": "object",
+      "required": ["deal_id", "financier_slug", "primary_subject", "finance_origin"],
+      "x-rules": [
+        { "id": "finance-no-proxy-date", "check": "date_source != 'proxy'",
+          "why": "finance-record-spec.md → Dates: a finance record with no real event date is not a dated fact. Lint #21 class 1, gated." },
+        { "id": "finance-primary-subject-in-topics", "check": "primary_subject in topics",
+          "why": "facets.md §1 / lint #16: a compiled page must never infer the filing subject from list order, because a sort re-files it invisibly." },
+        { "id": "finance-financier-in-entities", "check": "financier_slug in entities",
+          "why": "finance-record-spec.md → Entities / lint #16: a non-canonical financier key silently fragments a hub Financing aggregate." },
+        { "id": "finance-recipient-in-entities", "check": "recipient_slug in entities when present",
+          "why": "Same rule, soft: recipient drift sits below the paging bar and the entity pass reconciles it — route, don't block." }
+      ]
+    },
+
+    "concept": {
+      "type": "object",
+      "required": ["type", "title", "slug", "status", "last_reviewed", "sources"],
+      "x-expected": ["places", "entities"],
+      "properties": {
+        "type": { "const": "concept" },
+        "title": { "type": "string", "minLength": 1 },
+        "slug": { "$ref": "#/$defs/topic" },
+        "places": { "type": "array", "items": { "$ref": "#/$defs/placeCode" } },
+        "topics": { "type": "array", "items": { "$ref": "#/$defs/topic" } },
+        "entities": { "$ref": "#/$defs/linkList" },
+        "status": { "enum": ["active", "stub", "needs-review"] },
+        "last_reviewed": { "$ref": "#/$defs/date" },
+        "sources": { "$ref": "#/$defs/linkList" }
+      }
+    },
+
+    "place": {
+      "type": "object",
+      "required": ["type", "title", "code", "parent", "place_kind", "topics", "status", "last_reviewed"],
+      "properties": {
+        "type": { "const": "place" },
+        "title": { "type": "string", "minLength": 1 },
+        "code": { "$ref": "#/$defs/placeCode" },
+        "parent": {
+          "type": "string",
+          "description": "The single parent in §1's tree. Empty on XGL alone, which is the root."
+        },
+        "place_kind": { "enum": ["country", "region"] },
+        "topics": { "type": "array", "items": { "$ref": "#/$defs/topic" } },
+        "status": { "enum": ["active", "stub", "needs-review"] },
+        "last_reviewed": { "$ref": "#/$defs/date" }
+      }
+    },
+
+    "entity": {
+      "type": "object",
+      "required": ["type", "entity_type", "title", "places", "topics", "status", "last_reviewed"],
+      "x-expected": ["sources"],
+      "properties": {
+        "type": { "const": "entity" },
+        "entity_type": {
+          "enum": ["company", "organisation", "government-body", "initiative",
+                   "person", "deal", "resource", "instrument"],
+          "description": "§1's eight values. Blocs (AU, ECOWAS, SADC) are entities, not places."
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "places": { "type": "array", "items": { "$ref": "#/$defs/placeCode" } },
+        "topics": { "type": "array", "items": { "$ref": "#/$defs/topic" } },
+        "entities": { "$ref": "#/$defs/linkList" },
+        "status": { "enum": ["active", "stub", "needs-review"] },
+        "last_reviewed": { "$ref": "#/$defs/date" },
+        "sources": { "$ref": "#/$defs/linkList" }
+      }
+    },
+
+    "intersection": {
+      "type": "object",
+      "required": ["type", "title", "place", "places", "topics", "status", "last_reviewed"],
+      "x-expected": ["topic", "entities", "sources"],
+      "x-filename": {
+        "pattern": "^[a-z0-9-]+--[a-z0-9-]+$",
+        "note": "§4: {place-slug}--{topic-slug}.md, linked from both the place hub and the concept page."
+      },
+      "properties": {
+        "type": { "const": "intersection" },
+        "title": { "type": "string", "minLength": 1 },
+        "place": { "$ref": "#/$defs/placeCode" },
+        "topic": { "$ref": "#/$defs/topic" },
+        "places": { "type": "array", "items": { "$ref": "#/$defs/placeCode" } },
+        "topics": { "type": "array", "items": { "$ref": "#/$defs/topic" } },
+        "entities": { "$ref": "#/$defs/linkList" },
+        "status": { "enum": ["active", "stub", "needs-review"] },
+        "last_reviewed": { "$ref": "#/$defs/date" },
+        "sources": { "$ref": "#/$defs/linkList" }
+      }
+    },
+
+    "query": {
+      "type": "object",
+      "required": ["type", "id", "format"],
+      "description": "operations.md §10. Read-only workspace: a query result is a derived snapshot, never a source.",
+      "properties": {
+        "type": { "const": "query" },
+        "id": { "type": "string", "pattern": "^q-[0-9]{4}-[0-9]{2}-[0-9]{2}-" },
+        "format": { "enum": ["csv", "md"] },
+        "columns": { "type": "array", "items": { "type": "string" } },
+        "scope": { "type": "object" }
+      }
+    },
+
+    "queryResult": {
+      "type": "object",
+      "required": ["type", "id"],
+      "properties": {
+        "type": { "const": "query-result" },
+        "id": { "type": "string" }
+      }
+    }
+  },
+
+  "allOf": [
+    { "if": { "properties": { "type": { "const": "source" } }, "required": ["type"] },
+      "then": { "$ref": "#/$defs/source" } },
+    { "if": { "properties": { "type": { "const": "concept" } }, "required": ["type"] },
+      "then": { "$ref": "#/$defs/concept" } },
+    { "if": { "properties": { "type": { "const": "place" } }, "required": ["type"] },
+      "then": { "$ref": "#/$defs/placeCode" } },
+    { "if": { "properties": { "type": { "const": "entity" } }, "required": ["type"] },
+      "then": { "$ref": "#/$defs/entity" } },
+    { "if": { "properties": { "type": { "const": "intersection" } }, "required": ["type"] },
+      "then": { "$ref": "#/$defs/intersection" } },
+    { "if": { "properties": { "type": { "const": "query" } }, "required": ["type"] },
+      "then": { "$ref": "#/$defs/query" } },
+    { "if": { "properties": { "type": { "const": "query-result" } }, "required": ["type"] },
+      "then": { "$ref": "#/$defs/queryResult" } }
+  ]
+}

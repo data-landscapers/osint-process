@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": [
+      "Bash(python scripts/*)",
+      "Bash(python -c *)",
+      "Bash(curl *)",
+      "Bash(git push *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(awk *)",
+      "Bash(sed *)",
+      "Bash(sort *)",
+      "Bash(mv *)",
+      "Bash(cp *)",
+      "Bash(mkdir *)",
+      "Bash(date *)",
+      "PowerShell(Invoke-RestMethod *)",
+      "PowerShell(Invoke-WebRequest *)",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep"
+    ],
+    "deny": [
+      "AskUserQuestion",
+      "Bash(git reset --hard *)",
+      "Bash(rm -rf /*)"
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+# Line-ending policy for this vault: the WORKING TREE IS AUTHORITATIVE, and git
+# converts nothing, ever, in either direction.
+#
+# Decided 2026-09-10 (housekeeping job 78, registered 2026-08-25 after three stages of one
+# sweep cycle each needed an end-of-line repair before assert-containment.py would pass).
+#
+# WHY NOT `* text=auto eol=crlf`, which is the conventional answer:
+#
+#   1. It rewrites evidence. `text` normalises the stored blob to LF, so adopting it means a
+#      one-off `git add --renormalize` that changes the bytes of 3,526 files under raw/
+#      (3,250 CRLF + 276 mixed, measured 2026-09-10). raw/ bodies are someone else's text and
+#      immutable (CLAUDE.md -> The material; reference.md section 4). A commit that rewrites
+#      them is precisely what must not happen, whatever it does to the diffs.
+#   2. It destroys deliberate mixtures. Several ledgers carry both terminators at HEAD --
+#      sweep/daily/seen.csv 1,585 CRLF + 1 LF, sweep/off-list/seen.csv 792 CRLF + 21 LF on the
+#      night this was settled. `text` has no way to express "leave the rows nobody touched
+#      alone"; it normalises the file whole. repair-eol.py does express it, line by line
+#      against HEAD, which is why that is the instrument and this file is not.
+#   3. It moves the mass diff rather than removing it. `eol=crlf` converts on CHECKOUT, so the
+#      churn arrives at the next checkout of the 20,108 files that are LF today.
+#   4. `text=auto` re-sniffs content, reclassifying the 94 files git currently treats as
+#      binary -- and an md5 index over raw/ artefacts (housekeeping 106) needs those bytes
+#      stable.
+#
+# WHAT `-text` BUYS, beyond costing nothing:
+#
+#   core.autocrlf is `false` in .git/config -- which is UNTRACKED, while the system gitconfig
+#   on this machine says `true`. A fresh clone therefore inherits conversion-on-checkout and
+#   silently rewrites the vault's terminators. This line moves that protection out of a local
+#   file and into the repo, where it survives cloning.
+#
+# WHAT THIS DOES NOT DO, stated plainly: it does not stop an agent writing LF over a CRLF
+# file. No gitattributes policy can, and the only one that would HIDE it (`text`) does so by
+# giving up the byte fidelity above. The flip is caught at the stage boundary by
+# assert-containment.py's eol_flips gate and repaired by `python scripts/repair-eol.py`, which
+# aligns against HEAD and preserves each file's own mixture. That loop is closed already.
+#
+# Verified before and after: `git ls-files --eol` shows index and working tree agreeing on all
+# 24,435 tracked paths, `git status --porcelain` clean, no blob changed. Adding this line is a
+# no-op today by construction -- which is the point of writing it down.
+#
+# (The rule this file used to carry, `outputs/reports/**/*.csv text eol=lf`, was removed in
+# the same edit: outputs/reports/ was retired from git on 2026-08-16 and is gitignored, so it
+# matched nothing. Its reasoning is in git.)
+* -text

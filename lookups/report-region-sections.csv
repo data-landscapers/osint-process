@@ -1,0 +1,39 @@
+subject,section,section_order,section_key
+gov.regional,Institutions and mandates,2,institutions
+gov.discourse,Institutions and mandates,2,institutions
+gov.legislate,Instruments and harmonisation,3,instruments
+gov.policy,Instruments and harmonisation,3,instruments
+gov.standards,Instruments and harmonisation,3,instruments
+gov.protect,Instruments and harmonisation,3,instruments
+data.open,Instruments and harmonisation,3,instruments
+tech.ai,Instruments and harmonisation,3,instruments
+infra.connect,Shared systems and infrastructure,4,systems
+infra.store,Shared systems and infrastructure,4,systems
+infra.energy,Shared systems and infrastructure,4,systems
+infra.capacity,Shared systems and infrastructure,4,systems
+infra.cybersec,Shared systems and infrastructure,4,systems
+dpi.exchange,Shared systems and infrastructure,4,systems
+dpi.id,Shared systems and infrastructure,4,systems
+dpi.pay,Shared systems and infrastructure,4,systems
+dpi.registry,Shared systems and infrastructure,4,systems
+dpi.mis,Shared systems and infrastructure,4,systems
+dpi.govtech,Shared systems and infrastructure,4,systems
+data.statistics,Shared systems and infrastructure,4,systems
+data.satellite,Shared systems and infrastructure,4,systems
+digital.rural,Shared systems and infrastructure,4,systems
+digital.localgov,Shared systems and infrastructure,4,systems
+geopol.eu,Coordination and collaboration,5,coordination
+geopol.usa,Coordination and collaboration,5,coordination
+geopol.china,Coordination and collaboration,5,coordination
+geopol.india,Coordination and collaboration,5,coordination
+geopol.gulf,Coordination and collaboration,5,coordination
+tech.industry,Coordination and collaboration,5,coordination
+tech.innovate,Coordination and collaboration,5,coordination
+include.divides,Capacity and inclusion,6,capacity
+include.access,Capacity and inclusion,6,capacity
+capacity.literacy,Capacity and inclusion,6,capacity
+capacity.training,Capacity and inclusion,6,capacity
+capacity.research,Capacity and inclusion,6,capacity
+finance.new,Finance,7,finance
+finance.mou,Finance,7,finance
+finance.budget,Finance,7,finance

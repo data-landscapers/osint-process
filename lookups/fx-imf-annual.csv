@@ -1,0 +1,221 @@
+currency,year,per_usd,source
+ZAR,2015,12.76,IMF/WB annual average (local units per USD)
+ZAR,2016,14.68,IMF/WB annual average
+ZAR,2017,13.29,IMF/WB annual average
+ZAR,2018,13.23,IMF/WB annual average
+ZAR,2019,14.45,IMF/WB annual average
+ZAR,2020,16.49,IMF/WB annual average
+ZAR,2021,14.78,IMF/WB annual average
+ZAR,2022,16.37,IMF/WB annual average
+ZAR,2023,18.45,IMF/WB annual average
+ZAR,2024,18.34,IMF/WB annual average
+ZAR,2025,17.88,IMF/WB annual average
+ZAR,2026,18.00,provisional (no final annual average yet)
+BWP,2024,13.57,approx annual average (ball-park)
+BWP,2025,13.90,approx (ball-park)
+BWP,2026,14.00,provisional (ball-park)
+XOF,2024,606,euro-peg 655.957/EUR at ~1.082 USD/EUR
+XOF,2025,596,approx (ball-park)
+XOF,2026,600,provisional (ball-park)
+XAF,2024,606,euro-peg 655.957/EUR at ~1.082 USD/EUR
+XAF,2025,596,approx (ball-park)
+XAF,2026,600,provisional (ball-park)
+KES,2024,134.7,approx annual average (ball-park)
+KES,2025,129.2,approx (ball-park)
+KES,2026,130.0,provisional (ball-park)
+BIF,2024,2900,approx (ball-park)
+BIF,2025,2960,approx (ball-park)
+BIF,2026,3000,provisional (ball-park)
+AOA,2024,890,approx (ball-park)
+AOA,2025,915,approx (ball-park)
+AOA,2026,920,provisional (ball-park)
+ZMW,2024,26.13,approx annual average (ball-park)
+ZMW,2025,27.00,approx (ball-park)
+ZMW,2026,27.00,provisional (ball-park)
+NGN,2024,1465,"approx annual average (ball-park) — post-2024 float, volatile"
+NGN,2025,1550,approx (ball-park) — volatile
+NGN,2026,1600,provisional (ball-park) — volatile
+GHS,2024,14.70,approx annual average (ball-park)
+GHS,2025,13.00,approx (ball-park)
+GHS,2026,13.50,provisional (ball-park)
+ETB,2024,81.90,"approx annual average (ball-park) — mid-2024 float, rising fast"
+ETB,2025,130.0,"approx (ball-park) — volatile, refine before use"
+ETB,2026,140.0,provisional (ball-park) — volatile
+EGP,2024,45.33,approx annual average (ball-park) — devalued Mar 2024
+EGP,2025,50.00,approx (ball-park)
+EGP,2026,50.50,provisional (ball-park)
+TZS,2024,2650,approx annual average (ball-park)
+TZS,2025,2650,approx (ball-park)
+TZS,2026,2650,provisional (ball-park)
+UGX,2024,3757,approx annual average (ball-park)
+UGX,2025,3650,approx (ball-park)
+UGX,2026,3650,provisional (ball-park)
+RWF,2024,1320,approx annual average (ball-park)
+RWF,2025,1440,approx (ball-park)
+RWF,2026,1500,provisional (ball-park)
+MZN,2024,63.90,approx annual average (ball-park)
+MZN,2025,64.00,approx (ball-park)
+MZN,2026,64.00,provisional (ball-park)
+MWK,2024,1735,approx annual average (ball-park)
+MWK,2025,1735,approx (ball-park)
+MWK,2026,1750,provisional (ball-park)
+MAD,2024,9.90,approx annual average (ball-park)
+MAD,2025,9.30,approx (ball-park)
+MAD,2026,9.50,provisional (ball-park)
+DZD,2024,134.6,approx annual average (ball-park)
+DZD,2025,130.0,approx (ball-park)
+DZD,2026,131.0,provisional (ball-park)
+TND,2024,3.13,approx annual average (ball-park)
+TND,2025,3.00,approx (ball-park)
+TND,2026,3.00,provisional (ball-park)
+MGA,2024,4550,approx annual average (ball-park)
+MGA,2025,4450,approx (ball-park)
+MGA,2026,4500,provisional (ball-park)
+MUR,2024,46.40,approx annual average (ball-park)
+MUR,2025,45.50,approx (ball-park)
+MUR,2026,46.00,provisional (ball-park)
+CDF,2024,2800,approx annual average (ball-park)
+CDF,2025,2870,approx (ball-park)
+CDF,2026,2900,provisional (ball-park)
+GNF,2024,8580,approx annual average (ball-park)
+GNF,2025,8650,approx (ball-park)
+GNF,2026,8700,provisional (ball-park)
+LRD,2024,192,approx annual average (ball-park)
+LRD,2025,199,approx (ball-park)
+LRD,2026,200,provisional (ball-park)
+SLE,2024,22.60,"approx annual average (ball-park) — redenominated SLE (2022, 1000:1)"
+SLE,2025,22.80,approx (ball-park)
+SLE,2026,23.00,provisional (ball-park)
+GMD,2024,68.00,approx annual average (ball-park)
+GMD,2025,72.00,approx (ball-park)
+GMD,2026,73.00,provisional (ball-park)
+SOS,2024,571,approx (ball-park) — managed
+SOS,2025,571,approx (ball-park)
+SOS,2026,571,provisional (ball-park)
+SDG,2024,601,HIGHLY UNCERTAIN — official rate; parallel far higher (war). Refine before use
+SDG,2025,900,HIGHLY UNCERTAIN — refine before use
+SDG,2026,1100,HIGHLY UNCERTAIN — refine before use
+SSP,2024,1700,HIGHLY UNCERTAIN — extreme volatility. Refine before use
+SSP,2025,3800,HIGHLY UNCERTAIN — refine before use
+SSP,2026,4500,HIGHLY UNCERTAIN — refine before use
+NAD,2024,18.34,pegged 1:1 to ZAR
+NAD,2025,17.88,pegged 1:1 to ZAR
+NAD,2026,18.00,pegged 1:1 to ZAR (provisional)
+LSL,2024,18.34,pegged 1:1 to ZAR
+LSL,2025,17.88,pegged 1:1 to ZAR
+LSL,2026,18.00,pegged 1:1 to ZAR (provisional)
+SZL,2024,18.34,pegged 1:1 to ZAR
+SZL,2025,17.88,pegged 1:1 to ZAR
+SZL,2026,18.00,pegged 1:1 to ZAR (provisional)
+DJF,2024,177.72,pegged to USD (fixed)
+DJF,2025,177.72,pegged to USD (fixed)
+DJF,2026,177.72,pegged to USD (fixed)
+ERN,2024,15.08,pegged to USD (fixed)
+ERN,2025,15.08,pegged to USD (fixed)
+ERN,2026,15.08,pegged to USD (fixed)
+CVE,2024,101.9,euro-peg 110.265/EUR at ~1.082 USD/EUR
+CVE,2025,100.0,approx (ball-park)
+CVE,2026,101.0,provisional (ball-park)
+KMF,2024,454.7,euro-peg 491.968/EUR at ~1.082 USD/EUR
+KMF,2025,447.0,approx (ball-park)
+KMF,2026,450.0,provisional (ball-park)
+STN,2024,22.60,euro-peg 24.5/EUR at ~1.082 USD/EUR
+STN,2025,22.30,approx (ball-park)
+STN,2026,22.40,provisional (ball-park)
+EUR,2015,0.9013,IMF/WB annual average
+EUR,2016,0.9034,IMF/WB annual average
+EUR,2017,0.8852,IMF/WB annual average
+EUR,2018,0.8468,IMF/WB annual average
+EUR,2019,0.8933,IMF/WB annual average
+EUR,2020,0.8755,IMF/WB annual average
+EUR,2021,0.8455,IMF/WB annual average
+EUR,2022,0.9496,IMF/WB annual average
+EUR,2023,0.9248,IMF/WB annual average
+EUR,2024,0.9239,IMF/WB annual average
+EUR,2025,0.885,IMF/WB annual average
+EUR,2026,0.8602,provisional - IMF daily average to 2026-08-04 (no final annual average yet)
+GBP,2015,0.6545,IMF/WB annual average
+GBP,2016,0.7406,IMF/WB annual average
+GBP,2017,0.777,IMF/WB annual average
+GBP,2018,0.7495,IMF/WB annual average
+GBP,2019,0.7834,IMF/WB annual average
+GBP,2020,0.78,IMF/WB annual average
+GBP,2021,0.7271,IMF/WB annual average
+GBP,2022,0.8113,IMF/WB annual average
+GBP,2023,0.8045,IMF/WB annual average
+GBP,2024,0.7824,IMF/WB annual average
+GBP,2025,0.7595,IMF/WB annual average
+GBP,2026,0.7441,provisional - IMF daily average to 2026-08-04 (no final annual average yet)
+SEK,2015,8.4348,IMF/WB annual average
+SEK,2016,8.562,IMF/WB annual average
+SEK,2017,8.5489,IMF/WB annual average
+SEK,2018,8.6925,IMF/WB annual average
+SEK,2019,9.4583,IMF/WB annual average
+SEK,2020,9.2103,IMF/WB annual average
+SEK,2021,8.5766,IMF/WB annual average
+SEK,2022,10.1143,IMF/WB annual average
+SEK,2023,10.6102,IMF/WB annual average
+SEK,2024,10.5676,IMF/WB annual average
+SEK,2025,9.8207,IMF/WB annual average
+SEK,2026,9.324,provisional - IMF daily average to 2026-08-04 (no final annual average yet)
+NOK,2015,8.0642,IMF/WB annual average
+NOK,2016,8.4,IMF/WB annual average
+NOK,2017,8.2717,IMF/WB annual average
+NOK,2018,8.1325,IMF/WB annual average
+NOK,2019,8.8,IMF/WB annual average
+NOK,2020,9.4158,IMF/WB annual average
+NOK,2021,8.59,IMF/WB annual average
+NOK,2022,9.6142,IMF/WB annual average
+NOK,2023,10.5633,IMF/WB annual average
+NOK,2024,10.7458,IMF/WB annual average
+NOK,2025,10.3958,IMF/WB annual average
+NOK,2026,9.6014,provisional - IMF daily average to 2026-08-04 (no final annual average yet)
+DKK,2015,6.7279,IMF/WB annual average
+DKK,2016,6.7317,IMF/WB annual average
+DKK,2017,6.6029,IMF/WB annual average
+DKK,2018,6.3146,IMF/WB annual average
+DKK,2019,6.6694,IMF/WB annual average
+DKK,2020,6.5422,IMF/WB annual average
+DKK,2021,6.2871,IMF/WB annual average
+DKK,2022,7.0762,IMF/WB annual average
+DKK,2023,6.8897,IMF/WB annual average
+DKK,2024,6.8945,IMF/WB annual average
+DKK,2025,6.6218,IMF/WB annual average
+DKK,2026,6.4303,provisional - IMF daily average to 2026-08-04 (no final annual average yet)
+CAD,2015,1.2788,IMF/WB annual average
+CAD,2016,1.3256,IMF/WB annual average
+CAD,2017,1.2979,IMF/WB annual average
+CAD,2018,1.2958,IMF/WB annual average
+CAD,2019,1.3268,IMF/WB annual average
+CAD,2020,1.3412,IMF/WB annual average
+CAD,2021,1.2539,IMF/WB annual average
+CAD,2022,1.3016,IMF/WB annual average
+CAD,2023,1.3499,IMF/WB annual average
+CAD,2024,1.3694,IMF/WB annual average
+CAD,2025,1.3981,IMF/WB annual average
+CAD,2026,1.3816,provisional - IMF daily average to 2026-08-04 (no final annual average yet)
+JPY,2015,121.044,IMF/WB annual average
+JPY,2016,108.7929,IMF/WB annual average
+JPY,2017,112.1661,IMF/WB annual average
+JPY,2018,110.4232,IMF/WB annual average
+JPY,2019,109.0097,IMF/WB annual average
+JPY,2020,106.7746,IMF/WB annual average
+JPY,2021,109.7543,IMF/WB annual average
+JPY,2022,131.4981,IMF/WB annual average
+JPY,2023,140.4911,IMF/WB annual average
+JPY,2024,151.3663,IMF/WB annual average
+JPY,2025,149.6579,IMF/WB annual average
+JPY,2026,158.9083,provisional - IMF daily average to 2026-08-04 (no final annual average yet)
+XDR,2014,0.6581,IMF SDR valuation - annual average of daily rates
+XDR,2015,0.7149,IMF SDR valuation - annual average of daily rates
+XDR,2016,0.7193,IMF SDR valuation - annual average of daily rates
+XDR,2017,0.7213,IMF SDR valuation - annual average of daily rates
+XDR,2018,0.7063,IMF SDR valuation - annual average of daily rates
+XDR,2019,0.7238,IMF SDR valuation - annual average of daily rates
+XDR,2020,0.7185,IMF SDR valuation - annual average of daily rates
+XDR,2021,0.7019,IMF SDR valuation - annual average of daily rates
+XDR,2022,0.7478,IMF SDR valuation - annual average of daily rates
+XDR,2023,0.7497,IMF SDR valuation - annual average of daily rates
+XDR,2024,0.7531,IMF SDR valuation - annual average of daily rates
+XDR,2025,0.7408,IMF SDR valuation - annual average of daily rates
+XDR,2026,0.7317,provisional - IMF SDR valuation daily average to 2026-08-04 (no final annual average yet)

@@ -1,0 +1,63 @@
+﻿iso-3,country-name,Region
+AGO,Angola,XSA
+BDI,Burundi,XEA
+BEN,Benin,XWA
+BFA,Burkina Faso,XWA
+BWA,Botswana,XSA
+CAF,Central African Republic,XCA
+CIV,Cote d'Ivoire,XWA
+CMR,Cameroon,XCA
+COD,DR Congo,XCA
+COG,Congo,XCA
+COM,Comoros,XEA
+CPV,Cape Verde,XWA
+DJI,Djibouti,XEA
+DZA,Algeria,XNA
+EGY,Egypt,XNA
+ERI,Eritrea,XEA
+ETH,Ethiopia,XEA
+GAB,Gabon,XCA
+GHA,Ghana,XWA
+GIN,Guinea,XWA
+GMB,Gambia,XWA
+GNB,Guinea-Bissau,XWA
+GNQ,Equatorial Guinea,XCA
+KEN,Kenya,XEA
+LBR,Liberia,XWA
+LBY,Libya,XNA
+LSO,Lesotho,XSA
+MAR,Morocco,XNA
+MDG,Madagascar,XEA
+MLI,Mali,XWA
+MOZ,Mozambique,XSA
+MRT,Mauritania,XWA
+MUS,Mauritius,XEA
+MWI,Malawi,XSA
+NAM,Namibia,XSA
+NER,Niger,XWA
+NGA,Nigeria,XWA
+RWA,Rwanda,XEA
+SDN,Sudan,XEA
+SEN,Senegal,XWA
+SLE,Sierra Leone,XWA
+SOM,Somalia,XEA
+SSD,South Sudan,XEA
+STP,Sao Tome and Principe,XWA
+SWZ,Eswatini,XSA
+SYC,Seychelles,XEA
+TCD,Chad,XCA
+TGO,Togo,XWA
+TUN,Tunisia,XNA
+TZA,Tanzania,XEA
+UGA,Uganda,XEA
+XAF,Africa,XGL
+XCA,Central Africa,XAF
+XEA,East Africa,XAF
+XGL,Global/Developing Countries,
+XNA,North Africa,XAF
+XSA,Southern Africa,XAF
+XSS,Sub-Saharan Africa,XAF
+XWA,West Africa,XAF
+ZAF,South Africa,XSA
+ZMB,Zambia,XSA
+ZWE,Zimbabwe,XSA

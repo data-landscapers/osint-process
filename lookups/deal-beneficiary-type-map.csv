@@ -1,0 +1,54 @@
+beneficiary_type,source_value,review,note
+Fund,Fund,ADDED,"30 rows — an investment vehicle, one step removed from the ultimate beneficiary, and worth counting separately for exactly that reason. AFC to Africa-focused tech fund managers; FMO to TIDE Africa II."
+Fund,Infrastructure fund,ADDED,BII to the Africa50 Infrastructure Acceleration Fund.
+Individuals,Individuals / students,CHANGED,"the beneficiary is students, not an organisation. Startup Abuja's student aid programme, NGN 50m to individuals in higher education. `NGO` describes the financier here, not who receives."
+Multi-stakeholder,"African researchers, startups, universities, nonprofits, community organisations",CHANGED,five types in one cell. Research leads but does not describe it. The Gates/Microsoft LINGUA Africa award.
+Multi-stakeholder,Multi-partner consortium (not yet selected),ADDED,
+Multi-stakeholder,Multi-stakeholder,ADDED,"25 rows, genuinely multi-party — FCDO Frontier Technologies, the Mastercard Foundation/UNHCR refugee partnership. A real category, not a failure to classify."
+Multi-stakeholder,Public Sector / Startups,CHANGED,"Two beneficiary types in one cell and neither subordinate - public actors trained in AI and open government under the governance axis, and 20 startups supported under the innovation axis. Same shape as the five- and six-type rows here, ruled the same way."
+Multi-stakeholder,"Public sector employees, private-sector employees, women, entrepreneurs/SMEs, Ministry of Education, training companies",CHANGED,"six beneficiary types in one cell, only one of which is public sector."
+Multilateral,Continental alliance,,
+Multilateral,Continental body,,
+Multilateral,Multilateral,,
+Multilateral,Regional economic community,,
+Multilateral,Regional intergovernmental body,,
+Multilateral,Regional organisation,,
+NGO,Industry association,NOTE,"ICTAM, the ICT Association of Malawi — a membership body of private firms but not-for-profit. `NGO` is the better of the available fits; flagging only because the association case will recur."
+NGO,NGO/CS,,
+NGO,Non-profit civic-tech organisation,,
+NGO,Non-profit data/civil-society organisation,,
+PPP,Public-private partnership,NOTE,"`PPP` is a structure, not a beneficiary — and it is already a value in the instrument vocabulary. Two facets, one word."
+PPP,"Public–private (state counterparty, investor-financed)",,
+Private Sector,A2P messaging / digital-communications infrastructure provider,,
+Private Sector,Company (non-bank MSME financial services),,
+Private Sector,Fintech lender,,
+Private Sector,Pan-African tech start-up fund,,
+Private Sector,Private,,
+Private Sector,Private / startups,,
+Private Sector,Private company,,
+Private Sector,Private company (AI business-intelligence startup),,
+Private Sector,Private company (data-centre operator),,
+Private Sector,Private company (fintech),,
+Private Sector,Private operator,,
+Private Sector,Private sector,,
+Private Sector,Private sector (bank),,
+Private Sector,Private telecom-tower infrastructure company,,
+Private Sector,Women-led businesses (via unnamed implementing partner),,
+Public Sector,Government,,
+Public Sector,Government (agricultural extension system),,
+Public Sector,Government (ICT equipment supply),,
+Public Sector,Government (PPP concession),,
+Public Sector,Government (privatisation mandate),,
+Public Sector,Government (spectrum licensor) / operator investment,NOTE,the spectrum case again: money flows *to* the state for a licence. Same question as the instrument list's `5G spectrum licences`.
+Public Sector,Government (unnamed agency),,
+Public Sector,Government finance ministries and revenue authorities (six countries),,
+Public Sector,Government ministry,,
+Public Sector,Government programme,,
+Public Sector,State-owned enterprise,,
+Public Sector,State-owned enterprise (privatisation),,
+Public Sector,State-owned operator,,
+Research,Non-profit / university consortium,,
+Research,Non-profit research/policy organisation,,
+Research,Non-profit think tank,,
+Research,Research institution,,
+Research,Research/academic,,

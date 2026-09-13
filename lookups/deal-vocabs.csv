@@ -1,0 +1,33 @@
+field,sort order,value,definition
+instrument,1,Grant,"Money transferred with no expectation of repayment — donations, prizes, non-reimbursable assistance."
+instrument,2,Concessional Loan,"A loan on terms softer than the market would give: below-market interest, long maturity, a grace period, or a service charge in place of interest. IDA credits belong here."
+instrument,3,Commercial Loan,"A loan on market terms — syndicated and senior debt, IBRD lending, development-policy loans to non-IDA borrowers."
+instrument,4,Line of Credit,"A facility the borrower draws against up to a limit, revolving or not."
+instrument,5,Buyer's Credit,"Finance extended to the buyer so it may pay the supplier, including export finance."
+instrument,6,Bond,Debt raised by issuing a tradeable security.
+instrument,7,Guarantee,A commitment to meet another party's obligation if it defaults. No money moves unless it is called.
+instrument,8,Equity,"Money exchanged for an ownership stake, at any round from pre-seed to acquisition, including limited-partner commitments to a fund."
+instrument,9,Mezzanine,"Subordinated debt, or debt convertible to equity, ranking between senior debt and equity."
+instrument,10,Joint Venture,A jointly owned vehicle created by the parties to carry the activity.
+instrument,11,PPP,"A concession, BOT or similar: a private party finances and operates a public asset for a term. Distinct from the PPP value in the beneficiary vocabulary."
+instrument,12,Self Funded,"Capital the recipient commits from its own balance sheet. A funding source rather than an instrument, kept because the distinction is worth counting."
+instrument,13,Technical Assistance,"Expertise, advisory or capacity support, whether or not a cash figure is attached."
+instrument,14,MoU,An agreement is on record and its financial instrument is not. Use only where the source states an agreement and does not state how the money moves — never as shorthand for unclear.
+instrument,15,Unknown,The source does not state the instrument.
+status,1,Pipeline,"Proposed, identified or under negotiation. Nothing is committed."
+status,2,Approved,"Committed, approved or signed, but not yet operating."
+status,3,Active,"Operating: implementation under way, facility inaugurated, activities launched, funds disbursing."
+status,4,Closed,"Finished or fully disbursed, and IATI's finalisation stage where financial closure is outstanding."
+status,5,Cancelled,Abandoned before completion. IATI activity-status 5.
+status,6,Suspended,"Halted, to resume or be decided. IATI activity-status 6."
+status,7,Unknown,The source does not state the status.
+beneficiary_type,1,Public Sector,"Government at any level — a ministry, agency, programme or state-owned enterprise."
+beneficiary_type,2,Private Sector,"A company, operator, startup or bank receiving on its own account."
+beneficiary_type,3,NGO,"A non-governmental or civil-society organisation, including not-for-profit membership and industry associations."
+beneficiary_type,4,Multilateral,"A multilateral, regional or continental body — the AU, a regional economic community, an intergovernmental organisation."
+beneficiary_type,5,Research,"A university, research institute or think tank."
+beneficiary_type,6,Fund,"An investment vehicle that will on-invest the money. One step removed from the ultimate recipient, which is why it is not Private Sector."
+beneficiary_type,7,Multi-stakeholder,"Several types together, where no one of them is the beneficiary. A genuine consortium or partnership, not a failure to classify."
+beneficiary_type,8,Individuals,"People rather than organisations — students, entrepreneurs, households."
+beneficiary_type,9,PPP,A public-private vehicle receiving as one party. Distinct from the PPP value in the instrument vocabulary.
+beneficiary_type,10,Unknown,The source does not state who receives.

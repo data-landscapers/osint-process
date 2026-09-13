@@ -1,0 +1,24 @@
+status,source_value,review,note
+Active,Active,,
+Active,Active — approved for implementation 2025-08-11; launched in Dakar 2026-07-22,,
+Active,Announced — facility inaugurated,CHANGED,"the facility is inaugurated, so it is operating. Konecta, US$100m Egypt regional HQ and GenAI centre. Same logic as the `Launched (January 2026)` rule already in the list."
+Active,Approved — project activities launched 2026-07-29,CHANGED,"activities launched, so it is running. Pandemic Fund, Cameroon. `Approved` is what the value opens with, but the clause after the dash is the later fact and the one that governs."
+Active,Implementation,,
+Active,"Implementation (AfDB IATI, as at 2026-08-04)",,
+Active,Launched (January 2026),,
+Approved,Announced,NOTE,"worth a ruling rather than a mapping. In a public-finance lifecycle an announcement precedes board approval, so `Announced` is weaker than `Approved`; in a private one it usually follows closing, so it is stronger. Both rows here are the private case — Fincart's seed round, co-led by Launch Africa and Antler — where announced means done."
+Approved,Approved,,
+Approved,"Approved — Board 2026-04-24, signed 2026-06-19, ratified by Parliament 2026-07-29; expected closing 2031-06-30",,
+Approved,signed,,
+Approved,Signed (21 January 2026),,
+Closed,Closed,,
+Closed,Closed (100% disbursed as of 2020-12-31),,
+Closed,Finalisation,NOTE,"IATI activity-status 3: activities complete, financial closure pending. It is not Closed (4) and not Implementation (2). `Closed` is the nearest of the five available and I have left it, but a deal in finalisation is still open on paper."
+Pipeline,Pipeline,,
+Pipeline,Pipeline (expressions-of-interest stage),,
+Pipeline,Pipeline (principle agreement signed 14 April 2026; financing under negotiation),,
+Pipeline,"Pipeline — binding, but subject to feasibility, financing, permitting, regulatory approvals and definitive agreements",,
+Pipeline,"Pipeline — MoU signed, detailed technical studies and administrative procedures still ahead",,
+Pipeline,Pipeline/identification,,
+Unknown,(not stated),ADDED,"the third null idiom in this column, alongside blank and the sentence-length one."
+Unknown,Not stated; project's own dates (2023-03-01 to 2024-04-30) have elapsed as of this capture,,

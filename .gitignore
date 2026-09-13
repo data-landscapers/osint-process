@@ -1,0 +1,124 @@
+# Immutable binary artefacts — tracked by their companion .md source pages, not directly.
+# Keeps the repo lean; images are only ever moved, never edited.
+# PDFs are NOT tracked, anywhere, as of 2026-08-17 (documentation/osint-pdf-history-purge.md,
+# history rewritten with git-filter-repo same day). Superseded the prior rule below this
+# comment used to state ("PDFs in raw/ ARE tracked... do not re-add *.pdf here") — that
+# held from Git LFS's retirement (2026-07-29) until the purge. A PDF is never edited after
+# capture, so version control bought nothing for it; the backup of record is Bill's
+# FreeFileSync/Dropbox mirror, outside this repo, not git. .gitattributes routes no binary
+# rule either; since 2026-09-10 it carries one line, `* -text`, which only tells git never
+# to convert line endings (see its own header). The budget-archive block at the foot
+# untracked its PDFs earlier (2026-08-03) on the same reasoning; this line now generalises
+# that to raw/ and new-budget/ too, so that block is redundant but left as the historical
+# record.
+*.pdf
+*.PDF
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.docx
+*.xlsx
+# ...except where a spreadsheet IS the primary artefact: Benin's estimates volume is an
+# .xlsx in all three years, and Burundi's PTBA likewise (post-run note 11, 2026-07-28).
+!raw/**/*.xlsx
+!budget-archive/**/*.xlsx
+!new-budget/**/*.xlsx
+*.zip
+.env
+.git-note
+.obsidian/
+.claude/*
+!.claude/agents/
+!.claude/settings.json
+.trash/
+external-datasets/
+my-notes/
+run-overnight.log
+scratchpad/
+# The derived index (scripts/build-index.py). Rebuilt from scratch in ~3s and
+# never appended to, so it cannot drift out of step with the vault — only go
+# stale, which its consumers detect and repair themselves. Tracking a 27 MB
+# artefact rewritten on every rebuild would churn every commit and grow .git
+# against PRUNE.md's purpose, for a file nothing reads. It owes CORPUS nothing
+# either — CORPUS builds its own index from raw/ and wiki/.
+index/
+# outputs/reports/ and outputs/catalogue/ retired from git 2026-08-16 (OSINT/
+# CORPUS migration, R6) — CORPUS now authors its own reports and catalogue
+# from raw/ / wiki/, so OSINT's copies are dead. outputs/non-state-finance/
+# and outputs/budgets/ stay tracked: OSINT's own compile, still written every
+# ingest-fired FINANCE-COMPILE.
+outputs/reports/
+outputs/catalogue/
+__pycache__/
+# Mirror telemetry (2026-08-03, review task 6). Written by `mirror.bat` on its own
+# schedule, not on any commit, so tracking it would leave the tree permanently dirty and
+# make the `commits` count in the standing tally meaningless. Each file is its own
+# history, and both are themselves mirrored to Dropbox and D:\OSINT.
+logs/mirror_log.md
+logs/mirror-ffs/
+# Same reasoning, for stream-progress.py's transcript of the sweep_cycle claude call
+# (2026-08-10): overwritten every run, not committed to, so tracking it would leave the
+# tree permanently dirty for a file that only ever describes the most recent run.
+logs/sweep-console.log
+logs/sweep-console.jsonl
+
+# --- the budget archive's SOURCE PDFs are held on disk and backed up outside git ---
+# Bill, 2026-08-03, superseding the per-file list this block used to carry. 507 PDFs =
+# 5.53 GB, and budget-archive was 3.23 GB of a 4.1 GB .git — 79% of all history weight —
+# for no benefit git provides: they are immutable, never diffed, and the backup of record
+# is the FreeFileSync flashdrive and the Dropbox mirror, not this repo. Untracked
+# 2026-08-03 with `git rm --cached`; the bytes never moved. History still holds them, so
+# this stops future growth rather than reclaiming the 3.23 GB — reclaiming that needs a
+# rewrite, which is not worth breaking every commit SHA for.
+#
+# **Only the PDFs.** The archive's text stays tracked and is worth its 111 MB: the 457
+# `-companion.md` pages, the 114 extraction CSVs (`BUDGET-EXTRACT.md`'s output — losing
+# their history would lose reversibility on the extraction itself), and the 94 `.txt`
+# sidecars, which are the only way to grep a document git no longer holds. The 13 .xlsx
+# stay too, negated above: post-run note 11 records that for Benin and Burundi the
+# spreadsheet IS the primary artefact.
+#
+# What this means for a fresh clone: it carries the text but not the source PDFs, so
+# `BUDGET-EXTRACT.md`'s re-extract only runs on a machine holding the mirror.
+# `new-budget/` is deliberately untouched — it is a queue, not an archive, and a staged
+# document is work outstanding that should survive in git until it is extracted.
+/budget-archive/**/*.pdf
+
+# --- documents too large for git (>90MB), held locally and backed up outside git ---
+# Bill, 2026-07-29: not distribution artefacts; the wiki cites them by filename and the
+# bytes live on the local disk and its backups. .gitignore cannot express a size rule, so
+# the paths are listed here and the 90MB bar itself is enforced by .githooks/pre-commit.
+# The fourteen budget-archive entries this list used to carry are covered by the folder
+# rule above; only the ones outside it remain.
+/raw/2026/2026-04-01 State of Internet Freedom in Zambia 2026 6th Edition.pdf
+
+# The IATI master id list: ~25 MB, rewritten every poll, rebuildable from the API by
+# sweep/donor/iati/build-last-poll-ids.py. Versioning it costs ~1 GB of git a year for a
+# derived cache; the twice-daily mirror is where its backup guarantee lives (IATI-POLL.md).
+sweep/donor/iati/last-poll-ids.txt
+/raw/2026/2026-01-07-arpce-algeria-annual-report-2024.pdf
+
+# derived status snapshot, regenerated by scripts/status.py on every `wiki status`
+logs/status.md
+
+# The cycle manifest (scripts/cycle-manifest.py) — what CORPUS reads about a run: the
+# commit the mirror carries, when collection stopped, and the counts the pass measured.
+# Written AFTER the run's final commit, so `head` names the commit that is actually on
+# O:\ — a file committed inside that commit could not name it. Same reasoning as
+# logs/status.md above: derived, regenerable, and tracking it would leave the tree
+# permanently dirty and make the `commits` count meaningless.
+# Being gitignored, it is also unrestorable: nothing in history brings it back if it is
+# removed. It went missing overnight on 2026-09-07 (notes-for-osint 133) and stopped
+# CORPUS's cycle trigger twice. Never run `git clean`, `git stash -u` left unpopped, or
+# any other command that discards untracked files in this tree without excluding this
+# path and the one below it explicitly.
+cycle-manifest.json
+
+# The collection stamp (scripts/cycle-manifest.py --stamp) — sweep_closed/ingest_started/
+# last_admission from whichever pass most recently closed ingest, read into the manifest's
+# `collection` block above. A single overwritten object, not a log; same reasoning as
+# cycle-manifest.json — derived from a measurement already in git (the run's log.md line).
+# Same unrestorable risk and the same exclusion rule (notes-for-osint 133).
+logs/collection-stamp.json
