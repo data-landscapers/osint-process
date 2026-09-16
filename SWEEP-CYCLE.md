@@ -8,7 +8,7 @@ This file is **only the wiring**; the rules governing the work live in the proce
 
 One CC run; the parent is a **thin loop** that selects the day, runs its processes one at a time, holds only the tallies they return and keeps the log. It reads only this file and the cycle log, never a delegated process file and never a body: `ls new/` for a count, never `cat`.
 
-**One level of sub-agent (the Task tool); the parent owns every spawn.** A non-batching step (`INGEST` Phase A, `LINT`) is one sub-agent; a batching step is N, **~8–10 rows or countries each**, never one per country. The parent reads the list's row count (`wc -l`) and nothing else. **Each batch gets its own suffix for every per-run file the sweep writes, never for a sweep's persistent high-water state** (`state.json`). At most **20 running at once**.
+**One level of sub-agent (the Task tool); the parent owns every spawn.** A non-batching step (`INGEST` Phase A, `LINT`) is one sub-agent; a batching step is N, **~8–10 rows or countries each**, never one per country. The parent reads the list's row count (`wc -l`) and nothing else. **Each batch gets its own suffix for every per-run file the sweep writes, never for a sweep's persistent high-water state** (`state.json`). **That state is the parent's to write, never a slice's**: slices return their counts, and the parent advances `state.json` and appends `seen.csv` once they all have — a file no slice may suffix is otherwise a file every slice writes whole, and the last writer wins. At most **20 running at once**.
 
 ### Why the parent owns the spawn
 

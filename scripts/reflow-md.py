@@ -150,8 +150,21 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
-    changed = []
+    # A directory argument expands to the .md files under it. LINT #35 calls this
+    # script "over wiki/, reviews/, logs/"; without the expansion those arguments
+    # match no file and the check passes over the whole vault in silence.
+    targets = []
     for p in a.paths:
+        if os.path.isdir(p):
+            for root, dirs, fs in os.walk(p):
+                for fn in sorted(fs):
+                    if fn.endswith(".md"):
+                        targets.append(os.path.join(root, fn))
+        else:
+            targets.append(p)
+
+    changed = []
+    for p in targets:
         norm = os.path.normpath(p).replace("\\", "/")
         if norm.startswith("raw/") or "/raw/" in norm:
             print("refused (raw/ is immutable and verbatim): %s" % p, file=sys.stderr)
@@ -177,7 +190,7 @@ def main():
     if a.check:
         for p in changed:
             print("hard-wrapped: %s" % p)
-        print("%d of %d file(s) carry manual wrapping." % (len(changed), len(a.paths)))
+        print("%d of %d file(s) carry manual wrapping." % (len(changed), len(targets)))
         return 1 if changed else 0
     print("%s %d file(s)." % ("would reflow" if a.dry_run else "reflowed", len(changed)))
     return 0
