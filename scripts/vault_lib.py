@@ -120,7 +120,8 @@ FRAGMENT_IS_IDENTITY = ("d-portal.org", "d-portal.iatistandard.org")
 # Second-level labels that are registry suffixes, not the registrable name.
 # `co.ke`, `org.ng`, `ac.za`, `gov.gh` — taking the last two labels there would
 # collapse every Kenyan site to `co.ke` and screen the whole country as one origin.
-SLD = {"co", "com", "org", "net", "gov", "edu", "ac", "or", "go", "mil", "sch", "ne", "web"}
+SLD = {"co", "com", "org", "net", "gov", "gouv", "edu", "ac", "or", "go", "mil", "sch",
+       "ne", "web"}
 
 # Hyphens are allowed in keys: `needs-review: true` is in use on five sources, and
 # a key regex without it read them as unparsable lines.
