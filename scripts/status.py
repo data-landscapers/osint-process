@@ -25,6 +25,29 @@ def count_lines(path, pattern):
     except OSError:
         return 0
 
+def count_notes(path, pattern):
+    """Open notes in an exchange file, counted once each.
+
+    The house shape opens a note twice - `### 141. [ACT] <title>` and then `**141** [ACT]
+    (date) - <summary>` - and NOTE_ENTRY matches both, so every open note counted as two
+    and this line reported double. A repeat of the number just seen is the same note
+    continuing. The same defect was fixed the same night in `lint-deterministic.py`'s
+    `read_xchg_notes`, which truncated each note's body at its own second opening."""
+    try:
+        seen, last = 0, None
+        with open(path, encoding="utf-8", errors="replace") as f:
+            for ln in f:
+                m = re.match(pattern, ln)
+                if not m:
+                    continue
+                num = re.search(r"[0-9]+", m.group(0)).group(0)
+                if num != last:
+                    seen += 1
+                last = num
+        return seen
+    except OSError:
+        return 0
+
 def awaiting_ingest():
     try:
         return len([n for n in os.listdir(os.path.join(ROOT, "new"))
@@ -103,8 +126,8 @@ counts = {
     # and the `### N. [TAG]` heading their writers moved to - so match either. Pinning to one
     # is how osint-notes read 0 against a real queue of four (found by Bill, 2026-08-24): the
     # pattern went stale when the shape changed, and a zero looks exactly like an empty queue.
-    "osint-notes": count_lines(X + "notes-for-osint.md", NOTE_ENTRY),
-    "corpus-notes": count_lines(X + "notes-for-corpus.md", NOTE_ENTRY),
+    "osint-notes": count_notes(X + "notes-for-osint.md", NOTE_ENTRY),
+    "corpus-notes": count_notes(X + "notes-for-corpus.md", NOTE_ENTRY),
     "fetch": count_lines(X + "fetch-list.md", r"^[0-9]+[a-z]?\. "),
     "commits": len([l for l in sh("git status --porcelain").splitlines() if l.strip()]),
 }
