@@ -28,7 +28,7 @@ One CC run; the parent is a **thin loop** that selects the day, runs its process
 
 ### Usage log
 
-**`python scripts/usage-log.py`, twice a night: the first act, before draining notes, and after the cycle manifest, before the last mirror** *(Bill, 2026-09-13)*. It inserts `Date`, `Time (UTC)`, `7d usage` and `5h usage` — the weekly and 5-hour plan limits used, as percentages — at the top of `logs/usage-log.csv`, newest first — a record, not a budget: nothing reads it back, nothing is stopped by it, and it goes on no closing line. It never fails the night; an unreadable figure is written `n/a`. The closing row lands after the last commit, so it rides the next night's first commit — the mirror carries it either way.
+**`python scripts/usage-log.py`, twice a night into the CSV: the first act, before draining notes, and after the night's last commit, before the cycle manifest** *(Bill, 2026-09-13)*. **And at every stage boundary in between, into a buffer the manifest reads** *(Bill, 2026-09-17, strategic review 4 R4 — amending "nothing reads it back" for the buffer only)*: `usage-log.py --stage <name>` straight after each stage's commit, or where the commit would be when the stage commits nothing, named for the stage (`notes`, `sweep`, `ingest`, `lint`, `close`, and on the Day B night `backlog` and `rules`). The first act is `--reset --stage start --csv` and the last `--stage end --csv`, so each is one reading serving both. `cycle-manifest.py --usage` writes the buffer as the manifest's `usage` block, keyed by stage, and a stage's cost is its reading less the one before it. It inserts `Date`, `Time (UTC)`, `7d usage` and `5h usage` — the weekly and 5-hour plan limits used, as percentages — at the top of `logs/usage-log.csv`, newest first — a record, not a budget: nothing reads it back, nothing is stopped by it, and it goes on no closing line. It never fails the night; an unreadable figure is written `n/a`. The closing row lands after the last commit, so it rides the next night's first commit — the mirror carries it either way. The buffer, `logs/usage-stages.jsonl`, is git-ignored.
 
 ### What every sub-agent prompt carries
 
@@ -67,9 +67,11 @@ Anything longer goes to a file the parent does not read. `context` is distinct f
 **Commit at each stage boundary, never once at the end**, each preceded by `python scripts/assert-containment.py --stage <sweep|ingest|lint|close>`; exit 1 = do not commit as it stands. Allowed prefixes and the absolute deny set (`CLAUDE.md`, `wiki/reference.md`, every root procedure) live in the script; `--list` prints them. To commit outside a stage's set, pass `--allow-extra <path>` and say why in the log line.
 
 ```
-usage-log.py                                        # first act of the night; see § Usage log
+usage-log.py --reset --stage start --csv            # first act of the night; see § Usage log
 drain X:\notes-for-osint.md — act on every open note, close to -resolved (X:\README.md -> Conventions)
 assert-containment.py --stage notes [--allow-extra <path> ...] ; git commit  # only if this repo changed
+usage-log.py --stage notes                          # and after every stage boundary below, named for it
+pull-new-queue.py --apply                           # X:\new-queue\ READY folders into new/; see § Pulling X:\new-queue\
 
 Exa canary — on failure skip every line marked [exa] below; the rest of the night runs
 arm stall-watch.py under Monitor, all night
@@ -78,39 +80,40 @@ window from D's (old) Start                                                     
 
 SWEEP-DAILY-LIST, SWEEP-DAILY-OFFLIST              stage-only, batched             [exa]
 D's unprefixed Jobs, in order                      stage-only, batched; unbuilt -> "Day D: <NAME> not built" in logs/log.md   [exa]
-assert-containment.py --stage sweep ; git commit
+assert-containment.py --stage sweep ; git commit ; usage-log.py --stage sweep
 
-INGEST Phase A, once, lean form                    compile-hubs.py and FINANCE-COMPILE fire from it, scoped
+INGEST Phase A, once, lean form, both lanes open   compile-hubs.py and FINANCE-COMPILE fire from it, scoped
 cycle-manifest.py --stamp                           parent-measured sweep_closed/ingest_started; see below   [exa]
-assert-containment.py --stage ingest ; git commit
+assert-containment.py --stage ingest ; git commit ; usage-log.py --stage ingest
 
-D's @-prefixed Jobs, in order                                                      [exa]
+D's @-prefixed Jobs, in order, except @BACKLOG                                    [exa]
 quick lint ; RECONCILE if open/ has items [exa] ; ACQUIRE if acquisitions.md has open lines [exa]
 WIKI-SYNC Phase B if logs/ingest-pending-writes.md is non-empty
-full lint's batched checks
-assert-containment.py --stage lint ; git commit
+full lint's batched checks                          # Day B night only
+assert-containment.py --stage lint ; git commit ; usage-log.py --stage lint
 
 prune sweep-url_log.md before D's (old) Start (skip if blank) [exa] ; rotate-log.py --apply
 close D: Prev Duration = Duration; Duration = now - New-Start (H:MM); Start = New-Start; End = now; clear New-Start   [exa]
-assert-containment.py --stage close ; git commit
+assert-containment.py --stage close ; git commit ; usage-log.py --stage close
 
+── Day B night only (D's Jobs carry @BACKLOG) ──
 mirror to O:\
-
-housekeeping: oldest open entry in X:\housekeeping-jobs.md — whole job, or its largest tractable slice
-assert-containment.py --stage housekeeping [--allow-extra <path> ...] ; git commit
-
+BACKLOG.md — one housekeeping job, oldest first; prepared work on X:\prepared\ applied first
+assert-containment.py --stage housekeeping [--allow-extra <path> ...] ; git commit ; usage-log.py --stage backlog
 rules: drain reviews/rule-candidates.md — RULES.md, the parent's own work, no sub-agent
-assert-containment.py --stage rules [--allow-extra <each process file amended>] ; git commit
+assert-containment.py --stage rules [--allow-extra <each process file amended>] ; git commit ; usage-log.py --stage rules
 
-cycle-manifest.py --pass "sweep cycle" --count ...  # after the night’s LAST commit, before the last mirror
-usage-log.py                                        # before the last mirror
+── every night ──
+reader-visible change tonight? -> draft entries into X:\notes-for-corpus.md, titled "Add to change log"
+usage-log.py --stage end --csv                      # after the night’s LAST commit, whichever it is
+cycle-manifest.py --pass "sweep cycle" --usage --count ... --count screened=N --count screen_dropped=N
 git push ; mirror to O:\
 export-process-mirror.py  # after the push; a refusal goes on the closing line and never blocks
 ```
 
 ## The cycle manifest
 
-**`python scripts/cycle-manifest.py --pass "sweep cycle" --count items_in=N --count admitted=N --count dropped=N`, after the night’s last commit — the rules commit, not the close commit — and before the last mirror.** It writes `cycle-manifest.json` at the repo root, and that file is the whole of what CORPUS reads about a run: the commit the mirror carries, the collection window, the rotation's newest close, and the counts this pass measured. It is git-ignored and written after the commit on purpose — `head` has to name the commit that is actually on `O:\`, which a file committed inside that commit cannot do. **Counts are passed in, never inferred**: a pass that measured none writes none, because an absent count is visible and a wrong one is not. Lint #19 asserts that the manifest on the mirror names the mirror's own HEAD.
+**`python scripts/cycle-manifest.py --pass "sweep cycle" --usage --count items_in=N --count admitted=N --count dropped=N --count screened=N --count screen_dropped=N`, after the night’s last commit — the rules commit on the Day B night, the close commit on any other — and before the last mirror.** It writes `cycle-manifest.json` at the repo root, and that file is the whole of what CORPUS reads about a run: the commit the mirror carries, the collection window, the rotation's newest close, and the counts this pass measured. It is git-ignored and written after the commit on purpose — `head` has to name the commit that is actually on `O:\`, which a file committed inside that commit cannot do. **Counts are passed in, never inferred**: a pass that measured none writes none, because an absent count is visible and a wrong one is not. **`screened` and `screen_dropped` measure the sweeps' own screen, upstream of `new/`**, where `items_in`/`admitted`/`dropped` measure ingest: the parent sums them from the one-line returns (§ *What a sub-agent returns*) of every sweep step the night ran — the daily and off-list sweeps and D's unprefixed jobs, every batch, the final return of a re-spawned step — as `screened = staged + dropped + needs-clip` and `screen_dropped = dropped`. A night that ran no sweep (a canary failure) writes neither. They sit in `counts`, so the schema does not change *(strategic review 4 R3–R4, register R06, 2026-09-17: the denominator the screening trial needs)*. Lint #19 asserts that the manifest on the mirror names the mirror's own HEAD.
 
 ## Mirror
 
@@ -118,33 +121,41 @@ export-process-mirror.py  # after the push; a refusal goes on the closing line a
 
 **Assert on `git -C O:\ rev-parse HEAD` matching local, never on stdout**, and only **after the `FreeFileSync` processes exit**; the newest HTML log under `%APPDATA%\FreeFileSync\Logs\` is the second instrument. The same check is `LINT` #19 (`scripts/lint-mirror-head.py`), surface-only; `--gate` stops on it.
 
+## The change log
+
+**A change a reader of the published site could notice is drafted here as a change-log entry and sent to CORPUS as a note titled *Add to change log*** *(Bill, 2026-09-17)*. CORPUS publishes the log and writes its own entries; only this side knows when one of ours has happened, so nobody else can draft them.
+
+**What earns one**: a new sweep list, source type or country coverage; a taxonomy or lookup change; a correction reaching many records; records struck or re-dated in bulk. **What does not**: routine sweeping and ingest, and internal process changes. Most nights earn nothing, and a night that drafts none says nothing rather than saying there was no change.
+
+**The entry's shape is CORPUS's, not restated here** — `X:\README.md` → *Conventions* governs the note, and `notes-for-corpus` 29 is the worked example. CORPUS adds the entries as sent, editing only for length and house style.
+
 ## The process mirror
 
 **After the final push and mirror: `python scripts/export-process-mirror.py`.** It copies the process layer — root procedures, `scripts/`, `documentation/`, the vocabulary lookups and the thirteen `wiki/` specs, on the allowlist in the script — from `HEAD` to the public repository `data-landscapers/osint-process` (checkout `..\osint-process`, cloned if absent) and pushes. It has nothing to do with `O:\`: this is what lets anyone read how the vault is built without reading the vault. `raw/`, the compiled wiki, `logs/` and `reviews/` never go.
 
 **A refusal is not a failure of the night.** The script refuses on a markdown block quote over 200 characters or a secret, and reports any new root file, lookup or `wiki/` spec as *unclassified*. Put the line on the closing line; the ruling — acknowledge the quote's hash in `REVIEWED_QUOTES`, or add the path to `PUBLISH` or `WITHHELD` — is a housekeeping or rules act, never a sub-agent's. No change to a published file means no commit. LINT #37 catches an export that did not land.
 
-## Housekeeping, after the night's close
+## The Day B night
 
-**Runs once, after the first mirror — the register's oldest *workable* open entry, and no other.** Selection is `X:\housekeeping-jobs.md` → *Jobs — oldest first*, top entry. **An entry whose only remaining work is held by the process freeze is not workable: skip it, name it on the closing line, and take the next.** A frozen entry stays at the top of the register and is picked the first night after the freeze lifts — skipping it costs nothing, where letting it hold the stage costs every other job in the queue a night. This is the only ground for passing over the oldest entry; a job that is merely large is split, not skipped. An empty register: skip, say `no housekeeping job open` on the closing line.
+**Full lint's whole-vault checks, `BACKLOG.md` and `RULES.md` run only on the night whose selected row carries `@BACKLOG`** — in that order, rules still last — *(Bill, 2026-09-17, strategic review 4 R7)*. Every other night closes after quick lint, reconcile, acquire and Phase B, and goes straight to the manifest, the push and the mirror. **`@BACKLOG` is the row's marker, not an `@` job**: it is skipped where `@` jobs run, straight after ingest, because the backlog belongs after the close and before rules. A night the canary fails selects no day, so it is not a Day B night; the three stages wait for the next one that runs. Which row carries the marker, and how often it comes round, is `logs/sweep-cycle_log.md`'s.
 
-**Writes to `X:\housekeeping-jobs.md` and `-resolved.md`, commits nothing there** — the same boundary as draining notes-for-osint, `X:\README.md` → *Conventions* governs closing an entry. **Commits whatever it changed in `C:\OSINT`** — the pages, scripts or fixes the job actually produced — at its own boundary, gated by `assert-containment.py --stage housekeeping`.
+## Housekeeping, on the Day B night
 
-**One sub-agent**: housekeeping is read-and-judge work throughout, the same class as a Phase B page write.
+**Runs `BACKLOG.md`, once, after the first mirror** — one housekeeping job, oldest first, with any work CORPUS prepared on `X:\prepared\` applied first. Selection, sizing, the slice, closing an entry and the commit boundary (`assert-containment.py --stage housekeeping`) are that file's, not this one's.
 
-**An entry sized above 120 minutes is split before it is worked** (`housekeeping-jobs.md` → *Rough sizing*) — the night's housekeeping act is then the split itself, plus the first of the new jobs if there is room. Slicing an oversized entry night after night is what the sizing rule exists to stop.
+## Rules, the Day B night's last act
 
-**Whole job if it closes within the night; otherwise the largest tractable slice**, logged as a dated annotation on the still-open entry — job 30's own pattern, run here on a fixed nightly cadence instead of an ad hoc one. This is the one exception to `housekeeping-jobs.md` → *How a job is worked*'s "split into numbered jobs before starting": the entry stays oldest and is picked again the next night, until it can honestly be struck. A job that closes is struck (`x` prefix, cleared date) and moved to `housekeeping-jobs-resolved.md`, exactly as a manually-triggered session would close it. **Updates `housekeeping-jobs.md` → *Rough sizing* in the same pass** — drop the row on a strike, adjust it where the slice changed the job's known scope.
-
-## Rules, the night's last act
-
-**`RULES.md` over the whole of `reviews/rule-candidates.md`, after housekeeping and after nothing.** It is last because every other pass reads the rules it writes: a rule that changes with a step still to come leaves that step working to a different file from the ones before it, which is the mid-run rule change `CLAUDE.md` forbids. At the end of the night there is no such step, so the objection is spent — and the queue drains on the same nightly cadence as every other one rather than waiting on somebody to notice it.
+**`RULES.md` over the whole of `reviews/rule-candidates.md`, after housekeeping and after nothing.** It is last because every other pass reads the rules it writes: a rule that changes with a step still to come leaves that step working to a different file from the ones before it, which is the mid-run rule change `CLAUDE.md` forbids. At the end of the night there is no such step, so the objection is spent — and the queue drains on the rotation's own cadence, every Day B night, rather than waiting on somebody to notice it.
 
 **The parent's own work, never a sub-agent**: a spawned agent runs a process and does not amend one, and this is the pass that amends them.
 
 **`assert-containment.py --stage rules` names every process file it touched with `--allow-extra`** — the deny set still stands, so the exception is per file and the night's log line lists exactly which rules changed. An empty queue: skip, say `no rule candidates` on the closing line, which is the ordinary state of a good week.
 
-**Then push and mirror, once, covering housekeeping and rules together** — the only push in this file, so a same-night change reaches GitHub and `O:\` before tomorrow's mirror rather than waiting on it.
+**Then the every-night tail: the manifest, `usage-log.py`, push and mirror** — the only push in this file, covering housekeeping and rules together on a Day B night, so a same-night change reaches GitHub and `O:\` before tomorrow's mirror rather than waiting on it.
+
+## Pulling X:\new-queue\
+
+**After the notes commit, before the Exa canary — unconditional, and it runs on a canary failure too**: `python scripts/pull-new-queue.py --apply`. It moves every `X:\new-queue\` folder that carries a `READY` file flat into `new/`, gives a backfill-prefixed folder's candidates their `sweep_batch:` where they carry none, and leaves a `delivered-YYYY-MM-DD` marker in the emptied folder *(Bill, 2026-09-17, strategic review 4 R8 — the hand-carry retires)*. A folder without `READY` is still being written and is left; a name already in `new/` is left in the queue and retried the next night. The script's docstring holds the rules. **Delivery is not admission**: the night's one `INGEST` Phase A pass adjudicates the pulled items with everything else, **with the backfill lane open** (`INGEST.md` → *Two lanes*), so `status-acquire-` and `progress-filler-` batches take it and every other item — sweeps' catch and any other producer's folder — stays news. Commits nothing of its own: the files ride the sweep and ingest commits (`new/` is in both write-sets), and the queue's deletions on `X:\` are CORPUS's to commit.
 
 ## Draining notes-for-osint
 
@@ -161,13 +172,13 @@ export-process-mirror.py  # after the push; a refusal goes on the closing line a
 **On failure (error, exception, empty result set, absent connector) the collecting half of the night does not run — the processing half does** *(Bill, 2026-09-08)*. The canary proves the instrument, so what it gates is every pass that reaches outside the vault, and nothing else. **No fallback tool and no reduced sweep**: a sweep that cannot search does not run at all, because a nil it reports would be its own blindness rather than evidence of a quiet day.
 
 - **Does not run**: every sweep, the day's jobs, `RECONCILE` (its research step is Exa) and `ACQUIRE` (its one attempt and its gap probe are Exa). Their queues stand.
-- **Runs as normal**: `INGEST` Phase A over whatever is already in `new/` — a primary it cannot download becomes an acquisition line, which is step 8's ordinary path — then `WIKI-SYNC` Phase B, the compiles, quick and full lint, `PRUNE`, housekeeping, rules, the commits and the mirror. None of them touches the network, and the vault's own work does not depend on tonight's weather.
+- **Runs as normal**: `INGEST` Phase A over whatever is already in `new/` — a primary it cannot download becomes an acquisition line, which is step 8's ordinary path — then `WIKI-SYNC` Phase B, the compiles, quick lint, `PRUNE`, the commits and the mirror. Full lint, `BACKLOG` and rules wait for a Day B night that selects its row (§ *The Day B night*). None of them touches the network, and the vault's own work does not depend on tonight's weather.
 - **The rotation does not move**: select no day, write no `New-Start`, close no day. The day's collection is what did not happen, so the day is still due.
 - **No `cycle-manifest.py --stamp`**: nothing was collected, so there is no window to stamp, and the manifest carries the last real one forward. The manifest itself is still written after the final commit — it must name the commit the mirror carries (lint #19).
 
 Write the fatal line: `**SWEEP-CYCLE** · FATAL: Exa canary <the error> — sweeps skipped, processing ran`.
 
-**Every sweep runs `wiki/origin-screen.md` itself**; ingest is the only door (lint #17). **Sweeps run stage-only**, into `new/`. **Lint runs only here** (`WIKI-SYNC.md` never lints): **quick lint every night**, `LINT.md`'s nightly bands **plus the incremental checks (#6, #4, #5, #14, #20, #7) over the records this run admitted**; **full lint's whole-vault batched checks run every night too**, at the close (§ *Commit at boundaries*).
+**Every sweep runs `wiki/origin-screen.md` itself**; ingest is the only door (lint #17). **Sweeps run stage-only**, into `new/`. **Lint runs only here** (`WIKI-SYNC.md` never lints): **quick lint every night**, `LINT.md`'s nightly bands **plus the incremental checks (#6, #4, #5, #14, #20, #7) over the records this run admitted**; **full lint's whole-vault batched checks run on the Day B night**, at the close (§ *The Day B night*).
 
 ## Reconcile and acquire
 

@@ -122,3 +122,8 @@ cycle-manifest.json
 # cycle-manifest.json — derived from a measurement already in git (the run's log.md line).
 # Same unrestorable risk and the same exclusion rule (notes-for-osint 133).
 logs/collection-stamp.json
+
+# The night's per-stage usage buffer (scripts/usage-log.py --stage), read into the manifest's
+# `usage` block at the close and emptied by --reset at the next night's first act. A
+# working buffer, not a record: logs/usage-log.csv is the record.
+logs/usage-stages.jsonl

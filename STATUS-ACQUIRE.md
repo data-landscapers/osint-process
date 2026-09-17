@@ -89,7 +89,7 @@ printf '%s\n' <url> ... | python scripts/status-acquire.py --mark <ISO3> staged
 
 ## 4. Drain, then close
 
-**`update wiki backfill`.** The staged rows are ordinary candidates from here on: ingest screens, dedups and files them, Phase B writes the pages. **The trigger carries the lane and this pass has no other way to open it**: everything staged here is a `status-acquire-` batch, which `INGEST.md`'s whitelist reads as backfill — already screened upstream, so a plain `update wiki` would pay the news lane's origin adjudication, tier-3 dedup and authored `hub_line` on every row of it. This pass files nothing to `raw/` itself and writes to no `wiki/` page.
+**`update wiki backfill`.** The staged rows are ordinary candidates from here on: ingest screens, dedups and files them, Phase B writes the pages — **one iteration** (`UPDATE-WIKI.md` → *Lanes*), and the acquisitions and contradictions it raises wait for the nightly close. **The trigger carries the lane and this pass has no other way to open it**: everything staged here is a `status-acquire-` batch, which `INGEST.md`'s whitelist reads as backfill — already screened upstream, so a plain `update wiki` would pay the news lane's origin adjudication, tier-3 dedup and authored `hub_line` on every row of it. This pass files nothing to `raw/` itself and writes to no `wiki/` page.
 
 Then, and only then:
 

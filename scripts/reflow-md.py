@@ -57,7 +57,12 @@ INDENTED_CODE = re.compile(r'^(\t| {4,})\S')
 # paragraph. See the module docstring's "never touches" list for why these are named
 # rather than left to a blank-line heuristic.
 LEDGERS = {"logs/log.md", "logs/sweep-url_log.md", "logs/ingest-pending-writes.md"}
-LEDGER_DIR = re.compile(r'(^|/)logs/phaseb-batches/batch-[^/]*\.md$')
+# Two whole directories, not a filename pattern. `logs/phaseb-batches/` and `logs/_spool/`
+# hold nothing but per-slice partitions of the delta queue — one line is one record there by
+# construction — and naming a prefix inside them only works until a run picks a different one.
+# `batch-*` missed both `logs/_spool/pending-*.md` and the `cycle-*` partitions a later run
+# wrote, and either would have been fused by a lint pass that ran while the file was live.
+LEDGER_DIR = re.compile(r'(^|/)logs/(phaseb-batches|_spool)/[^/]*\.md$')
 
 
 def is_ledger(norm):

@@ -38,7 +38,13 @@ def taxonomy_labels():
     for ln in open("lookups/taxonomy.md", encoding="utf-8"):
         m = re.match(r'^-\s*`([^`]+)`\s*[—-]\s*(.+?)\s*$', ln)
         if m:
-            lab[m.group(1)] = m.group(2)
+            # A few entries (dpi.registry) carry an editorial ruling after the first
+            # sentence, and everything after the dash used to land in the label - so the
+            # `sector` and `subject` columns of every export holding such a slug carried
+            # ~500 characters of governance prose where "Registries" belongs (housekeeping
+            # job 102). Bound it at the first sentence, which is what vault_lib's
+            # load_taxonomy() has always done with the same file.
+            lab[m.group(1)] = re.split(r'\.\s', m.group(2), maxsplit=1)[0].strip()
     return lab
 
 def fy_label_from_year(y):        # commitment year -> fiscal-year label starting that year

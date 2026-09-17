@@ -16,9 +16,10 @@ rather than a silent skip.
 A file that is not a `.md` candidate is an artefact riding with its companion page; it is
 counted and listed apart, and takes whatever lane the companion takes.
 
-This script assigns a lane; it does not decide whether the run may use it. Only
-`update wiki backfill` opens the backfill lane — under any other trigger every item takes
-the news lane whatever it carries.
+This script assigns a lane; it does not decide whether the run may use it. Two triggers
+open the backfill lane — `update wiki backfill`, and the sweep cycle's ingest, for the
+batches `pull-new-queue.py` brings in from `X:\new-queue\` — and under any other trigger
+every item takes the news lane whatever it carries.
 
 Usage:
   python scripts/ingest-lane.py                 the partition, with counts

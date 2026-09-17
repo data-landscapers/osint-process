@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 assert-containment.py — standing. The write-set check at a stage boundary.
 
 `SWEEP-CYCLE.md` commits at four boundaries, and each stage has a write-set that was only
@@ -24,18 +24,32 @@ returned recommendation the parent applies. The parent applying one is exactly t
 `--allow-extra` exists for: it makes the exception explicit at the point of commit, and it
 lands in the shell history, rather than passing unremarked.
 
+**`--patch <dir>` is the same guard, one step earlier.** CORPUS prepares a housekeeping job
+in a scratch clone of the mirror and leaves a `git format-patch` series on `X:\prepared\job-NN\`
+for this vault to apply (strategic review 4, ruling R1, 2026-09-17). The rule that makes that
+safe is not a rule CORPUS can enforce on itself — `lint-interface.py` runs on its machine, and
+a guard the receiving side cannot verify is not a guard. So the patch's own file set is read
+here, before `git am` touches anything: `scripts/`, `lookups/` and the two faceted index pages,
+and nothing else. **Never `raw/`** — a frontmatter change that arrives as a diff conflicts with
+whatever the night's ingest wrote beside it, so bulk `raw/` work comes as a script and its input
+instead — **and never a `wiki/` page's prose**, which is where Phase B writes.
+
 Usage:
   python scripts/assert-containment.py --stage sweep
   python scripts/assert-containment.py --stage close --allow-extra SWEEP-CYCLE.md
+  python scripts/assert-containment.py --patch X:\prepared\job-102-103
+  python scripts/assert-containment.py --since <the BASE commit>   # after git am
   python scripts/assert-containment.py --list
 
 Exit 0 = every changed path is inside the stage's write-set. Exit 1 = at least one is not,
-and the offending paths are printed. Exit 2 = the check could not run (not a repo, no git),
+and the offending paths are printed. Exit 2 = the check could not run (not a repo, no git, no
+patch in the directory named — a check that passes over nothing is worse than no check),
 which is never read as a pass — a broken guard that reads as clean is the failure mode the
 gated rows in `sweep-cycle_log.md` already had to be taught.
 """
 import argparse
 import os
+import re
 import subprocess
 import sys
 
@@ -108,7 +122,7 @@ def inside(path, prefixes):
     return any(path == p or path.startswith(p + "/") for p in prefixes)
 
 
-def eol_flips(allow):
+def eol_flips(allow, rng=()):
     """Paths whose diff shrinks when line endings are ignored — a whole-file EOL flip.
 
     The repo holds both CRLF and LF files. A script that reads text and writes it back
@@ -119,7 +133,7 @@ def eol_flips(allow):
     """
     def numstat(extra):
         try:
-            out = subprocess.run(["git", "diff", "--numstat"] + extra,
+            out = subprocess.run(["git", "diff", "--numstat"] + list(rng) + extra,
                                  cwd=V.ROOT, capture_output=True, text=True, check=True).stdout
         except (OSError, subprocess.CalledProcessError):
             return None
@@ -143,6 +157,139 @@ def eol_flips(allow):
     return flips
 
 
+
+# --------------------------------------------------------------------------- #
+# --patch: what a patch series from CORPUS may carry.
+#
+# A whitelist, not the stage write-sets: those are about which pass is writing, and this is
+# about which machine. The two faceted index pages are named rather than `wiki/` prefixed,
+# because everything else under `wiki/` is prose.
+# --------------------------------------------------------------------------- #
+
+PATCH_ALLOW_PREFIXES = ["scripts", "lookups"]
+PATCH_ALLOW_FILES = {"wiki/places-index.md", "wiki/topics-index.md"}
+DIFF_GIT = re.compile(r'^diff --git (?:"?a/(?P<a>.+?)"?) (?:"?b/(?P<b>.+?)"?)$')
+
+
+def patch_paths(directory):
+    """Every path a `git format-patch` series touches, with the patch file that names it.
+
+    Read off the `diff --git a/X b/Y` headers, both sides, so a rename's source counts as
+    touched — a patch that moves a file out of `raw/` is refused on its source name.
+    """
+    try:
+        names = sorted(n for n in os.listdir(directory) if n.endswith(".patch"))
+    except OSError as e:
+        print(f"assert-containment: cannot read {directory} — {e}", file=sys.stderr)
+        sys.exit(2)
+    if not names:
+        print(f"assert-containment: no .patch file in {directory} — nothing to check, "
+              f"which is not the same as nothing wrong.", file=sys.stderr)
+        sys.exit(2)
+    found = []
+    for name in names:
+        with open(os.path.join(directory, name), encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                m = DIFF_GIT.match(line.rstrip("\n").rstrip("\r"))
+                if m:
+                    for side in ("a", "b"):
+                        path = m.group(side).replace("\\", "/")
+                        if path != "/dev/null" and (name, path) not in found:
+                            found.append((name, path))
+    return names, found
+
+
+def check_patch(directory):
+    names, found = patch_paths(directory)
+    denied = deny_set()
+    breaches = []
+    for name, path in found:
+        if path in denied:
+            breaches.append((name, path, "process file — CORPUS sends commits, not rules"))
+        elif path in PATCH_ALLOW_FILES or inside(path, PATCH_ALLOW_PREFIXES):
+            continue
+        elif path.startswith("raw/"):
+            breaches.append((name, path, "raw/ — frontmatter work travels as a script and "
+                                         "its input, never as a diff"))
+        else:
+            breaches.append((name, path, "outside the patch set"))
+
+    base = os.path.join(directory, "BASE")
+    if os.path.isfile(base):
+        commit = open(base, encoding="utf-8", errors="replace").read().strip().split()[0]
+        try:
+            subprocess.run(["git", "cat-file", "-e", commit + "^{commit}"], cwd=V.ROOT,
+                           capture_output=True, check=True)
+            held = "held here"
+        except (OSError, subprocess.CalledProcessError):
+            held = "NOT in this repository — `git am -3` will have no base to merge against"
+        print(f"containment [patch]: base {commit[:9]} {held}")
+
+    paths = sorted({p for _, p in found})
+    if not breaches:
+        print(f"containment [patch]: {len(names)} patch(es), {len(paths)} path(s), all "
+              f"inside scripts/, lookups/ and the index pages — apply with "
+              f"`git am --keep-cr -3`, then assert the stage.")
+        for p in paths:
+            print(f"  {p}")
+        return 0
+
+    print(f"containment [patch]: {len(breaches)} path(s) of {len(paths)} breach the patch "
+          f"set — a patch carries scripts/, lookups/ and the index pages, nothing else.")
+    for name, path, reason in breaches:
+        print(f"  {path}  <- {reason}  ({name})")
+    print("\nDo not run `git am`. Refuse the series in one line to CORPUS naming the paths "
+          "above; a re-cut patch is cheaper than a revert.")
+    return 1
+
+
+def committed_paths(base):
+    """Paths changed between `base` and HEAD, and nothing about the working tree."""
+    try:
+        out = subprocess.run(["git", "diff", "--name-only", base + "..HEAD"],
+                             cwd=V.ROOT, capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError) as e:
+        print(f"assert-containment: cannot diff {base}..HEAD — {e}", file=sys.stderr)
+        sys.exit(2)
+    return [ln.replace("\\", "/") for ln in out.splitlines() if ln.strip()]
+
+
+def check_since(base, extra, allow_eol):
+    """`git am` commits as it applies, so the working tree is clean the moment it lands.
+
+    A stage assertion run after it therefore reads a clean tree and passes over nothing —
+    the failure mode this whole script exists to refuse. So a patch's landing is asserted
+    against the commit range it created, where its paths and its line endings still are.
+    """
+    paths = committed_paths(base)
+    if not paths:
+        print(f"containment [since {base[:9]}]: no commit landed — nothing was applied.",
+              file=sys.stderr)
+        return 2
+    denied = deny_set() - set(extra)
+    breaches = []
+    for p in paths:
+        if p in denied:
+            breaches.append((p, "process file — CORPUS sends commits, not rules"))
+        elif p in PATCH_ALLOW_FILES or inside(p, PATCH_ALLOW_PREFIXES) or inside(p, extra):
+            continue
+        else:
+            breaches.append((p, "outside the patch set"))
+    flips = eol_flips(allow_eol, rng=(base + "..HEAD",))
+    if not breaches and not flips:
+        print(f"containment [since {base[:9]}]: {len(paths)} path(s) landed, all inside "
+              f"the patch set, no line-ending flips.")
+        return 0
+    print(f"containment [since {base[:9]}]: what landed is not what the patch set allows.")
+    for p, reason in breaches:
+        print(f"  {p}  <- {reason}")
+    for path, n, n2 in flips:
+        print(f"  {path}  <- line-ending flip: {n} changed lines, {n2} once EOL is ignored")
+    print("\nThe commits are already made: `git reset --hard " + base + "` puts the vault "
+          "back where the patch found it, and the series is refused in one line.")
+    return 1
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--stage", choices=sorted(STAGES), help="which boundary is being committed")
@@ -152,6 +299,12 @@ def main():
     ap.add_argument("--allow-eol", action="append", default=[], metavar="PATH",
                     help="a path whose line endings are being changed deliberately "
                          "(repeatable) — otherwise an EOL flip fails the stage")
+    ap.add_argument("--patch", metavar="DIR",
+                    help="a git format-patch series from CORPUS: check its file set "
+                         "against the patch whitelist before `git am`")
+    ap.add_argument("--since", metavar="COMMIT",
+                    help="after `git am`: assert what landed between COMMIT and HEAD "
+                         "(the tree is clean by then, so --stage would pass over nothing)")
     ap.add_argument("--list", action="store_true", help="print the stages and their write-sets")
     a = ap.parse_args()
 
@@ -160,10 +313,20 @@ def main():
             allowed = "anywhere" if "*" in prefixes else ", ".join(p + "/" for p in prefixes)
             print(f"{name:8} {allowed}\n{'':8} {why}")
         print(f"\ndenied in every stage: CLAUDE.md, the wiki/ specs, and root *.md procedures")
+        print(f"\n--patch DIR: a CORPUS patch series may carry "
+              f"{', '.join(p + '/' for p in PATCH_ALLOW_PREFIXES)} and "
+              f"{', '.join(sorted(PATCH_ALLOW_FILES))} — nothing else")
         return 0
 
+    if a.patch:
+        return check_patch(a.patch)
+
+    if a.since:
+        return check_since(a.since, [q.replace("\\", "/").rstrip("/") for q in a.allow_extra],
+                           {q.replace("\\", "/") for q in a.allow_eol})
+
     if not a.stage:
-        ap.error("--stage is required (or --list)")
+        ap.error("--stage is required (or --patch, or --list)")
 
     prefixes, why = STAGES[a.stage]
     extra = [p.replace("\\", "/").rstrip("/") for p in a.allow_extra]

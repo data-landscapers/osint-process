@@ -127,4 +127,20 @@ assert cm.check() == 1, "a schema the reader does not know must fail"
 open(cm.MANIFEST, "w", encoding="utf-8").write("{not json")
 assert cm.check() == 1, "an unreadable manifest fails rather than raising"
 
+# --- the usage block (schema 2): buffered stage readings, keyed by stage, in order
+cm.STAGES = os.path.join(TMP, "usage-stages.jsonl")
+assert cm.usage_block() is None, "no buffer, no block"
+assert "usage" not in cm.build("t", {}, usage=True), "an absent buffer writes no usage block"
+open(cm.STAGES, "w", encoding="utf-8").write(
+    '{"stage": "start", "time_utc": "2026-09-17 18:00", "seven_day": 60.0, "five_hour": 10.0}\n'
+    'not json\n'
+    '{"stage": "sweep", "time_utc": "2026-09-17 19:00", "seven_day": 63.5, "five_hour": null}\n'
+    '{"stage": "sweep", "time_utc": "2026-09-17 19:10", "seven_day": 64.0, "five_hour": 30.0}\n')
+b = cm.usage_block()
+assert list(b) == ["start", "sweep"], "stages keep their order; a malformed line is skipped"
+assert b["sweep"]["seven_day"] == 64.0, "a stage read twice keeps its last reading"
+assert "usage" not in cm.build("t", {}), "without --usage there is no block, buffer or not"
+m = cm.build("t", {}, usage=True)
+assert m["schema"] == 2 and m["usage"] == b
+
 print("test-cycle-manifest: all assertions pass")

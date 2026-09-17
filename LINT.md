@@ -1,6 +1,6 @@
 # LINT.md — the lint pass
 
-Trigger: **"full lint"** (also **"run lint"**). Hygiene checks #1–#36 over the vault, in two cadences — **"quick lint"** and **"full lint"** both at every cycle close (`SWEEP-CYCLE.md`), either also callable on demand. **`update wiki` does not lint** — the caller does.
+Trigger: **"full lint"** (also **"run lint"**). Hygiene checks #1–#38 over the vault, in two cadences — **"quick lint"** at every cycle close and **"full lint"** at the Day B night's close (`SWEEP-CYCLE.md` → *The Day B night*), either also callable on demand. **`update wiki` does not lint** — the caller does.
 
 Procedure only: §3 is `layout.md`, §4 `schemas.md`, §8–9 `operations.md`; dedup is `CLAUDE.md` → *Duplicates*. **Check numbers are permanent handles** — never renumber, never reuse; the order below is the run order, not the numeric order.
 
@@ -35,6 +35,8 @@ Every check has one correct action; lint takes it, in git, and records a count. 
 **4. Orphans & dead links** — auto-fix, scripted, nightly. Index absent pages; rewire or retire broken `[[links]]` per §9's bands. Entity slugs are whitelisted (§9); never touch the intentional-dead whitelist. Skip convention-documenting files and dated logs.
 
 **5. Untagged sources** — auto-fix, nightly (new records). Tag per `CLAUDE.md` → *Entities*; untagged mentions and sparse `entities` on thematic sources are not defects.
+
+**38. De-accented Romance titles** — surface, scripted, nightly (new records). `python scripts/lint-deterministic.py --check 38`. A `raw/` source whose `title:` carries no accented character **and** a spelling neither Portuguese nor French uses — a `-cao`/`-coes` ending, `n.o`, `Politica`, `Seguranca`, `Tecnico`, `donnees`, `numerique` — is a title a staging lane transliterated (job 81). **Never auto-fix and never spell it yourself**: refetch from the source's own heading and correct `title:` only, because a reconstructed title is a fabricated one on a gazette citation. The accent test alone over-reports by a quarter, which is why the flattened spelling is required with it. Sources ingested before 2026-09-17 are one soft line — the standing backlog, counted, never a defect. Two records are permanently exempt in the script (`DEACCENT_EXEMPT`): their own sources cannot state their titles.
 
 **34. Catalogue hero** — auto-fix, scripted detect, nightly (new records). `python scripts/lint-deterministic.py --check 34`. A post-contract `raw/` source with no `catalogue_hero`, or one over 120 characters, running to two lines, carrying markdown, ending in a full stop or repeating its own title: **write it or rewrite it** per `schemas.md` §4, with `scripts/catalogue-hero-set.py` for anything past a handful. Nothing here is surfaced — the record is in the public catalogue either way, so there is no refusal form to record and no judgment for Bill to make. **Pre-contract sources carry none by construction**: they are counted as one soft line and are a backfill process's work, never this check's.
 

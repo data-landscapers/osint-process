@@ -1,6 +1,6 @@
 # UPDATE-WIKI.md — the update-wiki orchestrator
 
-Trigger: **"update wiki"** / **"run update-wiki"**, and **"update wiki backfill"** for the same loop with `INGEST.md`'s backfill lane open (*Lanes* below). Callable manually, or from a sweep or batch (*Running it* below). Not called from the nightly cycle: `SWEEP-CYCLE.md` calls `INGEST.md`'s Phase A directly, and the rotation's deliberative catch-up is `WIKI-SYNC.md`. **Capped at 3 iterations and governed by the stop rule under *Termination*.**
+Trigger: **"update wiki"** / **"run update-wiki"**, and **"update wiki backfill"** for **one iteration** of it with `INGEST.md`'s backfill lane open (*Lanes* below). Callable manually, or from a sweep or batch (*Running it* below). Not called from the nightly cycle: `SWEEP-CYCLE.md` calls `INGEST.md`'s Phase A directly, and the rotation's deliberative catch-up is `WIKI-SYNC.md`. **Capped at 3 iterations and governed by the stop rule under *Termination*; `update wiki backfill` runs one.**
 
 This file runs **no research and files nothing itself**. It only invokes the existing passes — ingest's Phase A, `WIKI-SYNC.md`'s Phase B, reconcile, acquire — in a loop until the queues are empty **or hold only what the loop itself generated**. **It does not lint**; the caller lints separately (the sweep cycle, or a manual `full lint`). Every rule governing the work lives in those passes and in `CLAUDE.md` / `wiki/reference.md`; **this file is only the loop.**
 
@@ -58,6 +58,8 @@ Order within an iteration is **ingest's Phase A → Phase B → reconcile → ac
 
 **The lane is a per-item whitelist, not a blanket.** In a backfill run `python scripts/ingest-lane.py` partitions `new/`: `status-acquire-*` and `progress-filler-*` batches to the backfill lane, everything else to news, so an acquire fetch or a hand clip in the same queue is still screened in full. Slice from the two lists rather than from a bare listing of `new/`.
 
+**`update wiki backfill` runs one iteration, and its iteration is Phase A then Phase B** *(Bill, 2026-09-17, strategic review 4 task 10)*. The contradictions and acquisition lines its ingest files are not worked in the same sitting: they stand in `reviews/` for the sweep cycle's close, which runs `RECONCILE` and `ACQUIRE` whenever their queues have items, and whatever acquire fetches is ingested the next night. A backfill batch is already screened, so the second and third laps it used to take were spent almost wholly on its own tail — 39 rows took three iterations on one run. The hard cap and the stop rule below govern the news-lane loop; a backfill run has nothing for them to stop.
+
 **The announce banner names the lane**: `▶ running: ingest — update-wiki iteration 1, backfill lane (94 items) + news lane (6)`.
 
 **The trigger fixes the lane, never the model**: every spawn this loop makes runs on Opus, like everything else (`SWEEP-CYCLE.md` → *Model*).
@@ -88,7 +90,7 @@ This is `CLAUDE.md` → *Good beats perfect* applied to the loop: a tidy log of 
 
 **Apply the value test at entry, not exit.** *Does it change what the wiki can say?* is asked before opening a contradiction or an acquire line, not after closing one. A figure no published page turns on fails it, however tractable it looks.
 
-**Hard cap: 3 full iterations.** Reconcile and acquire stage primaries back into `new/`, so each iteration can refill the next one's input; the cap is the guard. If it is reached, exit and **flag it in `log.md`** rather than spinning: a run that hits it means a pass is failing to drain (repeated `529`s, a re-route cycle) and wants a human look, not another lap. A pass that errors out mid-run leaves its queue non-empty, so the loop retries it next iteration; a *persistent* failure is what the cap catches.
+**Hard cap: 3 full iterations** (one for `update wiki backfill`, § *Lanes*). Reconcile and acquire stage primaries back into `new/`, so each iteration can refill the next one's input; the cap is the guard. If it is reached, exit and **flag it in `log.md`** rather than spinning: a run that hits it means a pass is failing to drain (repeated `529`s, a re-route cycle) and wants a human look, not another lap. A pass that errors out mid-run leaves its queue non-empty, so the loop retries it next iteration; a *persistent* failure is what the cap catches.
 
 ## Concurrency
 

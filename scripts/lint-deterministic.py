@@ -636,9 +636,24 @@ def read_xchg_notes(path):
 
     A note runs from its numbered line to the next numbered line or the next `## ` heading.
     Closed notes are not here to be counted — both files carry unresolved notes only, and a
-    resolved one moves out wholesale to its `-resolved.md` twin."""
+    resolved one moves out wholesale to its `-resolved.md` twin.
+
+    **The house shape opens a note twice** — `### 29. [ACT] <title>` and then `**29** [ACT]
+    (date) - <summary>` — and both lines match. Read as two notes, the heading half ends
+    before the `Affects:` line and reports as carrying none, which is a false finding on
+    every note either side has ever written in that shape. A repeat of the number just
+    opened is the same note continuing, so it does not start one."""
     lines = open(path, encoding="utf-8", newline="").read().splitlines()
-    starts = [i for i, ln in enumerate(lines) if XCHG_NOTE_RE.match(ln)]
+    starts = []
+    for i, ln in enumerate(lines):
+        m = XCHG_NOTE_RE.match(ln)
+        if not m:
+            continue
+        num = m.group(1) or m.group(2)
+        if starts and num == starts[-1][1]:
+            continue
+        starts.append((i, num))
+    starts = [i for i, _num in starts]
     out = []
     for k, i in enumerate(starts):
         end = starts[k + 1] if k + 1 < len(starts) else len(lines)
@@ -959,6 +974,81 @@ def check_catalogue_hero(rows, d):
               % backlog, "the backfill lane — counted, never a defect", soft=True)
 
 
+# --------------------------------------------------------------------------- #
+# #38 — a de-accented Romance title
+#
+# A staging lane transliterated Portuguese and French `title:` values to ASCII while
+# the bodies beside them stayed correct UTF-8 (housekeeping job 81, 2026-08-27): `Lei
+# n.o 11/02`, `Politica de Seguranca Cibernetica`, `Instrucao 003-03-2025`. `title:` is
+# evidence (`reference.md` §4), so a flattened one is never reconstructed by inference —
+# it is refetched from the source's own heading, and this check is what finds the next
+# batch before a citation is built on it.
+#
+# **The test is a flattened spelling, not the absence of an accent.** "No accented
+# character" alone over-reported by roughly a quarter of what it matched — 9 of 38
+# records simply had titles whose Portuguese takes none (`Governo aprova proposta de Lei
+# de Terras`). So a title is flagged only when it carries no accented character AND a
+# word that is not spelled that way in either language: a `-cao`/`-coes` ending (ção /
+# ções), `n.o` for nº, or one of the stems below. That is the same signature job 110's
+# body measurement found, where intact text runs 29–34 accented characters per 1,000 and
+# flattened text runs 0.0–0.3, with no population in between.
+#
+# **Two records are exempt and always will be**, because their own sources cannot state
+# their titles: the Guinea-Bissau Boletim Oficial 24 scan, whose OCR layer renders its
+# own masthead as `RIPUBTICADA GUNIüI§§ÀU`, and the CFE company-registry statistics page,
+# whose domain `cfe.gw` is parked (no A record, Hostinger `dns-parking` SOA). Both were
+# read against their sources on 2026-09-13 and left exactly as held. An exemption lives
+# here rather than in the record because the record is evidence and this is lint's own
+# bookkeeping.
+# --------------------------------------------------------------------------- #
+
+ACCENTED = re.compile(r"[À-ɏ]")
+FLATTENED = re.compile(
+    r"\b(?:\w+(?:cao|coes)|n\.o|politic[ao]s?|publico|publica|servicos?|seguranca|"
+    r"tecnic[ao]s?|estatistic[ao]s?|relatorios?|anuario|codigo|numero|orcamento|"
+    r"juridic[ao]s?|regiao|orgao|"
+    r"donnees|numeriques?|arretes?|societe|ministere|annee|securite|identite)\b",
+    re.IGNORECASE)
+DEACCENT_CONTRACT = "2026-09-17"
+DEACCENT_EXEMPT = {
+    # cne.gw serves only the scan the record holds; its OCR masthead is unreadable.
+    "2023-06-15-guine-bissau-boletim-oficial-24-mapa-oficial-legislativas-2023",
+    # cfe.gw is a parked domain — nothing to refetch, not a transient outage.
+    "2025-04-30-cfe-guine-bissau-estatisticas-registo-empresas",
+}
+
+
+def check_deaccented_titles(rows, d):
+    backlog = 0
+    for r in rows:
+        fm, path = r["fm"], r["path"]
+        if fm.get("type") != "source" or not path.startswith("raw/"):
+            continue
+        title = str(fm.get("title") or "").strip()
+        if not title or ACCENTED.search(title):
+            continue
+        hit = FLATTENED.search(title)
+        if not hit:
+            continue
+        if os.path.splitext(os.path.basename(path))[0] in DEACCENT_EXEMPT:
+            continue
+        if str(fm.get("ingested") or "") < DEACCENT_CONTRACT:
+            backlog += 1
+            continue
+        d.add("38", path, "`title:` reads as de-accented Portuguese or French "
+              "(`%s`)" % hit.group(0),
+              "refetch the accented form from the source's own heading and correct "
+              "`title:` only — never spell it from your own Portuguese or French "
+              "(job 81); a source that cannot state its own title is left as held and "
+              "named in DEACCENT_EXEMPT here")
+    if backlog:
+        d.add("38", "raw/", "%d source(s) ingested before %s carry a de-accented "
+              "title" % (backlog, DEACCENT_CONTRACT),
+              "the standing backlog — counted, never a defect; job 81 repaired the "
+              "batches it measured and a corpus-wide sweep is its own job",
+              soft=True)
+
+
 def check_stranded(d):
     new_dir = os.path.join(V.ROOT, "new")
     left = [f for f in os.listdir(new_dir) if not f.startswith(".")] \
@@ -977,9 +1067,10 @@ TITLES = {"1": "schema integrity", "2": "vocabulary", "3": "freshness",
           "24": "register caps", "25": "procedure length",
           "28": "deal-record vocabulary",
           "36": "entity slugs with no referent",
-          "34": "catalogue hero"}
+          "34": "catalogue hero",
+          "38": "de-accented Romance titles"}
 ORDER = ["1", "12", "2", "11", "4", "15", "3", "23", "10", "24", "25", "28", "34",
-         "36"]
+         "36", "38"]
 
 
 def main():
@@ -1019,6 +1110,7 @@ def main():
     check_deal_vocab(rows, d)
     check_entity_referents(rows, d)
     check_catalogue_hero(rows, d)
+    check_deaccented_titles(rows, d)
 
     if a.json:
         json.dump(d.rows, sys.stdout, ensure_ascii=False, indent=1)

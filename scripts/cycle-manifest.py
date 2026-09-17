@@ -38,8 +38,17 @@ that gives none writes none. Re-deriving an ingest tally by parsing the prose he
 written into would move the forensics rather than retire them, and a wrong count is worse
 than an absent one — an absent one is visible.
 
+**Schema 2 (2026-09-17, strategic review 4 R4): the `usage` block.** With `--usage`, the
+per-stage plan-usage readings `usage-log.py --stage` buffered through the night in
+`logs/usage-stages.jsonl` are written as `usage`, an object keyed by stage in the order
+taken — `{"start": {"time_utc", "seven_day", "five_hour"}, "notes": {...}, ...}` — so a
+stage's cost is its reading less the one before it. A stage read twice keeps its last
+reading. Without `--usage`, or with an empty buffer, there is no `usage` block: an absent
+block is visible, where a block borrowed from another pass's night would be wrong. Only the
+sweep cycle passes it; CORPUS's reader accepts schemas 1 and 2 (register R07).
+
 Usage:
-  python scripts/cycle-manifest.py --pass "sweep cycle" \
+  python scripts/cycle-manifest.py --pass "sweep cycle" --usage \
       --count items_in=294 --count admitted=185 --count dropped=108
   python scripts/cycle-manifest.py --stamp --sweep-closed "2026-09-07 19:58" \
       --ingest-started "2026-09-07 20:08" --last-admission "2026-09-07 20:36"
@@ -72,7 +81,8 @@ if hasattr(sys.stdout, "reconfigure"):
 MANIFEST = os.path.join(V.ROOT, "cycle-manifest.json")
 CYCLE_LOG = os.path.join(V.ROOT, "logs", "sweep-cycle_log.md")
 STAMP = os.path.join(V.ROOT, "logs", "collection-stamp.json")
-SCHEMA = 1
+STAGES = os.path.join(V.ROOT, "logs", "usage-stages.jsonl")
+SCHEMA = 2
 
 STAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$")
 
@@ -199,9 +209,32 @@ def raw_sources():
     return n
 
 
-def build(pass_name, counts):
+def usage_block():
+    """The night's buffered stage readings, keyed by stage in the order taken; None if none.
+
+    A malformed line is skipped rather than failing the close — the block is a measurement
+    of cost, and the manifest's other blocks are what CORPUS cannot do without."""
+    block = {}
+    try:
+        with open(STAGES, encoding="utf-8") as fh:
+            for ln in fh:
+                try:
+                    r = json.loads(ln)
+                    stage = str(r["stage"])
+                except (ValueError, KeyError, TypeError):
+                    continue
+                block.pop(stage, None)
+                block[stage] = {"time_utc": r.get("time_utc"),
+                                "seven_day": r.get("seven_day"),
+                                "five_hour": r.get("five_hour")}
+    except OSError:
+        return None
+    return block or None
+
+
+def build(pass_name, counts, usage=False):
     head = git("rev-parse", "HEAD")
-    return {
+    m = {
         "schema": SCHEMA,
         "written_utc": datetime.datetime.now(datetime.timezone.utc)
                        .strftime("%Y-%m-%d %H:%M"),
@@ -213,6 +246,11 @@ def build(pass_name, counts):
         "counts": dict(counts, awaiting_ingest=awaiting_ingest(),
                        raw_sources=raw_sources()),
     }
+    if usage:
+        block = usage_block()
+        if block:
+            m["usage"] = block
+    return m
 
 
 def read():
@@ -255,6 +293,8 @@ def main():
                     help="the process name from STATUS.md's announce banner")
     ap.add_argument("--count", action="append", default=[], metavar="KEY=N",
                     help="a count this pass measured; repeatable")
+    ap.add_argument("--usage", action="store_true",
+                    help="write the night's per-stage usage readings as the `usage` block")
     ap.add_argument("--check", action="store_true",
                     help="exists, parses, and names the local HEAD")
     ap.add_argument("--print", dest="show", action="store_true",
@@ -295,7 +335,7 @@ def main():
         k, v = pair.split("=", 1)
         counts[k.strip()] = int(v) if v.strip().lstrip("-").isdigit() else v.strip()
 
-    m = build(a.pass_name, counts)
+    m = build(a.pass_name, counts, usage=a.usage)
     text = json.dumps(m, indent=1, ensure_ascii=False) + "\n"
     if a.show:
         print(text, end="")
