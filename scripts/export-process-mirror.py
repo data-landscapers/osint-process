@@ -65,7 +65,8 @@ MIRROR_OWNED = {".git", "README.md", "LICENSE", MARKER}
 # fnmatch patterns over repo-relative paths; `*` crosses `/`, so `scripts/*` is the whole tree.
 PUBLISH = [
     # Root procedures — every one except those in WITHHELD.
-    "ACQUIRE.md", "BUDGET-EXTRACT.md", "CLAUDE.md", "COUNTRY-BUDGET-BATCH.md", "DEAL-VOCAB.md",
+    "ACQUIRE.md", "BACKLOG.md", "BUDGET-EXTRACT.md", "CLAUDE.md", "COUNTRY-BUDGET-BATCH.md",
+    "DEAL-VOCAB.md",
     "DOMESTIC-FINANCE-SWEEP.md", "FINANCE-COMPILE.md", "FINANCE-PAGES.md", "HUB-COMPILE.md",
     "INGEST.md", "LINT.md", "PRUNE.md", "RECONCILE.md", "REPO-STATUS.md", "REPORT-LINT.md",
     "RULES.md", "STATUS-ACQUIRE.md", "STATUS.md", "SWEEP-BULLETIN.md", "SWEEP-COUNTRY-BUDGET.md",
