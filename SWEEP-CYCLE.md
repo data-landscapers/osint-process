@@ -20,7 +20,19 @@ One CC run; the parent is a **thin loop** that selects the day, runs its process
 
 ### Model
 
-**Everything runs on Opus** *(Bill, 2026-09-08 — the tiered model policy and the backfill run's Sonnet override are removed)*. Start the session on `--model opus`; the parent and every agent it spawns inherit it, whatever the step, the trigger or the item's lane. No spawn names a model, and no step is assigned one.
+**Screening runs on Sonnet; everything else runs on Opus** *(Bill, 2026-09-18, strategic review 4 R21, on R20's trial — 480 screened, all 312 drops re-screened, 0 false drops; supersedes the 2026-09-08 everything-on-Opus rule, which itself removed a tiered policy)*. Start the session on `--model opus`: the parent, `INGEST`, `LINT`, reconcile, acquire, the compiles, housekeeping and rules all inherit it. **The sweep-stage batches name `sonnet` on the spawn, and they are the only spawns that name a model at all** — the daily and off-list sweeps and the day's jobs, the steps that screen candidates and stage into `new/`. Nothing downstream of `new/` changes model: ingest is where value is judged, and it is the expensive stage.
+
+**The model attaches to the night, not to the lane.** Every screening batch a night runs takes the same model, so the night's `usage` block measures one thing and a stage-cost table can read it.
+
+**Day 2 runs its next night on Opus, and every night after that on Sonnet** *(Bill, 2026-09-18)*: the night is due anyway, so one heavy schema-2 night on Opus buys a sweep-stage figure to compare against at no extra cost. The test is the row's own `Start`, so nothing has to be remembered — **Day 2 screens on Opus while its `Start` is earlier than 2026-09-19, and on Sonnet once it is not.** Day 1 and Day B screen on Sonnet from tonight.
+
+### The screening monitor — one rotation, then it goes
+
+**On every night whose screening ran on Sonnet, one Opus sub-agent re-screens one batch's drop log**, after the sweeps have all returned and before the sweep commit. Take the **largest drop log** that night's batches wrote, capped at **30 rows**: this is a standing check, not a second trial. Hand it that batch's own window — the daily and off-list lanes run on their own high-water mark, not the cycle window, and the wrong window makes a re-screen more permissive than the screen and so measures nothing. It returns `false_drops=N` and the rows.
+
+**A false drop is a finding**: the item is staged and the finding goes in the sweep commit's body. A zero goes in the commit body too, in a clause.
+
+**It retires when three consecutive Sonnet nights return `false_drops=0`**, at the hands of the rules pass on the first Day B night after the third, which deletes this subsection. A night that finds one restarts the count. **The count is read from the sweep commits' bodies** — no register, no state file. Day 2's Opus night runs no monitor and counts neither way.
 
 ### No budget, no cost report
 
@@ -36,6 +48,7 @@ One CC run; the parent is a **thin loop** that selects the day, runs its process
 
 - **[`wiki/capture-rule.md`](wiki/capture-rule.md), baked in**, with *never read a feed whole*.
 - **The containment boundary** (`intake.md` §7): a sweep writes **only** to `new/` and its own `sweep/`; never `raw/`, never a wiki page, not even to reformat.
+- **A discard is a drop: logged and counted, every time.** An in-window item put aside as already-held, already-seen or a sibling's catch is a drop — **one row in this batch's own drop log** under the closest code in `intake.md` §7, and counted in `dropped=N`. Returning `dropped=0` and writing no row is the silent discard §7 forbids: it understates the denominator every screening measurement rests on, and it hides the one class of adjudication a re-screen can check most cheaply.
 - **`logs/log.md` only through `scripts/log-append.py`**, and **`logs/log.md` and `reviews/rule-candidates.md` are the parent's to write** — a slice flags them in its return. The parent corrects a nested line with `--at` (UTC) against its own measurement.
 - **Runs a process, never amends one, and runs no git command that writes**: no edit to a root process file, `CLAUDE.md` or `wiki/reference.md`; no commit, add, checkout, restore or reset; **and no tree-wide git command at all** — `stash`, `reset`, `checkout`, `clean` — because a slice cannot see what its siblings hold uncommitted. A rule change returns as a recommendation the parent applies; `assert-containment.py` enforces this (§ *Commit at boundaries*).
 - **Spawns nothing**: no `Agent` tool, no sub-agent of its own. A general-purpose agent carries every tool unless told otherwise.
@@ -80,6 +93,7 @@ window from D's (old) Start                                                     
 
 SWEEP-DAILY-LIST, SWEEP-DAILY-OFFLIST              stage-only, batched             [exa]
 D's unprefixed Jobs, in order                      stage-only, batched; unbuilt -> "Day D: <NAME> not built" in logs/log.md   [exa]
+screening monitor: one Opus re-screen of one Sonnet batch's drops, <=30 rows       # see § The screening monitor
 assert-containment.py --stage sweep ; git commit ; usage-log.py --stage sweep
 
 INGEST Phase A, once, lean form, both lanes open   compile-hubs.py and FINANCE-COMPILE fire from it, scoped

@@ -28,7 +28,7 @@ The last field is the load-bearing one: it records the conservative option actua
 
 For each distinct case in `reviews/rule-candidates.md`:
 
-1. **Count its lines.** Three or more from separate runs is a rule; one or two is not, whatever the case looks like written down. **Separate runs, not separate slices**: ten slices of one night meeting the same case is one line's worth of evidence, however many of them wrote it down.
+1. **Count its lines.** Three or more from separate runs is a rule; one or two is not, whatever the case looks like written down. **Separate runs, not separate slices**: ten slices of one night meeting the same case is one line's worth of evidence, however many of them wrote it down. **Bill may direct a case to be ruled on a single appearance**, and a candidate line carrying that direction is ruled on the named pass whatever its count — the three-line test is a substitute for judgment nobody has yet applied, and it is spent once he has applied it.
 
 2. **Ask whether an existing principle already covers it.** It usually does — `CLAUDE.md` → *Keeping this file short*. A case covered by a principle that a run failed to apply is not a new rule; it is evidence the principle is in the wrong file or is written too abstractly to reach for, and the pass may move or sharpen it without adding anything.
 
