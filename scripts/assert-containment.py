@@ -96,9 +96,14 @@ def deny_set():
 
 def changed_paths():
     """Repo-relative paths of everything git sees as changed — staged, unstaged, untracked."""
+    # Bytes, not text=True: git reports a path as it is on disk, and this tree holds
+    # filenames carrying characters the Windows locale codec cannot decode (a `raw/`
+    # slug with a U+2060 word joiner in it). Decoding under cp1252 raised inside the
+    # reader thread and left the check crashing on `None` — a gate that fails open on
+    # exactly the tree it is guarding.
     try:
         out = subprocess.run(["git", "status", "--porcelain", "-z", "--untracked-files=all"],
-                             cwd=V.ROOT, capture_output=True, text=True, check=True).stdout
+                             cwd=V.ROOT, capture_output=True, check=True).stdout.decode("utf-8", "replace")
     except (OSError, subprocess.CalledProcessError) as e:
         print(f"assert-containment: cannot read git status — {e}", file=sys.stderr)
         sys.exit(2)

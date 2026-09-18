@@ -106,9 +106,10 @@ WIKI-SYNC Phase B if logs/ingest-pending-writes.md is non-empty
 full lint's batched checks                          # Day B night only
 assert-containment.py --stage lint ; git commit ; usage-log.py --stage lint
 
+status-acquire.py --absorb                          # any pulled status-acquire batch; see § Absorbing a status-acquire batch
 prune sweep-url_log.md before D's (old) Start (skip if blank) [exa] ; rotate-log.py --apply
 close D: Prev Duration = Duration; Duration = now - New-Start (H:MM); Start = New-Start; End = now; clear New-Start   [exa]
-assert-containment.py --stage close ; git commit ; usage-log.py --stage close
+assert-containment.py --stage close --allow-extra lookups/rejected-urls.csv ; git commit ; usage-log.py --stage close
 
 ── Day B night only (D's Jobs carry @BACKLOG) ──
 mirror to O:\
@@ -170,6 +171,10 @@ export-process-mirror.py  # after the push; a refusal goes on the closing line a
 ## Pulling X:\new-queue\
 
 **After the notes commit, before the Exa canary — unconditional, and it runs on a canary failure too**: `python scripts/pull-new-queue.py --apply`. It moves every `X:\new-queue\` folder that carries a `READY` file flat into `new/`, gives a backfill-prefixed folder's candidates their `sweep_batch:` where they carry none, and leaves a `delivered-YYYY-MM-DD` marker in the emptied folder *(Bill, 2026-09-17, strategic review 4 R8 — the hand-carry retires)*. A folder without `READY` is still being written and is left; a name already in `new/` is left in the queue and retried the next night. The script's docstring holds the rules. **Delivery is not admission**: the night's one `INGEST` Phase A pass adjudicates the pulled items with everything else, **with the backfill lane open** (`INGEST.md` → *Two lanes*), so `status-acquire-` and `progress-filler-` batches take it and every other item — sweeps' catch and any other producer's folder — stays news. Commits nothing of its own: the files ride the sweep and ingest commits (`new/` is in both write-sets), and the queue's deletions on `X:\` are CORPUS's to commit.
+
+## Absorbing a status-acquire batch
+
+**At the close, before the log prune — unconditional**: `python scripts/status-acquire.py --absorb`. CORPUS screens, fetches and stages a country's `X:\africa-acquire.csv` rows and leaves its drop list on `X:\prepared\status-acquire-{ISO3}-drops.csv`; this closes the country's rows into `X:\acquire-done.csv` and writes the permanent negatives to `lookups/rejected-urls.csv` — which is why the close's containment check carries `--allow-extra lookups/rejected-urls.csv`, a no-op on a night that absorbed nothing. **A country is due once its batch folder no longer carries `READY`**, so the absorb lands on the night that pulled it and never before. `STATUS-ACQUIRE.md` holds the classes and the by-hand repair; the ingest is the night's own Phase A, in the backfill lane, like any other pulled batch. A night that absorbed something writes one `logs/log.md` line; a night that did not writes none.
 
 ## Draining notes-for-osint
 

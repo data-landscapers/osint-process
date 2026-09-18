@@ -1,118 +1,72 @@
-# STATUS-ACQUIRE.md — the status-report acquisition pass
+# STATUS-ACQUIRE.md — absorbing CORPUS's status-report batches
 
-Trigger: **"run status acquire"**, or **"run status acquire for <country>"**. One country per run.
+Trigger: **"run status acquire"**. The close runs it unattended every night (`SWEEP-CYCLE.md`), so the trigger is the repair path, not the normal one.
 
-CORPUS builds a country status report over sources OSINT does not hold — see [AGO](https://corpus.data-landscapers.io/reports/AGO/AGO-status.html) for the shape. `X:\africa-acquire.csv` is the list those reports were built from: one row per source CORPUS cited and this vault has no capture of. This pass closes that gap a country at a time — fetch the rows, stage them into `new/`, drain `new/` through `update wiki backfill`, move the rows to `X:\acquire-done.csv`.
+CORPUS builds a country status report over sources this vault does not hold — see [AGO](https://corpus.data-landscapers.io/reports/AGO/AGO-status.html) for the shape. `X:\africa-acquire.csv` is the list those reports were built from: one row per source CORPUS cited and this vault has no capture of. **CORPUS now works that list itself** *(strategic review 4, R24, 2026-09-18)*. This file is what remains on this side.
 
-**It is not the acquisitions queue.** `reviews/acquisitions.md` is OSINT's own fetch list and `ACQUIRE.md` drains it; this list is CORPUS's, lives on `X:\`, and never touches that register or its counts. It borrows `ACQUIRE.md`'s discipline: **one automated attempt per row, then the row is resolved**, and the archive is asked before a document is called gone.
+## The split — two scripts, two names, one per machine
 
-Governing rules: `CLAUDE.md` (admissibility, currency, duplicates), `wiki/layout.md` (filing) and `wiki/schemas.md` (schemas). This file is only the loop.
+**CORPUS owns the feed, the screen, the fetch and the staging**, through its own `status-stage.py`. The drop classes it screens by, the URL normalisation it matches on and the shape of the list it returns are stated for it in `X:\status-acquire.md`, because it may not read this file or `CLAUDE.md`.
 
----
+**This side owns `--select`, the run manifest, the rejection register and the close**, through `scripts/status-acquire.py` — still the only thing that reads or writes `X:\africa-acquire.csv` and `X:\acquire-done.csv`. Never sed either; a shared file CORPUS also writes is not a thing to hand-edit.
 
-## 0. Announce and select
+**The ingest is nobody's step here.** The cycle pulls the batch at its first act and INGEST Phase A adjudicates it in the backfill lane with everything else.
 
-Print the banner and note the time (`STATUS.md` → *Announce which process is running*):
+## What arrives
 
-```
-▶ running: status acquire — CAF (27 rows)
-```
-
-`python scripts/status-acquire.py --list` gives the outstanding rows per ISO3. **The country Bill named, or — with none named — the first ISO3 alphabetically still carrying rows.** No cherry-picking: the file drains in order.
-
-`python scripts/status-acquire.py --select <ISO3>` writes the run manifest to `sweep/status-acquire/<ISO3>.csv` — the country's rows verbatim, plus the `status` and `notes` columns this pass fills — and prints them. **A row whose URL is already a `raw/` capture or already a rejection is pre-marked `held` / `rejected` and is never fetched**: the same check as `ACQUIRE.md` step 0 and lint #22, run once for the whole country against `lookups/raw-url-index.csv` and `lookups/rejected-urls.csv`.
-
-That script is the **only** writer of `X:\africa-acquire.csv`. CORPUS writes to that file too — never sed it, never hand-edit it, and never open it for anything but reading.
-
-## 1. Screen the rows before fetching
-
-Cheap mechanical drops, all decided from the row alone, no fetch spent:
-
-- **A drop-listed origin** — `python scripts/origin-screen.py` over the run's URLs (`wiki/origin-screen.md`). A listed publisher is not a screened one.
-- **A generic global index or tool landing page with no dated document behind it** — `odin.opendatawatch.com/data`, the AWS regions reference, a World Bank indicator widget. `CLAUDE.md` → *Currency*: **reference studies are cited, not absorbed**, and a landing page has no body to capture and no event to date. Where the row names the study's actual publication (the ITU GCI 2024 PDF, an IIAG country profile) that is a document and it is fetched.
-- **A landing page dropped here is dropped for every country** — register it once with `python scripts/raw-url-index.py --reject not-a-document <url>` and `--select` pre-marks it `rejected` in every other manifest. A decision taken once is taken once; likewise the first country to stage a global study makes it `held` for the rest, off `raw-url-index.csv`.
-- **A row already in the manifest under a second URL** — the same document behind a publisher page and a bitstream link. Fetch the one that yields the document; drop the other as `duplicate-row`.
-
-Mark each with its reason as you go:
-
-```
-printf '%s\n' <url> ... | python scripts/status-acquire.py --mark <ISO3> dropped --note "<reason>"
-```
-
-Everything else goes to the fetch. **Admissibility is ingest's call, not this pass's** — scope, duplicates and dating are adjudicated at the gate, on the document, never pre-judged from a CSV row.
-
-## 2. Fetch — one attempt each, in batches
-
-**One sub-agent per batch of ~8–10 rows, spawned by this session**, exactly as the content sweeps do it (`SWEEP-NEWSPAPERS.md` → *Delegation*): a country's worth of fetched bodies will not fit in one context. Each batch stages its hits into `new/` and returns **a tally and the outcome per URL** — nothing else; the bodies die with the agent. No sub-agent spawns another.
-
-**Bake `wiki/capture-rule.md` into every batch agent's instructions.** Unattended agents refuse verbatim capture without it, and a refusal mid-batch is indistinguishable from a nil return.
-
-The attempt, in the order the row needs (`ACQUIRE.md` step 1):
-
-- a direct document URL — a PDF, a gazette, a project document → fetch it;
-- an ordinary page → `web_fetch_exa`;
-- a JS-rendered document library → **resolve the file URL, don't render the index**; the PDF an index points at almost always sits on a static path.
-
-**A dead domain is not a dead document.** Inside the same one attempt, ask the Internet Archive before concluding a row is unfetchable — `http://archive.org/wayback/available?url=<url>`. A live 404 dates the absence, not the document. Before recording a host as unreachable, resolve it over DoH and retry with a second client (`capture-rule.md` carries both tests).
-
-One real attempt. Do not loop, retry variants or hunt for mirrors.
-
-**Staging.** Flat into `new/` as `new/YYYY-MM-DD-slug.md`, full verbatim body, frontmatter as a head-start for ingest:
-
-| Field | From the row | Caveat |
-|---|---|---|
-| `url`, `publisher`, `title` | as given | the row's title is CORPUS's rendering; the document's own title wins |
-| `published` | the row's `published` | **often year- or month-only — set `date_precision` to match, and the document's own date always wins.** The CSV date is the year CORPUS cited, not an event date |
-| `places` | the row's `iso3` | validated at ingest; a global study cited for one country is `XGL`, not that country |
-| `topics` | the row's `sub_section` | the CSV's values are live `taxonomy.md` slugs and carry through |
-| `sweep_batch` | `status-acquire-<ISO3>-YYYY-MM-DD` | what a later grep finds this run by |
-| `entities` | — | **leave blank.** `capture-rule.md` → *Look a controlled value up; never assert one* |
-
-**Never write a frontmatter value the row does not carry.** A blank is a fact about what the fetch knew and ingest fills it; an invented slug is a defect ingest pays to correct.
-
-## 3. Record every outcome
-
-Every row leaves the queue carrying one of four statuses — there is no fifth state and nothing is parked:
-
-| Status | Means |
+| On the share | What it is |
 |---|---|
-| `staged` | fetched and sitting in `new/` for ingest to adjudicate |
-| `held` | the vault already holds this URL (pre-marked at select) |
-| `rejected` | already adjudicated and refused (pre-marked at select) |
-| `dropped` | screened out at step 1, or the one attempt did not retrieve it — with the reason in `notes` |
+| `X:\new-queue\status-acquire-{ISO3}\` | the staged candidates, with `READY` written last |
+| `X:\prepared\status-acquire-{ISO3}-drops.csv` | `url,iso3,class,note` — every row of the country that was **not** staged, exactly once |
+
+A row is staged or dropped and there is no third state, so the country's own rows are the denominator: what the drop list does not name was staged.
+
+## The close absorbs it
 
 ```
-printf '%s\n' <url> ... | python scripts/status-acquire.py --mark <ISO3> staged
+python scripts/status-acquire.py --absorb
 ```
 
-**A `dropped` row that bears on a specific page earns one dated line on that page** recording that the document is not held (`CLAUDE.md` → *Working the base*). Where Bill could plainly get it by hand — a subscriber clip, a login — raise a post-run note **as well as** dropping the row, identifying the document exactly. The row still leaves the queue.
+**Unconditional, every night, at the close.** A night with nothing due prints one line and stops. Bare, it takes every due country; `--absorb {ISO3}` takes one. `--due` lists what it would take.
 
-## 4. Drain, then close
+**Due** = the drop list is on the share **and** the batch folder no longer carries `READY`. The pull's `delivered-` marker is not the test — CORPUS removes the emptied folder once it has committed the marker, so its absence proves nothing, where `READY` present is a durable statement that the batch is still owed.
 
-**`update wiki backfill`.** The staged rows are ordinary candidates from here on: ingest screens, dedups and files them, Phase B writes the pages — **one iteration** (`UPDATE-WIKI.md` → *Lanes*), and the acquisitions and contradictions it raises wait for the nightly close. **The trigger carries the lane and this pass has no other way to open it**: everything staged here is a `status-acquire-` batch, which `INGEST.md`'s whitelist reads as backfill — already screened upstream, so a plain `update wiki` would pay the news lane's origin adjudication, tier-3 dedup and authored `hub_line` on every row of it. This pass files nothing to `raw/` itself and writes to no `wiki/` page.
+Per country it selects the rows (pre-marking `held` and `rejected` off `lookups/raw-url-index.csv` and `lookups/rejected-urls.csv`), applies each drop class, marks every unnamed row `staged`, registers the permanent negatives, closes the rows into `X:\acquire-done.csv`, and renames the drop list `…-drops-absorbed-YYYY-MM-DD.csv` — because CORPUS appends to the feed, and a stale drop list would otherwise be read against a later batch's rows.
 
-Then, and only then:
+| CORPUS's class | Status recorded | Registered in `lookups/rejected-urls.csv`? |
+|---|---|---|
+| `not-a-document` | `dropped` | **yes**, through `raw-url-index.py --reject not-a-document` |
+| `duplicate-row` | `dropped` | no |
+| `unfetchable` | `dropped` | **no** — one attempt on one day is not an adjudication, and that file pre-marks a URL rejected in every later country |
+| `held` | `held` | no |
+| `rejected` | `rejected` | no — already there |
 
-```
-python scripts/status-acquire.py --close <ISO3>
-```
+**A pre-mark from `--select` wins over the class CORPUS sent.** This side's normalisation is the authoritative one, and a URL the vault already holds is never written to the register. Disagreements print one line each; an unknown class refuses the country in one line.
 
-It refuses while any row is unmarked, naming them. It moves the country's rows out of `X:\africa-acquire.csv` into `X:\acquire-done.csv` with a `closed` date, and deletes the manifest. **Close after the drain, not before** — a run interrupted mid-fetch leaves the manifest and the CSV rows both in place, and re-running `--select` resumes from where it stopped.
-
-## 5. Ending the pass
-
-One line to `logs/log.md` via `scripts/log-append.py` — country, rows taken, staged / dropped / already-held:
-
-`status acquire — CAF 27 rows: 21 staged, 4 dropped, 2 held; update wiki backfill drained new/`
-
-Then the standing line:
-
-`contradictions - NN ; acquisitions - NN ; awaiting ingest - NN ; housekeeping - NN ; rule-candidates - NN ; osint-notes - NN ; corpus-notes - NN ; fetch - NN ; commits - NN ; decisions logged - NN`
+**`staged` records that the document reached the queue, not that it was admitted.** Delivery is not admission: ingest may still drop it on scope, duplication or dating, and the row stays closed either way — one automated attempt per row, then the row is resolved. A `dropped` row that bears on a specific page still earns one dated line on that page saying the document is not held (`CLAUDE.md` → *Working the base*); where only a hand-clip could get it, `X:\fetch-list.md` takes it.
 
 ## Containment
 
-The pass writes to `new/` (candidates), `sweep/status-acquire/` (its manifest), `logs/` (its own log lines and the origin screen's drop list), `lookups/rejected-urls.csv` (step 1's landing-page registrations) and the two CSVs on `X:\`, through `scripts/status-acquire.py` and nothing else. All but the rejection register sit inside the sweep boundary, so the check before the drain is `python scripts/assert-containment.py --stage sweep --allow-extra lookups/rejected-urls.csv` — step 1 mandates that write and a bare `--stage sweep` reports it as a breach. It never writes to `raw/` or to a `wiki/` page: `update wiki backfill` does that, under its own rules.
+`--absorb` writes `lookups/rejected-urls.csv` (through `raw-url-index.py`, that register's only writer), its manifest under `sweep/status-acquire/` — created and removed inside the run, so the tree shows nothing — and the two CSVs on `X:\`, which are outside this repo. The close's check is therefore
+
+```
+python scripts/assert-containment.py --stage close --allow-extra lookups/rejected-urls.csv
+```
+
+and the allow is a no-op on a night that absorbed nothing.
+
+## By hand
+
+If the close did not absorb — the run broke, or the drop list landed after it — run the same command. It is idempotent by construction: a country whose rows have left `africa-acquire.csv` is no longer due, and its drop list has been renamed.
+
+## Ending the pass
+
+One line to `logs/log.md` via `scripts/log-append.py`, **only where it absorbed something**:
+
+`status acquire — STP 28 rows: 20 staged, 5 dropped, 3 rejected; 2 URLs registered not-a-document`
+
+Then the standing count line (`STATUS.md` → *wiki status*).
 
 ## Concurrency
 
-One pass at a time, and no other CC session writing to the vault while it runs — it stages into the shared `new/` and then drains it. `X:\africa-acquire.csv` is shared with CORPUS, so a run that cannot complete closes the country it took rather than leaving rows checked out invisibly.
+One absorb at a time. `X:\africa-acquire.csv` is shared with CORPUS, and a country is closed whole or not at all.
