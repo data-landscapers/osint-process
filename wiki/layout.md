@@ -75,6 +75,10 @@ lookups/                  # controlled vocabularies and source lists — the tab
   sweep-thinktanks.csv    # content sweep: organisations (URL, Title, Focus) [BILL]
   sweep-regional-orgs.csv # regional sweep: institutions                     [BILL]
   financier-names.csv     # financier_slug -> canonical display name         [CC]
+  intersection-names.csv  # place -> the prefix its intersection pages use   [CC]
+                          #   cols: place,name,kind,prefix — one row per
+                          #   place in countries.csv, so a slice reads the
+                          #   prefix instead of deriving it (§3). Job 96.
   fx-imf-annual.csv       # IMF annual average rates, (currency, year)       [CC]
   budget-init-backlog.csv # countries not yet budget-initialised             [CC]
   raw-url-index.csv       # the raw/ dedup lookup (INGEST.md step 2, the      [CC]
@@ -189,6 +193,7 @@ Every source in `raw/` carries a **`YYYY-MM-DD` date prefix** taken from its tru
   - month only → prefix `YYYY-MM-01`
 - **All file types, not just clips.** PDFs, images and other artefacts follow the same rule — the clipper only prefixes markdown clips, so anything added by other routes must be prefixed on ingest.
 - **Binary artefacts get a companion source page.** A PDF or image can't hold YAML frontmatter, so create a date-prefixed markdown **source page** carrying the frontmatter (places, topics, entities, `published`, etc.) that links to or embeds the artefact. Prefix **both** the source page and the artefact with the same date so they sort together.
+- **An intersection page is `{prefix}--{topic-slug}.md`, and the prefix is read from [`lookups/intersection-names.csv`](../lookups/intersection-names.csv) — never derived.** A region uses its X-code (`xwa--dpi-pay`), a country the readable name recorded there (`cote-divoire--dpi-id`, not `civ--dpi-id`). **The table exists because the name form is not derivable**: COD is `drc`, CPV `cabo-verde`, STP `sao-tome`, each a better answer than slugifying `countries.csv` and none of them deducible from it. A slice facing a place whose prefix is not obvious was guessing, and guessed both ways inside one pass — which is how 60 pages came to carry a second form (job 96, ruled 2026-09-20). A place added to `countries.csv` takes a row here in the same edit.
 - **Renaming must not break links.** Source pages are referenced by `[[link]]` from `sources:` lists. Rename via Obsidian (which updates links), or, if renaming on disk, update every referencing link and confirm with the dead-link lint. Do renames in git so they're reversible.
 
 **Artefacts over 90MB are held on disk, not in git.** Large budget PDFs are working documents, not distribution artefacts: the wiki cites them by filename, and the bytes live on the local disk and its backups. **Git LFS is not a way round the bar.** `.gitignore` cannot express a size rule, so the known files are listed there by path and the bar itself is enforced by `.githooks/pre-commit` (enable with `git config core.hooksPath .githooks`). A record whose `artefact:` names such a file is **not** broken — the document is held, just not cloned; treat a missing artefact in a fresh clone as expected, not as a defect.

@@ -132,11 +132,18 @@ def instrument_counts(rows):
 def rewrite(iso3, write=False):
     rows = load(iso3)
     p = os.path.join(PLACES, "%s.md" % iso3)
-    if rows is None or not os.path.exists(p):
-        return None
+    if rows is None:
+        return None                      # no export for this place: nothing to compile
+    if not os.path.exists(p):
+        return ("no hub page", iso3)
     raw = open(p, "rb").read().decode("utf-8")
     if "## Financing" not in raw:
-        return None
+        # This compiler replaces a section; it does not mint one. That is deliberate
+        # — where the section goes on the page is an editorial call — but returning
+        # None made it indistinguishable from "no deals", so a place that gained its
+        # first deal was skipped in silence. XSA was the live instance (one unpriced
+        # pipeline grant, no section, nothing said). Name it instead.
+        return ("no section", iso3, len(rows))
 
     # keepends: each line keeps its own terminator, so a mixed-EOL file (this repo has
     # them) comes back byte-identical apart from the lines actually rewritten. An
@@ -207,6 +214,13 @@ def main():
     if done["rewritten"]:
         print("  " + " ".join(done["rewritten"]))
     print("unchanged: %d" % len(done["unchanged"]))
+    # A place with deals and no section to replace used to return None and vanish.
+    for state, note in (("no section", "have no `## Financing` section to land in"),
+                        ("no hub page", "have no hub page at all")):
+        if done[state]:
+            print("\n%d place(s) %s — this compiler replaces a section, it does not "
+                  "mint one, so these are skipped and named rather than silently dropped: %s"
+                  % (len(done[state]), note, " ".join(done[state])))
     return 0
 
 

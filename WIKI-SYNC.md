@@ -32,7 +32,7 @@ Drain `logs/ingest-pending-writes.md` **grouped by target page**, opening each o
 
 **6. For each subject.** Update the concept page; if place-specific and substantial, create or update the intersection and link from both sides.
 
-**9. Indexes — once per run, not per item.** `topics-index.md` and `places-index.md` change only when a place or topic appears that was **not already listed**, which on most runs is never: compute that from the run's deltas and open an index only if something new appeared. There is no entities index.
+**9. Indexes — run the generator, once per run.** `python scripts/wiki-index-gen.py --write` rebuilds the *Every intersection* block in both `topics-index.md` and `places-index.md` from `wiki/intersections/` itself; it owns its markers, touches no byte outside them, and asserts that before it writes, so the curated cells above stay hand-written and stay the lead. **The old test is retired** — open an index only when a run introduces a place or topic *not already listed* — because it inferred staleness from a run's deltas and the normal case is a new page for a pair whose halves are both already listed: it introduces neither, triggers nothing, and had left **483 pages unreachable from `places-index.md`** by the time jobs 89 and 117 counted them (closed 2026-09-20). Running it unconditionally also repairs pages minted outside this pass, which no delta test can see. `--check` exits 1 when a block is out of date. There is no entities index.
 
 **10. Set `last_reviewed`** on every page touched, then write the run's `log.md` line — one line, the pass's result. A judgment call the run made goes in the commit body, not a second line.
 

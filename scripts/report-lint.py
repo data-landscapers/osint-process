@@ -359,7 +359,7 @@ def check_f(chb, isos):
     Same assertion as B, other compiler.
     """
     fails = []
-    by_place, _undated, _held = chb.collect()
+    by_place, _undated, _held, _retired = chb.collect()
     # Every hub, not only the ones with a finance export: this check is about
     # hub_lines, and a hub with no deals still has Recent developments.
     for iso in isos:

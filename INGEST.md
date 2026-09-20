@@ -131,7 +131,7 @@ Move it to **`raw/YYYY/`**, prefixed `YYYY-MM-DD` from `published` (`layout.md` 
 
 **Append its deltas to `logs/ingest-pending-writes.md`**, one line per affected **subject**, naming the source slug and what Phase B is to write; places contribute nothing. Its existence means Phase B is outstanding.
 
-**Write its `logs/sweep-url_log.md` line here, at disposition, for all four** (`python scripts/url-log-append.py {admitted|dropped|contradiction|acquisition} URL`) and for an admission `python scripts/raw-url-index.py --append URL FILE PUBLISHED`, after the file is in `raw/` and before the candidate leaves `new/`. Never batch these to the close.
+**Write its `logs/sweep-url_log.md` line here, at disposition, for all four** (`python scripts/url-log-append.py {admitted|dropped|contradiction|acquisition} URL`) and for an admission `python scripts/raw-url-index.py --append URL FILE PUBLISHED`, after the file is in `raw/` and before the candidate leaves `new/`. **An admission that carries a binary artefact also runs `python scripts/artefact-md5-index.py --append <artefact path>`** — the URL index cannot see a document served from two routes, and the bytes are the one thing that can (job 106; lint #39 reports what the append missed). Never batch these to the close.
 
 ---
 

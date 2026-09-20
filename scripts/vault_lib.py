@@ -341,6 +341,20 @@ def parse_frontmatter(text):
                     cont.append(nxt.strip())
                     i += 1
                 fm[key] = _unquote(" ".join([val] + cont).strip() if cont else val)
+
+    # The reader above is deliberately tolerant, which is why it cannot be the test of
+    # whether the block is readable. CORPUS parses `raw/` with a real YAML parser, so a
+    # record this reader recovers happily can still be invisible to the consumer — on
+    # 2026-09-20 that was 371 records against the 19 lint #1 was reporting (job 95).
+    # One `yaml.safe_load` here closes that gap and stops the defect regrowing unseen.
+    try:
+        import yaml
+        if not isinstance(yaml.safe_load(head), dict):
+            warnings.append("yaml-unparseable:loads, but not as a mapping")
+    except ImportError:
+        pass
+    except Exception as exc:
+        warnings.append("yaml-unparseable:" + str(exc).split("\n")[0][:70])
     return fm, warnings, body
 
 

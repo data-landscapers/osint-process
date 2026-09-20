@@ -111,7 +111,7 @@ def places_of(fm):
 def collect():
     """place -> [(published, slug, hub_line, [co-source slugs])]"""
     by_place = defaultdict(list)
-    skipped = held = 0
+    skipped = held = retired = 0
     for name, path in raw_sources(RAW):
         fm, _ = fm_of(read(path)[0])
         if not fm:
@@ -125,6 +125,17 @@ def collect():
                        # reach a synthesis page until lint #6 clears the origin.
                        # Ingest should not have written a hub_line at all; this is
                        # the backstop, and a non-zero count here says it did.
+        if scalar(fm, "cite_through"):
+            retired += 1   # CLAUDE.md -> Duplicates -> Replace: this capture has been
+                       # retired in favour of a survivor, so its bullet must not stand.
+                       # Without this the compile re-cited the retired capture on every
+                       # run and rewriting the citation on the page never held, which is
+                       # how housekeeping job 90 was found. The fix at the record is to
+                       # move hub_line: to the survivor and name this one in
+                       # hub_line_sources:; this is the backstop that makes the class
+                       # impossible rather than merely repaired, and a non-zero count
+                       # here says a retirement left its bullet behind.
+            continue
         # Strip a trailing YAML comment. `published: 2025-01-01  # "January 2025";
         # exact date approximate` is legal YAML and two sources carry it; without
         # this the whole line fails every pattern below and the source is reported
@@ -147,7 +158,7 @@ def collect():
         for p in places_of(fm):
             by_place[p].append((sort_key, slug, line,
                                 listval(fm, "hub_line_sources"), shown))
-    return by_place, skipped, held
+    return by_place, skipped, held, retired
 
 
 def render(rows, eol):
@@ -239,8 +250,9 @@ def main():
     init = "--init" in argv
     codes = [a for a in argv if not a.startswith("--")]
 
-    by_place, undated, held = collect()
+    by_place, undated, held, retired = collect()
     known = sorted(f[:-3] for f in os.listdir(PLACES) if f.endswith(".md"))
+    scoped = bool(codes)
     if not codes:
         codes = known
     else:
@@ -270,6 +282,23 @@ def main():
         print("\n%d source(s) carry hub_line but are on origin_status: hold — no bullet. "
               "Ingest should not have written one (INGEST.md 4a); lint #6 drains the hold."
               % held)
+    if retired:
+        print("\n%d source(s) carry hub_line but are retired by cite_through — no bullet. "
+              "Move the hub_line to the survivor and name this capture in hub_line_sources "
+              "(housekeeping job 90); a non-zero count means a retirement left its bullet behind."
+              % retired)
+    # A scoped run is silent about every hub it did not name, and a source tagged
+    # with two places is touched by one run and read by two hubs (job 94: BWA, SYC
+    # and XSA drifted exactly this way). Say what is being left stale.
+    if scoped:
+        others = [c for c in known if c not in codes
+                  and compile_place(c, by_place.get(c, []), False) == "rewritten"]
+        if others:
+            print("\n%d hub(s) OUTSIDE this run scope would also change: %s"
+                  % (len(others), " ".join(others)))
+            print("  A source tagged with two places is touched by one run and read by "
+                  "two hubs. Re-run with --all (about five seconds over 62 hubs), or name these too.")
+
     empty = [c for c in codes if c in res.get("rewritten", []) and not by_place.get(c)]
     if empty:
         print("compiled block came out EMPTY for: %s" % " ".join(empty))

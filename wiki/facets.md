@@ -52,7 +52,7 @@ XWA,West Africa,XAF
 
 ### LENS — retired *(Bill, 2026-09-08)*
 
-There is no lens facet. `lens:` is not in the schema, no template carries it and no pass writes one; the values sitting in existing frontmatter are legacy and stay there untouched (`schemas.md` §4). Where the sovereignty or colonialism reading is the point of an item, **write it in the body prose** — which is where the argument was always doing its work, since a two-value facet nothing filtered on classified nothing.
+There is no lens facet. `lens:` is not in the schema, no template carries it and no pass writes one — **and as of 2026-09-20 no file carries one either**: the key was cleared from `raw/` (15,372 records) and then from every other root (1,696 files) by the strategic review's tasks 20a and 20b, so the values that sat in existing frontmatter are now in git history only (`schemas.md` §4). **A carrier appearing anywhere now means something has started writing it again.** Where the sovereignty or colonialism reading is the point of an item, **write it in the body prose** — which is where the argument was always doing its work, since a two-value facet nothing filtered on classified nothing.
 
 ### Blocs are entities, not places
 

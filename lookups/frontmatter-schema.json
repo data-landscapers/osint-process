@@ -61,7 +61,7 @@
                    "date_source", "places", "topics", "entities", "body_completeness"],
       "x-expected": ["ingested"],
       "x-url-blank-note": "A blank url: is admissible ONLY with url_note: stating dated evidence the search was exhausted (schemas.md §5a). minLength was dropped for that case; a blank with no url_note is still a defect and lint #14 is what says so.",
-      "x-expected-note": "`ingested` is carried by every source in raw/ and by none of the budget-archive companions, which were archived rather than ingested. A real convention, not worth a defect, so it reports softly. (`lens` sat here too until 2026-09-08, when the facet was retired: schemas.md §4. It is written by nothing and is no longer a property of any type, so the 17,036 legacy values in the corpus validate as an unknown key — ignored, and left in place rather than cleared.)",
+      "x-expected-note": "`ingested` is carried by every source in raw/ and by none of the budget-archive companions, which were archived rather than ingested. A real convention, not worth a defect, so it reports softly. (`lens` sat here too until 2026-09-08, when the facet was retired: schemas.md §4. It is written by nothing and is no longer a property of any type. The 17,036 legacy values were cleared on 2026-09-20 in two passes — 15,372 in raw/ and 1,696 everywhere else — so the key is now in git history only and an unknown-key hit means something has started writing it again.)",
       "x-required-in": { "raw/": ["ingested"] },
       "x-filename": {
         "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}",

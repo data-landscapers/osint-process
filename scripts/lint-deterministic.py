@@ -22,6 +22,7 @@ This answers all nine in about a second, off `index/`, against
   #25  procedure length     `CLAUDE.md` over its line cap - that file only, from 2026-08-20
   #28  deal-record vocab    Instrument/Status/Beneficiary type against `deal-vocabs.csv`
   #34  catalogue hero       the subtitle every post-contract source carries, and its shape
+  #8   page bloat          over §8's ~2,500-word classify line, by shape; hubs' compiled chronology exempt
 
 **#24 and #25 exist because the same limits were written as prose and broke inside a
 week** (2026-08-10, token review tasks 5, 6 and 16): the 60-word note cap was ignored on
@@ -377,9 +378,19 @@ def check_vocabulary(rows, places, topics, d):
                 d.add("2", path, f"topic `{t}` is not in taxonomy.md")
         if fm.get("type") == "concept" and fm.get("slug") not in topics:
             d.add("2", path, f"concept slug `{fm.get('slug')}` is not in taxonomy.md")
-        for l in V.as_list(fm.get("lens")):
-            if l not in LENS_VALUES:
-                d.add("2", path, f"lens `{l}` is not one of {sorted(LENS_VALUES)}")
+        # **The vocabulary clause is retired and replaced by its own inverse**
+        # (2026-09-20, register R50): `lens:` was cleared from the whole corpus —
+        # 15,372 records in `raw/`, then 1,696 files everywhere else — so a check
+        # that reads the value had nothing left to read. What can still happen is a
+        # pass starting to write the key again, which `schemas.md` §4 names as the
+        # thing to catch, so presence is the finding and the value is irrelevant.
+        # **`LENS_VALUES` stays** — `check_links` whitelists `sovereignty` and
+        # `colonialism` from it as intentional-dead wikilink targets in body prose,
+        # which the strip never touched (`operations.md` §9).
+        if "lens" in fm:
+            d.add("2", path, "`lens:` is retired and was cleared corpus-wide",
+                  "schemas.md §4: nothing writes it, so a carrier means something "
+                  "has started again")
 
 
 def check_freshness(rows, today, d):
@@ -515,6 +526,14 @@ def check_linklists(rows, d):
                       "add the closing `---`; until then no field on this page is readable")
             elif w.startswith("unparsed-line"):
                 d.add("1", r["path"], f"unreadable frontmatter line: {w.split(':', 1)[1]}")
+            elif w.startswith("yaml-unparseable"):
+                # 2026-09-20 (job 95): `unreadable frontmatter line` above is this file's
+                # own tolerant reader complaining, and it caught 19 records while an actual
+                # YAML parse failed on 371. raw/ is what CORPUS reads, so an unparseable
+                # record is invisible to the consumer, not merely untidy.
+                d.add("1", r["path"], f"frontmatter fails a YAML parse: {w.split(':', 1)[1]}",
+                      "quote the scalar; a value that already fails to parse cannot change "
+                      "meaning by being quoted (scripts/repair-frontmatter-quoting.py)")
 
 
 def check_completeness(rows, d):
@@ -1049,6 +1068,153 @@ def check_deaccented_titles(rows, d):
               soft=True)
 
 
+def check_unreadable_records(d):
+    r"""A `raw/` record whose frontmatter block no parser in the vault can match.
+
+    **This is the one defect shape nothing else is looking for.** Every frontmatter
+    reader here matches `^---\r?\n`, so a record whose closing `---` carries a doubled
+    CR, or has lost its newline entirely, reads as having *no frontmatter* rather than
+    as malformed: not an orphan, not bad YAML, not a missing key. Lints and compiles
+    that partition on the block skip it silently and report nothing. Three Somali
+    records sat in that state until `catalogue-hero-set.py` refused one outright
+    (housekeeping 118, found by the R31 hero sitting 2026-09-18).
+
+    **Read as bytes, never as text**, because the defect IS the byte sequence: a reader
+    that opens in text mode with universal newlines has already normalised it away,
+    which is why every text-mode check in this file passes over it.
+
+    The repair is a terminator fix and never a re-capture — it changes no character of
+    anyone's words, which the job asserted by stripping every CR from both sides and
+    comparing before writing.
+    """
+    root = os.path.join(V.ROOT, "raw") if hasattr(V, "ROOT") else "raw"
+    block = re.compile(rb"^---\r?\n(.*?\r?\n)---\r?\n", re.S)
+    doubled = 0
+    for dirpath, _dirs, files in os.walk(root):
+        for fn in files:
+            if not fn.endswith(".md"):
+                continue
+            path = os.path.join(dirpath, fn)
+            rel = os.path.relpath(path, os.path.dirname(root)).replace(os.sep, "/")
+            try:
+                b = open(path, "rb").read()
+            except OSError:
+                continue
+            if not block.match(b):
+                d.add("40", rel,
+                      "frontmatter block does not match the reader's own regex — every "
+                      "parser in the vault reads this record as having no frontmatter",
+                      "a terminator repair, not a re-capture: fix the bytes around the "
+                      "`---` and leave the body's own words alone")
+            elif b"\r\r\n" in b:
+                doubled += 1
+    if doubled:
+        d.add("40", "raw/",
+              "%d record(s) carry a doubled CR inside the body" % doubled,
+              "cosmetic while the frontmatter still parses, but it is the same capture "
+              "fault that made three records unreadable — one byte fix each, touching "
+              "no word of the text",
+              soft=True)
+
+
+def check_drop_domains(rows, d):
+    """A `raw/` record whose `url:` host sits on a domain adjudicated `drop`.
+
+    The deterministic half of #6. `wiki/origin-screen.md` -> *After a promotion to
+    `drop`* makes the promoting session hand every `raw/` hit to #6 in the same
+    session, and four records survived three separate promotions because no script
+    ever asked (housekeeping job 104). A retired record is still a finding until it
+    leaves `raw/`, so the count is the enforcement.
+
+    `origin_status: cleared` stamped before the promotion is the second half: a stamp
+    that predates its own domain's adjudication says nothing and reads as if it did.
+    """
+    dropped = {}
+    path = os.path.join(V.ROOT, "logs", "drop-list.csv") if hasattr(V, "ROOT") else "logs/drop-list.csv"
+    try:
+        with open(path, encoding="utf-8-sig", newline="") as fh:
+            for row in csv.DictReader(fh):
+                if (row.get("status") or "").strip().lower() == "drop":
+                    dom = (row.get("domain") or "").strip().lower().lstrip(".")
+                    if dom:
+                        dropped[dom] = (row.get("added") or "").strip()
+    except OSError:
+        return
+    if not dropped:
+        return
+    for r in rows:
+        fm, p = r["fm"], r["path"]
+        if fm.get("type") != "source" or not p.startswith("raw/"):
+            continue
+        url = str(fm.get("url") or "")
+        m = re.match(r'https?://([^/?#]+)', url, re.I)
+        if not m:
+            continue
+        host = m.group(1).lower().split(":")[0]
+        host = host[4:] if host.startswith("www.") else host
+        hit = next((dom for dom in dropped
+                    if host == dom or host.endswith("." + dom)), None)
+        if not hit:
+            continue
+        added = dropped[hit]
+        stamp = str(fm.get("origin_cleared") or fm.get("origin_held") or "")[:10]
+        stale = " and still stamped `origin_status: cleared` (%s), which predates it" % stamp             if str(fm.get("origin_status") or "").strip() == "cleared" and stamp and added and stamp < added else ""
+        d.add("6", p, "url sits on `%s`, adjudicated `drop` %s%s" % (hit, added or "(undated)", stale),
+              "take the record's live claims, re-source them from an admissible origin or "
+              "state the absence dated on the page that carries them, then retire the record "
+              "and rewire its citations (`wiki/origin-screen.md` -> After a promotion to `drop`)")
+
+
+def check_artefact_md5(d):
+    """Two artefacts with one md5 and no documented reason (job 106).
+
+    The index is read, never rebuilt: hashing 2,249 files takes minutes and lint runs
+    nightly. `scripts/artefact-md5-index.py --append` keeps it current at ingest, and the
+    count check below is what says whether it did — an index that has stopped being
+    appended to is a check that has stopped looking, which is worse than no check.
+    """
+    import csv as _csv
+    index = os.path.join(V.ROOT, "lookups", "artefact-md5-index.csv")
+    allow = os.path.join(V.ROOT, "lookups", "artefact-md5-allowed.csv")
+    if not os.path.isfile(index):
+        d.add("39", "lookups/artefact-md5-index.csv", "the artefact md5 index is absent",
+              "`python scripts/artefact-md5-index.py --rebuild`")
+        return
+    with open(index, encoding="utf-8-sig", newline="") as fh:
+        rows = list(_csv.DictReader(fh))
+    ok = {}
+    if os.path.isfile(allow):
+        with open(allow, encoding="utf-8-sig", newline="") as fh:
+            ok = {r["md5"]: r.get("reason", "") for r in _csv.DictReader(fh) if r.get("md5")}
+
+    # Count the artefacts with the index's own walker rather than a second copy of it here:
+    # two walkers that disagree about what an artefact is report a stale index every night
+    # and there is nothing to fix.
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location(
+        "artefact_md5_index", os.path.join(V.ROOT, "scripts", "artefact-md5-index.py"))
+    _mod = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_mod)
+    held = len(_mod.artefacts(V.ROOT))
+    if held != len(rows):
+        d.add("39", "lookups/artefact-md5-index.csv",
+              "the index holds %d row(s) against %d artefact(s) held" % (len(rows), held),
+              "an index that is not appended to at ingest stops seeing collisions — "
+              "`python scripts/artefact-md5-index.py --rebuild`")
+
+    by_hash = {}
+    for r in rows:
+        by_hash.setdefault(r["md5"], []).append(r)
+    for digest, members in sorted(by_hash.items()):
+        if len(members) < 2 or digest in ok:
+            continue
+        d.add("39", members[1]["artefact"],
+              "byte-identical to %s" % members[0]["artefact"],
+              "read both records: retire the lesser under `CLAUDE.md` -> *Duplicates*, "
+              "or record the reason in lookups/artefact-md5-allowed.csv — a document "
+              "served by two routes defeats both the title dedup and the URL index")
+
+
 def check_stranded(d):
     new_dir = os.path.join(V.ROOT, "new")
     left = [f for f in os.listdir(new_dir) if not f.startswith(".")] \
@@ -1058,9 +1224,134 @@ def check_stranded(d):
               "lint does not ingest it — the count says the ingest did not complete")
 
 
+
+
+# --------------------------------------------------------------------------- #
+# #8 page bloat — over §8's classify line, by shape
+# --------------------------------------------------------------------------- #
+
+CLASSIFY_LINE = 2500          # operations.md §8: "stop and classify"
+SMALL_SECTION = 400           # a section too short to be a theme
+HUB_CHRONOLOGY = "Recent developments"   # compiled, not written — LINT.md #8 exempts it
+RULED_HEADING = re.compile(r"^Length\s*[-\u2013\u2014]\s*reviewed\s*(\d{4}-\d{2}-\d{2})?")
+SECTION_DATE = re.compile(r"(?:19|20)\d\d")
+BLOAT_KINDS = ("concept", "place", "intersection")
+# Page furniture: out of the word count and out of the shape test both, because
+# it is neither synthesis nor chronology and a page cannot be trimmed by deleting
+# its own links. `Reads`, `Record not held` and `Documents reached for` are NOT
+# furniture — a dated statement of what is unestablished is a finding
+# (`CLAUDE.md` -> *Currency*), so it counts as content and as a section.
+FURNITURE = ("Links", "Sources", "Length", "Places", "Related")
+
+
+def _shape(real, body_words):
+    """§8's three flavours, as the ruling of housekeeping job 114 states them.
+
+    `unsectioned` is not a flavour but a bar to diagnosing one: §8 asks which of
+    three a page's length is, and the answer is invisible while the material is
+    one block (job 115, mali--dpi-id). Section first, then classify.
+    """
+    if len(real) <= 1:
+        return "unsectioned"
+    biggest = max(n for _, n in real)
+    if biggest > 0.6 * body_words:
+        return "unsectioned"
+    dated = sum(1 for h, _ in real if SECTION_DATE.search(h))
+    small = sum(1 for _, n in real if n < SMALL_SECTION)
+    if len(real) >= 6 and small >= 0.5 * len(real) and dated >= 0.4 * len(real):
+        return "append-log"
+    return "synthesis"
+
+
+def check_page_bloat(rows, d):
+    """LINT.md #8, which was specified and never implemented.
+
+    Every figure housekeeping job 87 carried — 199 pages on 2026-08-30, 295 on
+    2026-09-05, 342 on 2026-09-16, 394 on 2026-09-17 — was measured ad hoc, which
+    is why they disagree with each other and why **the hub exemption LINT.md
+    already states had never once been applied**: `places/NGA.md` was counted at
+    56,296 words when 51,668 of them are its compiled `## Recent developments`.
+
+    Every finding here is SOFT by design. §8 is explicit that "word figures are
+    diagnostic prompts, not hard caps", and a page over the line may correctly be
+    left alone — so this reports where to look and never gates a pass.
+
+    A page carrying a dated `## Length — reviewed` note has been ruled on, and is
+    reported as ruled rather than as backlog. **The ruling goes stale when the
+    page has been substantively edited since it was made** — `last_reviewed`
+    newer than the note's own date — because a length judgment is made on the
+    page that existed when it was made, and `tech.ai.md` has roughly doubled
+    since its 2026-08-23 note.
+    """
+    for r in rows:
+        dd = r["d"]
+        if dd.get("kind") not in BLOAT_KINDS:
+            continue
+        secs = dd.get("sections") or []
+        words = dd.get("words") or 0
+        exempt = 0
+        if dd.get("kind") == "place":
+            exempt = sum(n for h, n in secs if h.startswith(HUB_CHRONOLOGY))
+        furniture = sum(n for h, n in secs if h.startswith(FURNITURE))
+        effective = words - exempt - furniture
+        if effective <= CLASSIFY_LINE:
+            continue
+
+        # The exempt block is out of the shape test as well as out of the count.
+        # Leaving it in made every hub read `unsectioned`, since a compiled
+        # chronology is by construction the largest section on its page.
+        skip = FURNITURE + ((HUB_CHRONOLOGY,) if exempt else ())
+        real = [(h, n) for h, n in secs
+                if not any(h.startswith(s) for s in skip)]
+        shape = _shape(real, effective) if real else "unsectioned"
+        biggest = max((n for _, n in real), default=effective)
+        bigname = next((h for h, n in real if n == biggest), "(one block)")
+
+        ruled = None
+        for h, _ in secs:
+            m = RULED_HEADING.match(h)
+            if m:
+                ruled = m.group(1) or "undated"
+                break
+
+        note = "{:,} words".format(effective)
+        if exempt or furniture:
+            parts = []
+            if exempt:
+                parts.append("the compiled `%s` block's {:,}".replace("%s", HUB_CHRONOLOGY).format(exempt))
+            if furniture:
+                parts.append("{:,} of links and sources".format(furniture))
+            note = "{:,} words, of {:,} — {} exempt".format(
+                effective, words, " and ".join(parts))
+        note += "; {} {}section(s), largest {:,} — {}".format(
+            len(real), "hand-written " if exempt else "", biggest, bigname[:60])
+
+        if dd.get("kind") == "concept":
+            note += " · concept-page heads are housekeeping jobs 97 and 99, not #8's to clear"
+        if dd.get("kind") == "place":
+            note += " · a hub is a derived view; only its hand-written sections are in scope"
+
+        if ruled:
+            stale = (ruled != "undated"
+                     and (r["fm"].get("last_reviewed") or "") > ruled)
+            if stale:
+                d.add("8", r["path"],
+                      "over §8's classify line; the `Length` ruling of %s predates the page's last substantive edit (%s)"
+                      % (ruled, r["fm"].get("last_reviewed")),
+                      note + " · %s — re-rule it" % shape, soft=True)
+            else:
+                d.add("8", r["path"],
+                      "over §8's classify line, ruled %s" % ruled,
+                      note + " · %s" % shape, soft=True)
+        else:
+            d.add("8", r["path"], "over §8's classify line, unruled — %s" % shape,
+                  note, soft=True)
+
 # --------------------------------------------------------------------------- #
 
 TITLES = {"1": "schema integrity", "2": "vocabulary", "3": "freshness",
+          "6": "`drop`-domain residue in raw/",
+          "8": "page bloat (§8 classify line)",
           "4": "orphans & dead links", "10": "stranded queue items",
           "11": "filenames & shards", "12": "link-list convention",
           "15": "body_completeness", "23": "region place code",
@@ -1068,9 +1359,11 @@ TITLES = {"1": "schema integrity", "2": "vocabulary", "3": "freshness",
           "28": "deal-record vocabulary",
           "36": "entity slugs with no referent",
           "34": "catalogue hero",
-          "38": "de-accented Romance titles"}
-ORDER = ["1", "12", "2", "11", "4", "15", "3", "23", "10", "24", "25", "28", "34",
-         "36", "38"]
+          "38": "de-accented Romance titles",
+          "39": "artefact md5 collisions",
+          "40": "unreadable frontmatter block"}
+ORDER = ["1", "40", "12", "2", "11", "4", "6", "15", "3", "8", "23", "10", "24", "25",
+         "28", "34", "36", "38", "39"]
 
 
 def main():
@@ -1098,6 +1391,8 @@ def main():
     check_vocabulary(rows, places, topics, d)
     check_filenames(rows, schema, d)
     check_links(all_rows, links, d)
+    check_unreadable_records(d)
+    check_drop_domains(rows, d)
     check_completeness(rows, d)
     check_freshness(rows, today, d)
     check_region_place(rows, d)
@@ -1111,6 +1406,8 @@ def main():
     check_entity_referents(rows, d)
     check_catalogue_hero(rows, d)
     check_deaccented_titles(rows, d)
+    check_artefact_md5(d)
+    check_page_bloat(all_rows, d)
 
     if a.json:
         json.dump(d.rows, sys.stdout, ensure_ascii=False, indent=1)
@@ -1130,6 +1427,23 @@ def main():
         n_soft = len(d.of(a.check)) - len(rowset)
         print(f"#{a.check} {TITLES.get(a.check, '')} — {len(rowset)} finding(s)"
               + (f", {n_soft} soft hidden (--all)" if n_soft else "") + "\n")
+        if a.check == "8" and rowset:
+            # One number over three folders hides that they have three different
+            # remedies, which is how this count came to be re-derived by hand four
+            # times and ignored each time (housekeeping job 130).
+            pop = defaultdict(Counter)
+            for r in rowset:
+                folder = r["path"].split("/")[1]
+                state = ("ruled" if ", ruled" in r["defect"]
+                         else "stale ruling" if "predates" in r["defect"]
+                         else r["defect"].split("unruled — ")[-1])
+                pop[folder][state] += 1
+            for folder in ("concepts", "places", "intersections"):
+                if folder in pop:
+                    c = pop[folder]
+                    print(f"  {folder:>14}: {sum(c.values()):>3} over the line  "
+                          + ", ".join(f"{k} {v}" for k, v in c.most_common()))
+            print()
         for r in rowset[:a.limit]:
             flag = " (soft)" if r["soft"] else ""
             print(f"  {r['path']}\n      {r['defect']}{flag}"
