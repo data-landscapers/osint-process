@@ -5,11 +5,11 @@ ingest-lane.py — which ingest lane each candidate in `new/` takes.
 `INGEST.md` -> *Two lanes*. Ingest prices every item as unscreened news — a per-item origin
 adjudication, a tier-3 dedup judgment, an authored `hub_line`. Backfill arrives already
 screened: `STATUS-ACQUIRE.md` screens the origins of the rows it fetches, and a
-progress-filler batch is staged by CORPUS against this vault's own origin screen. Paying the
+progress-filler or dataset batch is staged by CORPUS against this vault's own origin screen. Paying the
 news price on it buys nothing, so the backfill lane skips those three steps.
 
 The lane is read off `sweep_batch:` and is a **whitelist**: a batch prefixed
-`status-acquire-` or `progress-filler-` is backfill, and everything else — including an item
+`status-acquire-`, `progress-filler-` or `dataset-` is backfill, and everything else — including an item
 carrying no `sweep_batch:` at all — is news. A new producer therefore costs a full-price run
 rather than a silent skip.
 
@@ -35,7 +35,7 @@ import json
 import pathlib
 import sys
 
-BACKFILL_PREFIXES = ("status-acquire-", "progress-filler-")
+BACKFILL_PREFIXES = ("status-acquire-", "progress-filler-", "dataset-")
 
 
 def sweep_batch(path):

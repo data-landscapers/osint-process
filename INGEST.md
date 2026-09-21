@@ -26,7 +26,7 @@ Fall back to sequential spawning only where a batch's own history shows the reco
 
 ## Two lanes
 
-**The backfill lane skips exactly the three rows below and changes nothing else.** **Two triggers open it: `update wiki backfill`, and the sweep cycle's one Phase A pass, which ingests the batches it pulls from `X:\new-queue\`** (`SWEEP-CYCLE.md` → *Pulling X:\new-queue\*; Bill, 2026-09-17); under any other trigger every item is news. `python scripts/ingest-lane.py` assigns the lane per item off `sweep_batch:` (whitelist: `status-acquire-`/`progress-filler-` batches; artefacts follow their companion) and lists each lane (`--lane backfill|news`). **The parent names the lane in every Phase A slice's spawn prompt**, as it names the iteration; a slice not told its lane is a news slice.
+**The backfill lane skips exactly the three rows below and changes nothing else.** **Two triggers open it: `update wiki backfill`, and the sweep cycle's one Phase A pass, which ingests the batches it pulls from `X:\new-queue\`** (`SWEEP-CYCLE.md` → *Pulling X:\new-queue\*; Bill, 2026-09-17); under any other trigger every item is news. `python scripts/ingest-lane.py` assigns the lane per item off `sweep_batch:` (whitelist: `status-acquire-`/`progress-filler-`/`dataset-` batches; artefacts follow their companion) and lists each lane (`--lane backfill|news`). **The parent names the lane in every Phase A slice's spawn prompt**, as it names the iteration; a slice not told its lane is a news slice.
 
 | Step | News lane | Backfill lane |
 |---|---|---|

@@ -6,6 +6,14 @@ Trigger: **`SWEEP-CYCLE.md`'s close**, at its housekeeping position — after th
 
 ---
 
+## 0. Notes first, every job
+
+**Read `X:\notes-for-osint.md` before starting a job, and action whatever is open** *(Bill, 2026-09-21)*. **Every job, not once a session**: a job can run an hour, CORPUS writes while OSINT works, and a note raised at 08:13 should not sit unread inside a page-fold.
+
+**A note outranks a job by construction.** A housekeeping entry is lint-shaped — real, closable, and about how the wiki reads; a note is usually a **correctness defect in something already published**: a wrong date, a wrong amount, a row attributed to the wrong country. Fix the published thing first.
+
+Close each note into `notes-for-osint-resolved.md` with its resolution, per the share's `README.md`. **A note that needs a primary the wiki does not hold is not left half-answered** — it becomes a contradiction brief or an acquisition line, and the note closes saying so.
+
 ## 1. Select
 
 **The register's oldest open entry, and no other.** Selection is `X:\housekeeping-jobs.md` → *Jobs — oldest first*, top entry. A job that is merely large is split (§3), never skipped. An empty register: skip, and say `no housekeeping job open` on the closing line.
