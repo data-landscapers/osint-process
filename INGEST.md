@@ -69,7 +69,9 @@ Everything else binds both lanes. **The lane changes the work, never the model**
 
 **Tier 2, narrow.** From `raw/` filenames, only sources within a few days of this item's `published` sharing a place or an entity.
 
-**Tier 3, a single judgment, on titles and ledes only, drop-by-default.** Match on event + entities + date; never open a held candidate's body: **drop unless clearly a new event**, no replace/keep-both analysis, no tier-upgrade hunting. Sources that **disagree** on the same event are a contradiction (step 7), never a duplicate.
+**Tier 3, a single judgment, on titles and ledes only, drop-by-default.** Match on event + entities + date; never open a held candidate's body: **drop unless clearly a new event**, no tier-upgrade hunting. Sources that **disagree** on the same event are a contradiction (step 7), never a duplicate.
+
+**Drop-by-default is a rule about cost, not about precedence, and `CLAUDE.md` → *Duplicates* still governs two shapes it must not swallow.** An arriving item that is **the institution's own primary of a held secondary** is a *Replace*, and dropping it leaves the wiki citing a wire rewrite of a document it could have cited directly. An arriving item that **carries a dated figure, named party or primary link the held record lacks** is a *keep both*, and dropping it loses the payload. Both are visible from the title and lede tier 3 already reads, so neither costs a body open; what they cost is one comparison against the held record, and that is the comparison tier 3 exists to ration rather than to forbid. Everything else drops as before.
 
 ## 2a. Finance branch
 
@@ -84,6 +86,8 @@ If the item **amends, supersedes, repeals, replaces or postpones** a named prior
 Frontmatter per `schemas.md` §4 — **including `catalogue_hero:`, step 3a** — facets per `facets.md` §1, the **full verbatim body** (`CLAUDE.md` → *The material*);
 
 **Every `topics:` value is checked against `lookups/taxonomy.md` before the record is written.** Staging invents slugs — a compound `<valid-slug>--<descriptive-suffix>`, or a plausible-looking slug that is simply not in the vocabulary — and an invalid one reaches `raw/` unnoticed and surfaces only when Phase B opens a concept page that does not exist. Truncate a compound to its valid prefix; correct anything else to the controlled value, or drop the facet. This is a frontmatter defect, fixed in place, never a contradiction. **The value staging most often gets wrong is `geopol.*`**, whose scope ruling in that file is already explicit and keeps being missed: bilateral aid, donor funding, development cooperation and project financing are **not** geopolitics, whichever country funds them — tag `finance.*` and the topics they fund, or drop the item if that is all it is.
+
+**Staged `published:`, `places:` and `topics:` are a producer's guesses, not values, and they are checked against the document's own text before the record is written.** A staged facet that is merely *invalid* surfaces later; a staged facet that is **valid but wrong** passes every mechanical gate and reaches `raw/` as fact. The shapes met: a blanket topic applied to a whole batch, a place taken from the publisher's nationality where the story names none, a date stamped `YYYY-01-01 / year / proxy` over an item whose page states the day, and a date and place that contradict the document's own printed imprint. **The document's own imprint wins over the staged value every time** — dateline, masthead date, gazette number, the place the story is about — and where the two disagree the record says so in its `note:`. Correcting these is ingest's work in either lane, and the producer is told once, not per item.
 
  `body_completeness:` `full`, `paywalled` (free lede only) or `excerpt` (truncated or unavailable: **flag, do not retry**).
 

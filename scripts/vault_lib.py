@@ -123,6 +123,48 @@ FRAGMENT_IS_IDENTITY = ("d-portal.org", "d-portal.iatistandard.org")
 SLD = {"co", "com", "org", "net", "gov", "gouv", "edu", "ac", "or", "go", "mil", "sch",
        "ne", "web"}
 
+# Suffixes that hand unrelated parties a label of their own, so the registrable
+# name is one label *longer* there. `kamdem.blogspot.com` and
+# `subseacables.blogspot.com` are two strangers; collapsing both to
+# `blogspot.com` made one tenant's `drop` row condemn the other — the screen read
+# `DROP 2` against the subsea-cable blog for a personal blog it has no relation to
+# (measured by housekeeping 104, fixed by 143) — and made every tenant of a
+# platform count as one publisher to the screen's `KNOWN` tally and to the dedup.
+#
+# **Derived from the hosts this vault actually meets**, not from a public-suffix
+# list: every entry below was found in `logs/drop-list.csv`, `lookups/raw-url-index.csv`
+# or `lookups/sweep-*.csv` (2026-09-23 survey: 5,023 distinct hosts, 182 two-label
+# suffixes carrying more than one host, of which these are the ones whose owner
+# *hosts* rather than publishes). A general list is thousands of entries for a vault
+# that meets ten, and every entry is a place where a platform-wide `drop` row would
+# stop matching its tenants.
+#
+# A suffix earns its line when the vault holds two hosts under it that belong to
+# unrelated parties **and** the suffix's owner sells or gives the hosting rather
+# than publishing — a portal aggregating its own partner titles is not one, and
+# neither is a publisher's own subdomains. `wixsite.com` and `github.io` are the
+# two exceptions: nothing under them is held yet, and they are listed because the
+# job that wrote this set named them and they are unambiguous.
+#
+# Adding one is safe in both directions only because `drop-list.csv` is matched by
+# parent suffix as well as by key (`origin-screen.py`, `lint-url-log.py`,
+# `lint-deterministic.py` #6): a row keyed on the bare platform still condemns
+# every tenant, so a longer key never silently re-admits a dropped domain.
+MULTI_TENANT = {
+    "blogspot.com",        # kamdem. (drop 2026-08-28), subseacables.
+    "wordpress.com",       # budgetouvert., ghanafinancialmarket., lawethiopiacomment.
+    "substack.com",        # 19 held, russellsouthwood. and reamby. among them
+    "medium.com",          # benrobertskenya., developmentmusings., undpsom.
+    "ghost.io",            # lesiba. (drop 2026-09-18)
+    "over-blog.com",       # njogmathieu.
+    "centerblog.net",      # comoresdroit.
+    "africa-newsroom.com", # APO's wire: afdb., orange., visa-inc. are three issuers
+    "cloudfront.net",      # one distribution per tenant, nothing shared but the CDN
+    "r2.dev",              # one bucket per tenant, same
+    "wixsite.com",         # not yet held
+    "github.io",           # not yet held
+}
+
 # Hyphens are allowed in keys: `needs-review: true` is in use on five sources, and
 # a key regex without it read them as unparsable lines.
 KEY_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_-]*):(.*)$")
@@ -182,6 +224,9 @@ def registrable(host_or_url):
     """The registrable domain: what `drop-list.csv` keys on, subdomains included.
 
     news.example.co.ke -> example.co.ke ;  https://www.Example.COM/a?b -> example.com
+
+    A host under a `MULTI_TENANT` suffix keeps one label more, because there the
+    tenant *is* the publisher: kamdem.blogspot.com -> kamdem.blogspot.com.
     """
     s = (host_or_url or "").strip().lower()
     s = re.sub(r"^[a-z][a-z0-9+.-]*://", "", s)      # scheme
@@ -193,9 +238,35 @@ def registrable(host_or_url):
     parts = s.split(".")
     if len(parts) <= 2:
         return s
+    for suf in MULTI_TENANT:                         # blogspot.com, substack.com
+        n = suf.count(".") + 1
+        if parts[-n:] == suf.split("."):
+            return ".".join(parts[-(n + 1):])
     if len(parts[-1]) == 2 and parts[-2] in SLD:     # co.ke, org.ng, ac.za
         return ".".join(parts[-3:])
     return ".".join(parts[-2:])
+
+
+def listed_domain(host_or_url, keys):
+    """The `drop-list.csv` key covering this host, or "" — key, or parent suffix.
+
+    Two steps, because a row may key either a tenant or the platform under it.
+    `registrable()` first, which is how a row keyed on a publisher's domain catches
+    its subdomains; then the parent-suffix walk, which is how a row keyed on a bare
+    multi-tenant platform still catches every tenant under it. Without the second
+    step, `MULTI_TENANT` would let a platform-wide `drop` row stop matching — the one
+    failure mode the suffix set has to be safe against. `lint-deterministic.py` #6
+    matches the full host the same way, which is why the two now agree.
+    """
+    reg = registrable(host_or_url)
+    if not reg:
+        return ""
+    if reg in keys:
+        return reg
+    for k in keys:
+        if k and reg.endswith("." + k):
+            return k
+    return ""
 
 
 def is_bare_domain(url_norm):

@@ -11,7 +11,7 @@ Usage:
   python scripts/usage-log.py --stage sweep                 a buffer reading only
   python scripts/usage-log.py --reset --stage start --csv   empty the buffer, then both, from one reading
 
-CSV columns: `Date`, `Time (UTC)`, `7d usage`, `5h usage`, whole percentages. Newest row first, directly under the header; creates the file if absent, and rewrites an older header to the current one, leaving a missing cell blank.
+CSV columns: `Date`, `Time (UTC)`, `7d usage`, `Session usage`, whole percentages. `Session usage` is the row's `7d usage` less the row below's — D2 = C2 − C3 — recomputed for every row at each write, blank on the oldest row or beside an `n/a`; where the weekly limit reset between the two it is the row's own reading *(Bill, 2026-09-22, replacing the 5-hour column)*. Newest row first, directly under the header; creates the file if absent, and rewrites an older header to the current one.
 
 Buffer: one JSON object a line, `{"stage", "time_utc", "seven_day", "five_hour"}`, percentages to one decimal place — a stage costs a point or two, which whole percentages would round away. Git-ignored; emptied by `--reset` at the night's first act, never by the manifest, so a rewritten manifest reads the same night again.
 """
@@ -28,7 +28,7 @@ LOG = REPO / "logs" / "usage-log.csv"
 STAGES = REPO / "logs" / "usage-stages.jsonl"
 CREDS = pathlib.Path.home() / ".claude" / ".credentials.json"
 URL = "https://api.anthropic.com/api/oauth/usage"
-HEADER = ["Date", "Time (UTC)", "7d usage", "5h usage"]
+HEADER = ["Date", "Time (UTC)", "7d usage", "Session usage"]
 
 
 def usage():
@@ -44,13 +44,23 @@ def usage():
         return None, None
 
 
+def session(week, prior):
+    """This row's weekly reading less the row below it, in whole points; blank where either is unreadable or there is no row below. A negative difference means the weekly limit reset in between, so the reading itself is the usage since."""
+    pct = lambda v: int(v.rstrip("%")) if v.rstrip("%").isdigit() else None
+    w, p = pct(week), pct(prior or "")
+    if w is None or p is None:
+        return ""
+    return f"{w - p if w >= p else w}%"
+
+
 def write_csv(now, week, five):
     cell = lambda v: "n/a" if v is None else f"{v:.0f}%"
     rows = []
     if LOG.exists():
         with LOG.open(newline="", encoding="utf-8") as f:
             rows = [r for r in csv.reader(f) if r][1:]
-    rows = [[now.strftime("%Y-%m-%d"), now.strftime("%H:%M"), cell(week), cell(five)]] + [(r + [""] * len(HEADER))[:len(HEADER)] for r in rows]
+    rows = [[now.strftime("%Y-%m-%d"), now.strftime("%H:%M"), cell(week)]] + [(r + [""] * 3)[:3] for r in rows]
+    rows = [r + [session(r[2], rows[i + 1][2] if i + 1 < len(rows) else None)] for i, r in enumerate(rows)]
     with LOG.open("w", newline="", encoding="utf-8") as f:
         csv.writer(f, lineterminator="\n").writerows([HEADER] + rows)
 

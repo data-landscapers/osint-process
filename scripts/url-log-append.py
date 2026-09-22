@@ -18,32 +18,29 @@ Phase A slices write this file at once and every loss here has been silent.
 """
 import csv, re, sys, os, time, datetime
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from vault_lib import normalise_url
+
 LOG = "logs/sweep-url_log.md"
 INDEX = "lookups/raw-url-index.csv"
 LOCK = LOG + ".lock"
 LOCK_STALE_SECS = 30
 LOCK_TIMEOUT_SECS = 10
-TRACK = ("utm_", "fbclid", "gclid", "msclkid", "mc_cid", "mc_eid", "igshid", "ref_src", "spm")
-# Hosts where the `#fragment` is the document identity, not a scroll position — an IATI
-# d-portal activity is addressed by its fragment, so stripping it wrote every activity
-# from one publisher into this log under one key. Mirrors vault_lib.FRAGMENT_IS_IDENTITY;
-# the two must not drift, or the log and the index disagree about what is held.
-FRAGMENT_IS_IDENTITY = ("d-portal.org", "d-portal.iatistandard.org")
+# TRACK and FRAGMENT_IS_IDENTITY now live in vault_lib, with normalise_url() itself.
 VALID = ("admitted", "dropped", "contradiction", "acquisition")
 
 
 def norm(u):
-    u = re.sub(r'^https?://', '', u.strip())
-    u, _hash, frag = re.sub(r'^www\.', '', u).partition('#')
-    if '?' in u:
-        base, q = u.split('?', 1)
-        keep = [kv for kv in q.split('&') if kv and not any(kv.lower().startswith(t) for t in TRACK)]
-        u = base + ('?' + '&'.join(keep) if keep else '')
-    head, _, tail = u.partition('/')
-    out = (head.lower() + ('/' + tail if tail else '')).rstrip('/')
-    if frag.strip() and head.lower() in FRAGMENT_IS_IDENTITY:
-        out += '#' + frag.strip()
-    return out
+    """The one normalisation contract, `vault_lib.normalise_url()`.
+
+    This was a second implementation until 2026-09-22, and the two drifted exactly
+    where it mattered: `vault_lib` percent-decodes and this did not, so a non-ASCII
+    URL was keyed one way in this log and another in `lookups/raw-url-index.csv`,
+    and a tier-1 `grep -F` never matched its own log row. `raw-url-index.py` already
+    states the rule this now follows: the function is never re-implemented, or the
+    gates disagree about what is held.
+    """
+    return normalise_url(u)
 
 
 def acquire_lock(timeout=LOCK_TIMEOUT_SECS, interval=0.1):

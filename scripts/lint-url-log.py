@@ -247,14 +247,15 @@ def parse_log(path):
 
 
 def domain_hit(host, droplist):
-    """The row may key a registrable domain while the URL carries a subdomain."""
+    """The row may key a registrable domain while the URL carries a subdomain.
+
+    Or a bare multi-tenant platform while the URL carries a tenant of it, which is
+    what `V.listed_domain()` adds — the same two-step the origin screen uses.
+    """
     h = host.lower()
     if h in droplist:
         return h
-    reg = V.registrable(h)
-    if reg in droplist:
-        return reg
-    return ""
+    return V.listed_domain(h, droplist)
 
 
 def adjudicate(rows, idx, staged, rejected, droplist, queued):

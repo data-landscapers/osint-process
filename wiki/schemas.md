@@ -113,6 +113,8 @@ sources: [[2026-06-16-cassava-nvidia-deal]]    # bare, never a path — see §3
 ---
 ```
 
+**A wikilink flow list is one bracket layer per item inside an outer list, and it is rebuilt from bracket tokens, never parsed.** One item is `sources: [[a]]`; two are `sources: [[a], [b]]` — so appending a second item is **not** wrapping the existing value, and `[[a]], [[b]]` and `[[[b]]` are both corruptions of it. `hub_line_sources:` and `entities:` take the same shape. **Parsing it is what produces the corruption**: `yaml.safe_load` mis-reads it, and a naive `split('], [')` breaks on the legacy slugs that contain commas, so a writer that round-trips the value destroys it. Read the tokens, append, re-emit. **The same rule covers a bare-scalar flow list** — `places: [KEN, NGA, ZAF]` — where a tokenizer written for the wikilink form has silently concatenated every value into one. Lint #12 reads the result, and a list it cannot parse as items is a list nothing downstream can count.
+
 ### Place (hub page, in `wiki/places/` — countries and regions alike)
 
 ```yaml

@@ -47,7 +47,7 @@ from finance_lib import raw_sources                                   # noqa: E4
 # `registrable()` lived here and was copied wherever else a domain had to be
 # keyed. One definition now, in the read layer, so the screen and the index
 # cannot key `drop-list.csv` two different ways (2026-08-03).
-from vault_lib import SLD, registrable                                # noqa: E402,F401
+from vault_lib import SLD, listed_domain, registrable                 # noqa: E402,F401
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DROP_LIST = os.path.join(ROOT, "logs", "drop-list.csv")
@@ -185,7 +185,10 @@ def held_sources(raw="raw"):
 def verdict(domain, listed, seen):
     if not domain:
         return "NOMAIN", "no url on the candidate — screen it by hand"
-    st = listed.get(domain)
+    # `listed_domain()`, not `listed.get()`: a row keyed on a bare multi-tenant
+    # platform has to catch every tenant under it, while a row keyed on one tenant
+    # catches only that tenant (`vault_lib.MULTI_TENANT`).
+    st = listed.get(listed_domain(domain, listed))
     if st and st[0] == "drop":
         return "DROP", st[1] or "adjudicated inadmissible"
     if st and st[0] == "watch":
