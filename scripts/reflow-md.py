@@ -23,15 +23,14 @@ What it never touches, because the line break is meaningful there:
     would rewrite the evidence.
   - a handful of `logs/` append-only ledgers are refused outright too, for a different
     reason: one line *is* one record there (STATUS.md's log.md entry form; INGEST.md
-    step 11's pending-write; job 83's url-log disposition; a phaseb-batches queued
-    row), with no blank line between consecutive records. This tool absorbs any run
+    step 11's pending-write; job 83's url-log disposition), with no blank line between consecutive records. This tool absorbs any run
     of non-blank lines into one paragraph, so run over a boundary-sensitive ledger it
     does the opposite of the house rule: it fuses many records onto one line instead
     of keeping one line per record (found 2026-09-07, housekeeping 75 — logs/log.md
     had exactly this fusion at HEAD, 1,566 entries collapsed into a few dozen lines).
     Named here rather than left to a blank-line heuristic, so a new ledger is an
     addition someone makes on purpose: `logs/log.md`, `logs/sweep-url_log.md`,
-    `logs/ingest-pending-writes.md`, `logs/phaseb-batches/batch-*.md`.
+    `logs/ingest-pending-writes.md`.
 
 Usage:
     python scripts/reflow-md.py CLAUDE.md              # in place
@@ -57,16 +56,10 @@ INDENTED_CODE = re.compile(r'^(\t| {4,})\S')
 # paragraph. See the module docstring's "never touches" list for why these are named
 # rather than left to a blank-line heuristic.
 LEDGERS = {"logs/log.md", "logs/sweep-url_log.md", "logs/ingest-pending-writes.md"}
-# Two whole directories, not a filename pattern. `logs/phaseb-batches/` and `logs/_spool/`
-# hold nothing but per-slice partitions of the delta queue — one line is one record there by
-# construction — and naming a prefix inside them only works until a run picks a different one.
-# `batch-*` missed both `logs/_spool/pending-*.md` and the `cycle-*` partitions a later run
-# wrote, and either would have been fused by a lint pass that ran while the file was live.
-LEDGER_DIR = re.compile(r'(^|/)logs/(phaseb-batches|_spool)/[^/]*\.md$')
 
 
 def is_ledger(norm):
-    return norm in LEDGERS or bool(LEDGER_DIR.search(norm))
+    return norm in LEDGERS
 
 
 def join(parts):

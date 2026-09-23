@@ -1,6 +1,6 @@
 # Subject taxonomy — controlled vocabulary
 
-The SUBJECT facet for the Data Landscapers wiki. Ten Level-1 categories, ~36
+The SUBJECT facet for the Data Landscapers wiki. Ten Level-1 categories, 40
 Level-2 topics. **Tag pages with the slug**, never the label.
 
 ## Rules
@@ -61,6 +61,7 @@ roll-up-able. Individually minor, collectively load-bearing.
 - `geopol.eu` — EU activities
 - `geopol.india` — India activities
 - `geopol.gulf` — Gulf/UAE activities
+- `geopol.sovereignty` — Digital sovereignty
 
 **Scope (curator ruling, 2026-07-20).** `geopol.*` means **geopolitics** — great-power positioning,
 rivalry and strategic influence — **not foreign assistance**. Bilateral aid, donor funding,
@@ -68,6 +69,14 @@ development cooperation and project financing (e.g. Japan, Korea, UK or Russia g
 **not** `geopol` items: tag them by `finance.*` and the topics they fund. This list is **closed** — no
 new per-country `geopol` slug is minted on the strength of aid/cooperation activity. (Settles
 ISSUE-014 and ISSUE-017.)
+
+**`geopol.sovereignty` is not a power (2026-09-23, Corpus note 164).** It is the state's own
+side of the chapter: how far it controls its digital estate — where state data is hosted and
+under whose law, whether its core systems can be run and changed nationally, and what
+jurisdiction, portability and exit terms its agreements with external providers and powers
+carry. A source takes it when that is what it reports — a hosting decision, a data
+classification or localisation instrument, a contract term — alongside the acting power's slug
+where there is one. The closed list above is the list of powers, and this does not reopen it.
 
 **And a `geopol.*` slug does not by itself carry a non-African record into the base (2026-08-20,
 settling note 30's open tagging question).** The facet names the acting power because the wiki
@@ -99,3 +108,10 @@ earn, so its domestic story is simply out.
 - `finance.new` — New investments
 - `finance.mou` — MoUs and other agreements
 - `finance.budget` — Domestic budget appropriations and expenditure
+- `finance.sustain` — Financial sustainability
+
+**`finance.sustain` vs `finance.budget` (2026-09-23, Corpus note 164).** `finance.budget` is
+the facts of actual budgets — what was proposed, appropriated and spent. `finance.sustain` is
+the efforts to make the digital estate pay for itself: domestic financing mechanisms, digital
+funds and levies, cost recovery, plans to move externally financed systems onto the budget. A
+budget document is `finance.budget`; a finance-law provision creating a levy is both.
