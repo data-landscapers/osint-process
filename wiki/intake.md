@@ -51,12 +51,14 @@ Acquisition sweeps run *upstream* of the wiki and stage into `new/`.
   | `already-seen` | URL already adjudicated in `logs/sweep-url_log.md`, or already staged in `new/` |
   | `duplicate-in-run` | same URL or confident same-outlet re-crawl within this run |
   | `inadmissible-origin` | failed [`origin-screen.md`](origin-screen.md) |
-  | `off-topic` | outside data governance and digital transformation — the scope drop above |
+  | `off-topic` | outside data governance and digital transformation — the subject half of the scope drop above |
+  | `off-place` | on subject, but its place is neither African nor `XGL` and it files under no `geopol.*` slug — the place half of scope (`CLAUDE.md` → *The material*) |
   | `no-development` | digest, paid placement, awards PR or vendor thought-leadership: reports no development |
   | `headline-only-stub` | free text adds nothing beyond the headline (`capture-rule.md`) |
   | `url-dead` | 404/410, or NXDOMAIN/NODATA **after** the DoH check — never on the system resolver alone |
   | `fetch-blocked` | reachable but refusing us — 403, paywall, JS wall; routed to manual clip |
   | `already-held` | the URL is new but the story is already in `raw/` under a different URL, host or syndication — the dedup index or the slug check says so |
+  | `syndicated-copy` | the URL is new but this run has already staged the same story under a different URL — a syndicated repost of the canonical, or the same outlet's other-language edition; a story that is instead dropped elsewhere is coded on its own merits |
   | `date-unestablished` | in scope, but no instrument settles a publication date at all, so the window cannot be applied either way |
   | `not-this-slice` | in scope and wanted, but belongs to a row, financier or place this slice was not handed — it is another slice's or another night's |
   | `fails-record-test` | polled from a structured feed and rejected on that feed's own required fields — geography, vintage or amount — rather than on scope |

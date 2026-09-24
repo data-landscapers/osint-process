@@ -396,11 +396,9 @@ def scan_all():
 def build_one(iso3, ns, dom, lab, fx):
     csv_nonstate(ns, lab, iso3, os.path.join(NONSTATE_OUT, f"{iso3}-nonstate.csv"))
     csv_summary(ns, dom, lab, os.path.join(NONSTATE_OUT, f"{iso3}-summary.csv"), fx)
-    budget_csv = os.path.join(BUDGET_OUT, f"{iso3}-budget.csv")
-    if dom:
-        csv_budget(dom, iso3, budget_csv)
-    elif os.path.exists(budget_csv):     # no budget CSV where there is no budget data — the
-        os.remove(budget_csv)            # gap is the signal, so a stale one has to go
+    # The domestic budget export (outputs/budgets/{ISO3}-budget.csv) is retired: budget rows
+    # are CORPUS's (notes-for-osint 168, R57). The folder keeps its last-built content and
+    # nothing here writes or deletes it. Domestic records still feed the summary above.
     return len(ns), len(dom)
 
 def place_codes():

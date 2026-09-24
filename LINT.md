@@ -1,6 +1,6 @@
 # LINT.md — the lint pass
 
-Trigger: **"full lint"** (also **"run lint"**). Hygiene checks #1–#38 over the vault, in two cadences — **"quick lint"** at every cycle close and **"full lint"** at the Day B night's close (`SWEEP-CYCLE.md` → *The Day B night*), either also callable on demand. **`update wiki` does not lint** — the caller does.
+Trigger: **"full lint"** (also **"run lint"**). Hygiene checks #1–#38 over the vault, in two cadences — **"quick lint"** at every cycle close and **"full lint"** at every night's close (`SWEEP-CYCLE.md` → *The nightly close*), either also callable on demand. **`update wiki` does not lint** — the caller does.
 
 Procedure only: §3 is `layout.md`, §4 `schemas.md`, §8–9 `operations.md`; dedup is `CLAUDE.md` → *Duplicates*. **Check numbers are permanent handles** — never renumber, never reuse; the order below is the run order, not the numeric order.
 
@@ -52,7 +52,7 @@ Every check has one correct action; lint takes it, in git, and records a count. 
 
 **16. Finance record keys** — auto-fix + defect list, nightly (defects → batched); finance records only. `scripts/lint-finance-slugs.py` (exits non-zero on a financier defect — an ingest gate). Fix the mechanical (slug from `entities[0]`, `ALIASES`); surface the rest as a defect list drained like a contradiction. `recipient_slug` drift is soft.
 
-**21. Machine-record audit** — auto-fix, surface on a rise, nightly (a rise → batched). `python scripts/audit-machine-records.py --persist`; class 2 (empty `entities: []`) never gates. Fix a rise from `logs/machine-record-audit-defects.csv`; surface only what cannot be fixed.
+**21. Machine-record audit** — auto-fix, surface on a rise, nightly (a rise → batched). `python scripts/audit-machine-records.py --persist`; class 2 (empty `entities: []`) never gates. Fix a rise from `logs/machine-record-audit-defects.csv`; surface only what cannot be fixed. **A class-3 hit that reading shows is a complete body goes into `logs/machine-record-audit-cleared.csv` (`file,cleared,reason`), and the script never counts it again.** The flag stays `full`, and the next run does not re-adjudicate it. The truncation tests are heuristics, and a known false positive left in the count keeps the gate red on the same record every night.
 
 **3. Freshness** — auto-resolve, partly scripted; nightly detect, batched fix. `last_reviewed` over **90 days**; newest source over **2 years** old while the topic has sources under **6 months** old; undated time-varying figures; money breaking `CLAUDE.md` → *Currency*. Date, rephrase, or write the dated absence; re-stamp `last_reviewed`. A figure inherits its bullet's date, except a one-line index bullet. Never invent a rate.
 
@@ -86,7 +86,7 @@ Every check has one correct action; lint takes it, in git, and records a count. 
 
 **25. `CLAUDE.md` length** — surface, scripted, nightly. `CLAUDE_MD_CAP` (123), that file only. Never auto-fix; raising the cap is deliberate. **And the freeze's own end date**: a standing rule read past the date it names is read as live and is not, so a lapsed `frozen until YYYY-MM-DD` is a hard finding — renew the paragraph with a new date or delete it.
 
-**31. `pdftotext` carries `-enc UTF-8`** — surface, scripted, nightly. `python scripts/lint-pdftotext-enc.py`. A command is a finding, a name is not (`BUDGET-EXTRACT.md` §1 covers names); `subprocess` lists count; `raw/`, `sweep/`, `logs/`, `reviews/`, `wiki/` never read.
+**31. `pdftotext` carries `-enc UTF-8`** — surface, scripted, nightly. `python scripts/lint-pdftotext-enc.py`. A command is a finding, a name is not; `subprocess` lists count; `raw/`, `sweep/`, `logs/`, `reviews/`, `wiki/` never read.
 
 **26. Output freshness** — surface, scripted, nightly. `python scripts/lint-output-freshness.py`; `outputs\budgets\` excluded while the budget layer is suspended. Never fix — `FINANCE-COMPILE` is the fix.
 

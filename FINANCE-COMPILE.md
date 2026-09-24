@@ -3,7 +3,7 @@
 Trigger: **"run finance compile"** (optionally scoped, `run finance compile for South Africa`). This pass **aggregates**: it reads the finance records already in `raw/` and, for each place in scope, writes **two** outputs from the one set of reads:
 
 1. the terse **`## Financing` section on the place hub** — a §8-bound summary; and
-2. the full **per-country CSV exports under `outputs/`** — deal export, domestic budget export and subject × fiscal-year summary, built by `scripts/build-finance-page.py`.
+2. the full **per-country CSV exports under `outputs/`** — deal export and subject × fiscal-year summary, built by `scripts/build-finance-page.py`.
 
 Both come from the same aggregation so they cannot drift; there is **no separate finance-page pass**. The CSVs are **OSINT's own compile, not a website feed** (`FINANCE-PAGES.md`). **It does not ingest** — it moves no files, admits nothing, makes no dedup decisions.
 
@@ -73,11 +73,12 @@ Compute the aggregation with a script and **write the result onto the page** —
 
 3. **List an individual deal only when it is large or multi-party.** Everything else is **not** named on the hub.
 
-4. **Write/replace the full CSV exports** for the place — `python scripts/build-finance-page.py {ISO3}`. Not §8-bound: every non-state deal and every domestic budget line-year. Three files, each row carrying its source record:
+4. **Write/replace the full CSV exports** for the place — `python scripts/build-finance-page.py {ISO3}`. Not §8-bound: every non-state deal. Two files, each row carrying its source record:
 
    - **`outputs/non-state-finance/{ISO3}-nonstate.csv`** — one row per deal: year, financier, recipient, instrument, US$m, original amount, **sector** (taxonomy slug), **subject** (≤5-word deal description), status, source link.
-   - **`outputs/budgets/{ISO3}-budget.csv`** — one row per **line-year at the record's own grain** (`finance-load-domestic-state.md` → *The record's grain*), the stage ladder as columns (appropriated / revised / audited) with **execution vs voted** and **vs revised**. **Never sum a programme row together with its own sub-programme rows.**
    - **`outputs/non-state-finance/{ISO3}-summary.csv`** — aggregates by subject × fiscal year: non-state rows (US$m) and domestic-state rows (US$m at the IMF annual average), primary subject per record, plus one **`origin: excluded`** row per reason a domestic line sits outside the total (`excluded_lines`, `excluded_usd_m`).
+
+   **The domestic budget export is retired** (R57, 2026-09-24): budget rows are CORPUS's, built from the documents OSINT catalogues (`BUDGET-COLLECT.md`). `outputs/budgets/` keeps its last-built content and nothing rewrites it.
 
    Derived snapshots (`CLAUDE.md` → *Working the base*), rebuilt each run — never hand-edit; changes belong in the records.
 

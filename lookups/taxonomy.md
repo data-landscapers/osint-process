@@ -27,7 +27,7 @@ Level-2 topics. **Tag pages with the slug**, never the label.
 - `dpi.exchange` — Data Exchange
 - `dpi.id` — Digital Identity and CRVS
 - `dpi.pay` — Digital Payments and Fintech
-- `dpi.registry` — Registries (population, land, address, etc.). **At country level, registry material files under `--dpi-id`, not a separate `--dpi-registry` intersection** *(ruled 2026-08-10, token review task 7, housekeeping job 37)*: in practice registry and identity development has always been reported together, so no `{place}--dpi-registry` page is minted — a country's registry facts live in its `--dpi-id` page and `dpi.registry` itself stays a thematic page with `## By place` as index-plus-links, same as any other concept page's over-bar cells (`reference.md` §8).
+- `dpi.registry` — Registries (population, land, address, etc.). **At country level, registry material files under `{place}--dpi-registry`, like any other topic's intersection**; identity material stays on `--dpi-id`, and a development that is both is written on whichever page already holds its thread, with a `See` link from the other. Registry facts already written onto a `--dpi-id` page stay where they are.
 - `dpi.mis` — Sectoral management information systems (HMIS, EMIS, etc.)
 - `dpi.govtech` — Other GovTech and e-Gov
 

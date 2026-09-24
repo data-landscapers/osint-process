@@ -13,7 +13,7 @@ new-queue/                # not a sweep target; sweep writes straight to new/
 new-budget/               # budget documents awaiting extraction — NOT an ingest queue
   {ISO3}/{FY}/            #   artefact (PDF/XLSX) + its companion markdown, together
   manifest.csv            #   what is held and which country-year it belongs to
-budget-archive/           # budget documents already extracted (BUDGET-EXTRACT.md)
+budget-archive/           # budget documents collected and catalogued (BUDGET-COLLECT.md)
   {ISO3}/{FY}/            #   artefact + companion + the extracted tables as CSV
                           #   source PDFs untracked (.gitignore); companions, CSVs, .txt
                           #   sidecars and the .xlsx primaries all tracked. A fresh clone
@@ -108,7 +108,6 @@ reviews/
                           #   (the residue — documents whose automated route is PROVEN dead
                           #    and that Bill's browser gets in one click — moved to
                           #    X:\fetch-list.md, 2026-09-07)
-  jobs-archive/           # completed batch runs: <filestem>-YYYY-MM-DD-HHMM.md (archived on completion)
 outputs/                  # DERIVED exports — OSINT's own compile, not a website feed
                           #   (CORPUS authors the published output layer from raw/ / wiki/)
   budgets/                # {ISO3}-budget.csv — domestic budget line-years
@@ -151,14 +150,13 @@ The document's own `fiscal_year_label` stays **verbatim** in its frontmatter (`2
 
 `{ISO3}/{FY}/` applies to `new-budget/` and `budget-archive/` alike, so a document keeps its shape when it moves between them, and a country swept for several years cannot mix them.
 
-**`new-budget/` is outside the ingest path, deliberately.** It holds budget documents — appropriation acts, estimates volumes, outturn reports, IFMIS and procurement extracts — staged by the domestic finance sweep (`DOMESTIC-FINANCE-SWEEP.md`) and drained by `BUDGET-EXTRACT.md`, which runs as **step 4 of `COUNTRY-BUDGET-BATCH.md`** or on demand. Nothing else drains it — `update wiki` does not.
+**`new-budget/` is outside the ingest path, deliberately.** It is the domestic finance sweep's staging area (`DOMESTIC-FINANCE-SWEEP.md`): budget documents — appropriation acts, estimates volumes, outturn reports, IFMIS and procurement extracts — land there as artefact plus companion, same folder, same date prefix. `BUDGET-COLLECT.md` drains it for the country it is collecting, and nothing else does.
 
-- **Ingest never drains it.** A 600-page appropriation act is not a source to be read and filed; it is a structure to be learned.
-- **The artefact and its companion markdown sit together**, same folder, same date prefix — not split across `new-budget/` and `new/`. The companion is a *description of a document not yet processed*, so filing it as a source would put a page in `raw/` whose `finance.budget` tag routes it to the domestic-state driver with no budget lines in it to find. The pair stays together until the pair is processed.
-- **It is not counted as `awaiting ingest`** in `STATUS.md` — it has its own staging gate there, **awaiting budget-extract**, which stays off the standing tally line. Nothing reads that gate to decide whether to extract; the batch runs the pass unconditionally at its step 4. The sweep reports what it staged; `manifest.csv` is the standing record.
-- **Nothing enters `raw/` from here except through the extraction pass** (`BUDGET-EXTRACT.md`, "run budget extract"). That pass produces source pages and finance records into `new/`, and ingest is still the only door. On completion it moves the artefact and its companion to **`budget-archive/{ISO3}/{FY}/`** alongside the tables it extracted as CSV — folder as state, as everywhere else — and **removes the emptied `new-budget/` folders**, so a folder that still exists always means work outstanding.
+- **Ingest never drains it.** Ingest admits only what `new/` holds.
+- **Collection catalogues; it does not extract.** Each companion page becomes a source record in `new/` (`source_tier: budget-document`, no `artefact:` key), and the artefact moves with the companion to **`budget-archive/{ISO3}/{FY}/`**, its `new-budget/manifest.csv` row repointed and `archive_path` filled. Extraction is CORPUS's, from the archive.
+- **`new-budget/` holds only `manifest.csv` at every stop.** A country folder that still exists means a collect batch stopped short; `UPDATE-WIKI.md` says so and stops. `manifest.csv` is the register of both trees.
 
-**`sweep/recapture/` is spent tooling**, not part of any standing procedure: the scripts and ledger of a one-off bulk verbatim re-capture (`run.py`, `retry.py`, `extract.py`, `progress.sh`, `ledger.csv`, `done/exa-recovery.csv`). The **ledger has provenance value** and records which held sources were re-captured; the scripts are reusable if another bulk re-capture is ever needed. Nothing reads it on a normal pass. Under `CLAUDE.md`'s month rule it is a deletion candidate — git holds it.
+**`sweep/recapture/` was deleted 2026-09-24** under `CLAUDE.md`'s month rule — the spent scripts and ledger of a one-off bulk verbatim re-capture (2026-07). Git holds them; the ledger is the record of which held sources were re-captured, if that is ever asked.
 
 **The intake pipeline is physical** (`CLAUDE.md` → *Structure*). `new/` = not yet processed, `raw/` = admitted as a source. Everything not admitted leaves `new/` by deletion (its residual value captured first as a contradiction brief or an acquisition line) — there is no parking folder. The web clipper points at `new/`. "What's new" is the contents of `new/` — no diffing against the log. Each item's move out of `new/` is the **last** step of processing it, so an interrupted run leaves exactly the unfinished items in `new/` and re-running resumes cleanly.
 

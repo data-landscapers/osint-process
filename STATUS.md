@@ -12,7 +12,7 @@ Trigger: **"wiki status"** / **"display status"**. **Single source of truth** fo
 - **contradictions** — files in `reviews/contradictions/open/`, **excluding the folder's `README.md`**: `ls reviews/contradictions/open/*.md 2>/dev/null | grep -vi readme | wc -l`
 - **acquisitions** — **every list line under the one `## Open items` heading** of `reviews/acquisitions.md`, never by marker or URL: `awk '/^## Open items/{f=1;next} /^## /{f=0} f' reviews/acquisitions.md | grep -cE '^\s*[-*] '`
 - **housekeeping** — unstruck numbered jobs in `X:\housekeeping-jobs.md` (a struck job carries an `x` prefix): `grep -cE '^[0-9]+\. ' /x/housekeeping-jobs.md`
-- **rule-candidates** — open lines in `reviews/rule-candidates.md`, the queue `RULES.md` drains: `grep -cE '^- ' reviews/rule-candidates.md`. The pass runs as the Day B night's last stage (`SWEEP-CYCLE.md`), so this reads as the **open** queue — cases still under three occurrences and under 21 days old — not as a backlog waiting on a trigger. **A number that climbs is a case recurring**, which is what it is there to show.
+- **rule-candidates** — open lines in `reviews/rule-candidates.md`, the queue `RULES.md` drains: `grep -cE '^- ' reviews/rule-candidates.md`. The pass runs as every night's last stage (`SWEEP-CYCLE.md`), so this reads as the **open** queue — cases still under three occurrences and under 21 days old — not as a backlog waiting on a trigger. **A number that climbs is a case recurring**, which is what it is there to show.
 - **osint-notes** — open notes in `X:\notes-for-osint.md`, the CORPUS→OSINT queue. Both note files hold unresolved issues only (resolved ones move to the `-resolved` file), so every entry counts. **Both entry shapes count**, the bold lead `**N** (date) —` and the `### N. [TAG]` heading: `grep -cE '^(\*\*[0-9]+\*\*[ (]|#{2,3} [0-9]+[. ])' /x/notes-for-osint.md`
 - **corpus-notes** — open notes in `X:\notes-for-corpus.md`, the OSINT→CORPUS queue; the **same** pattern: `grep -cE '^(\*\*[0-9]+\*\*[ (]|#{2,3} [0-9]+[. ])' /x/notes-for-corpus.md`
 - **fetch** — unstruck lines in `X:\fetch-list.md`, documents **only Bill's browser** can get; same `x` convention: `grep -cE '^[0-9]+[a-z]?\. ' /x/fetch-list.md`
@@ -26,7 +26,7 @@ The commands are indicative; verify against the files if a count looks wrong.
 
 **A queue counts work waiting to start; a gate marks a pass that stopped half-way.** Gates are reported **separately, in prose, never folded into the tally line**, and checked at the end of every job.
 
-- **awaiting budget-extract — suspended, not checked.** The domestic-state budget layer is iced; `new-budget/{ISO3}/{FY}/` folders sit there by design. Was: `find new-budget -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l`, cleared only by `run budget extract`. Reinstate when the layer resumes.
+- **awaiting budget collect.** A `new-budget/{ISO3}/` folder means a collect batch stopped short, since `new-budget/` holds only `manifest.csv` at every stop: `find new-budget -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l`, cleared by `BUDGET-COLLECT.md` for that country. Off the standing tally line.
 - **finance-compile baseline** — places whose finance records changed since the last compile: `python scripts/finance-compile-scope.py | wc -l`. Ingest fires the compile itself (`INGEST.md` → *Ending the run*), so this reads 0 on a healthy tree. `FINANCE-COMPILE.md` → *Close* advances the baseline with `finance-compile-scope.py --commit` only after the hubs are **committed**. A full-house scope means that step was skipped: repair the baseline, do not recompute every hub.
 - **an interrupted sweep** — a sweep writes its manifest, appends `seen.csv`, then advances `state.json` **last**, so an interruption re-sweeps rather than skips (`SWEEP-DAILY-LIST.md` step 6, *Manifest and state*). Compare `sweep/*/state.json.last_run_completed_utc` against the newest `manifest-*.md` / `drop-log-*.csv` in the same folder; a manifest ahead of the mark is an interrupted run.
 - **pending writes from an ingest** — `logs/ingest-pending-writes.md` exists and is non-empty: `test -s logs/ingest-pending-writes.md && wc -l < logs/ingest-pending-writes.md`. Phase B (`WIKI-SYNC.md`) writes the concept pages and indexes from this file, so **an empty `new/` does not mean the ingest finished**. Place hubs are not in it (`HUB-COMPILE.md`). Only Phase B drains it; its writes are idempotent.
@@ -73,13 +73,13 @@ Whenever a pass runs, and on **every** iteration of the `update-wiki` loop, prin
 ▶ running: ingest — update-wiki iteration 2
 ```
 
-The process names: `ingest`, `reconcile`, `acquire`, `rules`, `full lint`, `prune`, `daily sweep`, `off-list sweep`, `newspapers sweep`, `journals sweep`, `thinktanks sweep`, `sweep cycle`, `hub compile`, `finance compile`, `budget extract`, `wiki sync`. A display convention, not a log entry. **Note the time as you print it**: the elapsed clock starts here.
+The process names: `ingest`, `reconcile`, `acquire`, `rules`, `full lint`, `prune`, `daily sweep`, `off-list sweep`, `newspapers sweep`, `journals sweep`, `thinktanks sweep`, `sweep cycle`, `hub compile`, `finance compile`, `budget collect`, `wiki sync`. A display convention, not a log entry. **Note the time as you print it**: the elapsed clock starts here.
 
 ## Progress — a broad sense while it runs
 
 For a long pass or a multi-step batch, also emit a **broad progress line** at each pass/step boundary and each rough milestone, **not** every item:
 
-- **Batch step** (`SWEEP-CYCLE.md`, `COUNTRY-BUDGET-BATCH.md`): `▶ step 2/3: off-list sweep`.
+- **Batch step** (`SWEEP-CYCLE.md`, `BUDGET-COLLECT.md`): `▶ step 2/3: off-list sweep`.
 - **Within a pass:** a rough count against the whole: `ingest: 12/30 processed`.
 - **update-wiki loop:** the iteration and what it is draining: `iteration 2 — ingest 8 left, acquire 3 left`.
 

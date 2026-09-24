@@ -1,6 +1,6 @@
 # Domestic-state finance sweep — procedure
 
-**Acquisition sweep for one country and one fiscal year**, gathering what the domestic-state finance driver (`wiki/finance-load-domestic-state.md`) builds records from: budget documents, outturn and audit reports, ministerial statements, on-the-record reporting of state digital spending.
+**Acquisition sweep for one country and one fiscal year**, gathering the budget documents CORPUS extracts from and the wiki catalogues as sources: budget documents, outturn and audit reports, ministerial statements, on-the-record reporting of state digital spending.
 
 **Invocation: "run domestic finance sweep for `<country>` `<year>`"** — e.g. *run domestic finance sweep for South Africa 2024*.
 
@@ -14,12 +14,12 @@ One country, one fiscal year, one run — the driver's grain of one line, one ye
 
 ### The fiscal year is a search target, not a filter on what gets built
 
-**A document covering several years is fetched once and kept whole.** Record every year in `fiscal_years_covered`, dedup on URL across runs, and let the driver build records for whichever years it supports.
+**A document covering several years is fetched once and kept whole.** Record every year in `fiscal_years_covered`, dedup on URL across runs, and let extraction take whichever years it supports.
 
 **Statements and reporting are date-windowed, not fiscal-year-filtered**; `fy` blank with the reason noted is a valid record.
 
 - **Blocks 1–3 (documents)** — hard-scoped to the run's fiscal year.
-- **Blocks 4–7 (statements, reporting, scrutiny)** — a **date window** from six months before `fy_start` to twelve months after `fy_end`; the driver assigns the year where it can.
+- **Blocks 4–7 (statements, reporting, scrutiny)** — a **date window** from six months before `fy_start` to twelve months after `fy_end`; extraction assigns the year where it can.
 
 ## Boundaries
 
@@ -98,6 +98,8 @@ Append to the country's section after every run, including what was searched and
 
 ## Priority and stopping
 
+**Run from `BUDGET-COLLECT.md`, the scope is tiers 0–3 plus own-source funds and the data-protection authority's budget (Blocks 4c and 6)**; the prose blocks run only where they are cheap.
+
 **Cap: 40 items per country-year run.** Take documents in this order and stop early once tiers 1–3 are exhausted:
 
 0. **The full estimates volume (all votes)** — the only instrument for the cross-vote scan; fetch it even though its sector chapter duplicates the standalone extract.
@@ -120,11 +122,11 @@ Eight documents covering appropriation *and* outturn beat forty news items.
 - **Prose sources → `new/`** — news, statements, press releases, decrees, investigative reporting. Flat, date-prefixed, best-effort frontmatter; the driver's case-4 material.
 - **Budget documents → `new-budget/{ISO3}/{FY}/`** — the artefact **and its companion markdown together, same folder, same date prefix**. **`{FY}` is always the bare start year** — `new-budget/ZAF/2024/`, never `2024-25` (`layout.md` §2). A companion page never goes to `new/` alone: the pair's folder is its state, *held, not yet extracted* (`CLAUDE.md` → *Structure*).
 
-**Nothing in `new-budget/` counts as `awaiting ingest`**, and ingest never drains it (`layout.md` §2, §7). **A `new-budget/` folder existing always means work outstanding.** Append a row to **`new-budget/manifest.csv`** for each document staged:
+**Nothing in `new-budget/` counts as `awaiting ingest`**, and ingest never drains it (`layout.md` §2, §7). **A `new-budget/` folder existing always means work outstanding.** Append a row for each document staged to **`new-budget/{ISO3}/manifest-rows.csv`**, never straight to the shared `new-budget/manifest.csv`; the batch merges it at the close:
 
 `iso3, fiscal_year, fiscal_years_covered, doc_type, title, url, artefact_path, companion_path, retrieved, scale, currency, pages, extracted, extracted_scope, re_extract, archive_path, notes`
 
-The sweep fills everything up to `pages`; `BUDGET-EXTRACT.md` sets the rest.
+The sweep fills everything up to `pages`; `BUDGET-COLLECT.md` sets the paths and `archive_path` when it files the document. `extracted` stays blank: extraction is CORPUS's.
 
 Prose candidates carry `retrieved:` and never `ingested:` (`intake.md` §7).
 
@@ -151,7 +153,7 @@ body_completeness: <full | excerpt>
 ---
 ```
 
-A companion page in `new-budget/` is a **head start for the extraction pass, not an admitted source** — no `ingested:`, not linked from any wiki page; it becomes a source only when the extraction pass emits one into `new/`. **For a tabular or PDF artefact** it also records the **sheet/tab, header row, printed scale and currency** — the scale header (`N'000`, *en milliers*, "bilião") is the 1,000× error; capture it at staging.
+A companion page in `new-budget/` is **not yet a source** — no `ingested:`, not linked from any wiki page; it becomes one when `BUDGET-COLLECT.md` step 2 catalogues it into `new/`. **For a tabular or PDF artefact** it also records the **sheet/tab, header row, printed scale and currency** — the scale header (`N'000`, *en milliers*, "bilião") is the 1,000× error; capture it at staging.
 
 ## Close
 
@@ -159,4 +161,4 @@ A companion page in `new-budget/` is a **head start for the extraction pass, not
 
 Then terse per `CLAUDE.md` → *Reporting*: documents staged by `doc_type`, items sent to acquisitions, what was appended to the extraction notes, **which fiscal-year stages remain uncovered**, and **whether the full estimates volume was obtained** — if not, every total downstream must say the run supports sector-vote coverage only. Then the status line.
 
-**The sweep ends at staging.** Extraction is a step of its own, run once over **every** country-year staged: **sweep → budget extract → update wiki [ingest → finance compile]**, steps 1–5 of `COUNTRY-BUDGET-BATCH.md`. A sweep run outside that batch needs a following **`run budget extract`** before any `update wiki`; nothing picks the documents up implicitly.
+**The sweep ends at staging.** `BUDGET-COLLECT.md` catalogues and archives what it staged; a sweep run outside that batch leaves `new-budget/` populated until the batch's steps 2–3 are run for the country. Nothing else drains it.

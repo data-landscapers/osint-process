@@ -39,7 +39,15 @@ import sys
 import time
 import urllib.parse
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Every importer prints URLs and titles in Arabic, Amharic or accented Latin, and a cp1252
+# console raises UnicodeEncodeError on them — after the work is done, so a caller reads a
+# failure for a line that landed (url-log-append.py), or a crash that empties a key
+# (normalise_url). Set once here rather than in each importer.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+
+ROOT =os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX_DIR = os.path.join(ROOT, "index")
 FILES_JSONL = os.path.join(INDEX_DIR, "files.jsonl")
 LINKS_JSONL = os.path.join(INDEX_DIR, "links.jsonl")
@@ -72,6 +80,7 @@ LINK_CHECK_SKIP = {
     "wiki/finance-record-spec.md",
     "wiki/finance-load-domestic-state.md",
     "wiki/finance-news-driver.md",
+    "wiki/append-log-trim.md",
 }
 
 # Truncation evidence for `body_completeness` (lint #15, #21 class 3), scanned once
@@ -313,10 +322,36 @@ def _parse_flow(inner, warnings, key):
         return []
     if "[" in inner:
         if re.search(r"\[\s*\[", inner):
-            # `[[[a]], [[b]]]` or a hybrid — readable, but lint #12's business.
+            # `[[[a]], [[b]]]` — readable, but lint #12's business.
             warnings.append("link-list-nonstandard:" + key)
+        if BRACKET_ITEM_RE.sub("", inner).replace(",", "").strip():
+            # The hybrid `[a, [b]]`: the item regex sees `b` alone and drops `a`
+            # silently, so read it on top-level commas instead, and warn.
+            warnings.append("link-list-nonstandard:" + key)
+            return [_unquote(p.strip().strip("[]").strip())
+                    for p in _split_top(inner) if p.strip().strip("[]").strip()]
         return [_unquote(m) for m in BRACKET_ITEM_RE.findall(inner)]
+    if key in LINK_KEYS:
+        # A bare `entities: [a, b]` parses, which is why 257 of them went unreported
+        # (housekeeping 146): read it, and warn.
+        warnings.append("link-list-nonstandard:" + key)
     return [_unquote(p) for p in inner.split(",") if p.strip()]
+
+
+LINK_KEYS = {"entities", "sources"}
+
+
+def _split_top(inner):
+    """Split on commas that sit outside any bracket."""
+    parts, depth, cur = [], 0, ""
+    for ch in inner:
+        depth += (ch == "[") - (ch == "]")
+        if ch == "," and depth == 0:
+            parts.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    return parts + [cur]
 
 
 def parse_frontmatter(text):

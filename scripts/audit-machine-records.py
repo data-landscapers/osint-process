@@ -157,6 +157,12 @@ def truncated(body, fam):
 
 SERIES = os.path.join("logs", "machine-record-audit.csv")
 DEFECTS = os.path.join("logs", "machine-record-audit-defects.csv")
+# Class-3 hits a run has read and found complete — the heuristic's known false positives
+# (an email TLD or dispatch code read as a dangling word, a truncated teaser lede above a
+# complete body, an IATI description published without a full stop). `file,cleared,reason`;
+# a listed file is never counted again, so the gate stops re-reporting a record already
+# inspected instead of every run re-adjudicating it.
+CLEARED = os.path.join("logs", "machine-record-audit-cleared.csv")
 # The defect classes, in the order they are carried in the series. Adding a class
 # means adding a column here; the reader tolerates an older row missing it.
 COLS = ["1 finance date_source:proxy", "2 empty entities[]", "3 truncated but full"]
@@ -239,6 +245,11 @@ def main():
     defects = collections.defaultdict(lambda: collections.Counter())  # class -> family -> n
     rows = []
     proxy_nonfinance = 0
+    cleared = set()
+    cp = os.path.join(a.root, CLEARED)
+    if os.path.exists(cp):
+        with open(cp, encoding="utf-8", newline="") as fh:
+            cleared = {r["file"] for r in csv.DictReader(fh)}
 
     for p in glob.glob(os.path.join(a.root, "raw", "**", "*.md"), recursive=True):
         t = open(p, encoding="utf-8").read()
@@ -261,7 +272,7 @@ def main():
             defects["2 empty entities[]"][fam] += 1
             rows.append((rel, fam, "2 empty entities[]"))
         # class 3
-        if val(fm, "body_completeness") == "full":
+        if val(fm, "body_completeness") == "full" and rel not in cleared:
             tr = truncated(body, fam)
             if tr:
                 defects["3 truncated but full"][fam] += 1

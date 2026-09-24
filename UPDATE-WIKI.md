@@ -4,7 +4,7 @@ Trigger: **"update wiki"** / **"run update-wiki"**, and **"update wiki backfill"
 
 This file runs **no research and files nothing itself**. It only invokes the existing passes — ingest's Phase A, `WIKI-SYNC.md`'s Phase B, reconcile, acquire — in a loop until the queues are empty **or hold only what the loop itself generated**. **It does not lint**; the caller lints separately (the sweep cycle, or a manual `full lint`). Every rule governing the work lives in those passes and in `CLAUDE.md` / `wiki/reference.md`; **this file is only the loop.**
 
-**It does not drain `new-budget/`.** Budget extraction is a step of `COUNTRY-BUDGET-BATCH.md`, run **before** update wiki, so its records are already in `new/` when this loop opens. If `new-budget/` is non-empty when this loop finishes, **say so and stop**; `run budget extract` is the process that drains it.
+**It does not drain `new-budget/`.** `BUDGET-COLLECT.md` catalogues its documents into `new/` before this loop opens, so they arrive as ordinary sources. If `new-budget/` holds anything but `manifest.csv` when this loop finishes, **say so and stop**; the collect batch for that country is what drains it.
 
 ---
 
@@ -112,4 +112,4 @@ Each pass writes its **own** terse `log.md` entry and status line as it always d
 
 - **Manually:** `update wiki`.
 - **From a sweep:** the daily trade-journal sweep (`SWEEP-DAILY-LIST.md`) stages candidates flat into `new/`, then hands off to update-wiki, which processes them through ingest and drains any contradictions / acquisitions they surface.
-- **From a batch:** `COUNTRY-BUDGET-BATCH.md` (three sweeps → **budget extract** → this). The extraction has already staged its records into `new/`, so this loop's first ingest admits them; the loop itself never touches `new-budget/`.
+- **From a batch:** `BUDGET-COLLECT.md` (three sweeps → catalogue and archive → this). Its companion records are already in `new/`, so this loop's first ingest admits them; the loop itself never touches `new-budget/`.

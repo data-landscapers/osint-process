@@ -65,11 +65,11 @@ MIRROR_OWNED = {".git", "README.md", "LICENSE", MARKER}
 # fnmatch patterns over repo-relative paths; `*` crosses `/`, so `scripts/*` is the whole tree.
 PUBLISH = [
     # Root procedures — every one except those in WITHHELD.
-    "ACQUIRE.md", "BACKLOG.md", "BUDGET-EXTRACT.md", "CLAUDE.md", "COUNTRY-BUDGET-BATCH.md",
+    "ACQUIRE.md", "BACKLOG.md", "BUDGET-COLLECT.md", "CLAUDE.md",
     "DEAL-VOCAB.md",
     "DOMESTIC-FINANCE-SWEEP.md", "FINANCE-COMPILE.md", "FINANCE-PAGES.md", "HUB-COMPILE.md",
     "INGEST.md", "LINT.md", "PRUNE.md", "RECONCILE.md", "REPO-STATUS.md", "REPORT-LINT.md",
-    "RULES.md", "STATUS-ACQUIRE.md", "STATUS.md", "SWEEP-BULLETIN.md", "SWEEP-COUNTRY-BUDGET.md",
+    "RULES.md", "STATUS-ACQUIRE.md", "STATUS.md", "SWEEP-BULLETIN.md",
     "SWEEP-COUNTRY-DEEP.md", "SWEEP-CYCLE.md", "SWEEP-DAILY-LIST.md", "SWEEP-DAILY-OFFLIST.md",
     "SWEEP-FINANCIERS.md", "SWEEP-IATI.md", "SWEEP-JOURNALS.md", "SWEEP-NEWSPAPERS.md",
     "SWEEP-REGIONAL.md", "SWEEP-THINKTANKS.md", "UPDATE-WIKI.md", "WIKI-SYNC.md",
@@ -93,7 +93,6 @@ PUBLISH = [
 
 # Ruled out, with the reason. Anything at these levels in neither list is reported.
 WITHHELD = {
-    "HANDOVER-corpus-osint-link.md": "machine and network configuration, with a credential",
     "SyncSettings.ffs_batch": "machine configuration",
     "SyncSettings.ffs_gui": "machine configuration",
     "lookups/raw-url-index.csv": "the private corpus in index form",

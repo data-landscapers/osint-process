@@ -1,6 +1,6 @@
 # BACKLOG.md — one housekeeping job, unattended
 
-Trigger: **`SWEEP-CYCLE.md`'s close**, at its housekeeping position — after the first mirror, before the rules pass. **`SWEEP-CYCLE.md` decides which nights; this file decides what the night's backlog act is.** Also runnable by hand as **"run the backlog"**. A session spent on the register ("run housekeeping", "run housekeeping job N") works under the same rules below, minus the one-job limit.
+Trigger: **`SWEEP-CYCLE.md`'s close**, at its housekeeping position — after the first mirror, before the rules pass. **It runs every night (`SWEEP-CYCLE.md`); this file decides what the night's backlog act is.** Also runnable by hand as **"run the backlog"**. A session spent on the register ("run housekeeping", "run housekeeping job N") works under the same rules below, minus the one-job limit.
 
 **What it is.** The drain for `X:\housekeeping-jobs.md`: one job a night, oldest first, so the register counts down without a dedicated session. Status-acquire countries do not come here — their batches are ingested by the cycle itself.
 

@@ -171,7 +171,21 @@ def main():
                 t = t + ("" if (not t or t.endswith(eol)) else eol) + eol + block
 
         if lines:
-            open(LOG, "wb").write(t.encode("utf-8"))
+            # Write a sibling file and swap it in, never rewrite the log in place: an
+            # in-place `open(LOG, "wb")` that fails mid-write (EINVAL under concurrent
+            # readers on Windows) leaves the shared log truncated. The swap is retried
+            # because Windows refuses os.replace while another process holds the target.
+            tmp = LOG + ".tmp"
+            with open(tmp, "wb") as f:
+                f.write(t.encode("utf-8"))
+            for attempt in range(50):
+                try:
+                    os.replace(tmp, LOG)
+                    break
+                except OSError:
+                    if attempt == 49:
+                        raise
+                    time.sleep(0.1)
     finally:
         release_lock()
 

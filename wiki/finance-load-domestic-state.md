@@ -4,7 +4,7 @@ Feeds `wiki/finance-record-spec.md` from **national and sub-national budget docu
 
 Invocation: **"run domestic finance capture"** (one document or item at a time), **"run domestic finance load"** (a prepared CSV of lines), or **"run domestic finance back-swing"** (a pass over `raw/` items already carrying `finance.*` that report domestic state spend and have no `deal_id`). `INGEST.md` step 2a also calls it for any item tagged `finance.budget`. Run it from Claude Code.
 
-**The domestic-state layer is suspended** (`wiki/index.md` → *Processes*); this file governs the procedure whenever it runs.
+**Record-minting is retired** (strategic review R57, 2026-09-24): OSINT builds no domestic-state records, and none of the invocations above runs. The records already in `raw/` stand unedited, because CORPUS's migrated rows cite them. This file is kept as the schema of those records and as the home of the closed `doc_type` list, which `BUDGET-COLLECT.md` uses to catalogue budget documents.
 
 ## Provenance — budget documents *and* reporting
 

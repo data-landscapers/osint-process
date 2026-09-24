@@ -52,17 +52,6 @@ index/
 outputs/reports/
 outputs/catalogue/
 __pycache__/
-# Mirror telemetry (2026-08-03, review task 6). Written by `mirror.bat` on its own
-# schedule, not on any commit, so tracking it would leave the tree permanently dirty and
-# make the `commits` count in the standing tally meaningless. Each file is its own
-# history, and both are themselves mirrored to Dropbox and D:\OSINT.
-logs/mirror_log.md
-logs/mirror-ffs/
-# Same reasoning, for stream-progress.py's transcript of the sweep_cycle claude call
-# (2026-08-10): overwritten every run, not committed to, so tracking it would leave the
-# tree permanently dirty for a file that only ever describes the most recent run.
-logs/sweep-console.log
-logs/sweep-console.jsonl
 
 # --- the budget archive's SOURCE PDFs are held on disk and backed up outside git ---
 # Bill, 2026-08-03, superseding the per-file list this block used to carry. 507 PDFs =

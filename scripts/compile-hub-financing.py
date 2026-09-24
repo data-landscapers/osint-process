@@ -71,6 +71,10 @@ def non_state_paragraph(rows):
     lead = ", ".join("`%s`" % s for s, _ in sorted(subj.items(), key=lambda kv: (-kv[1], kv[0]))[:3])
     lead_clause = " Leading subjects: %s." % lead if lead else ""
 
+    if not rows:
+        # A place whose last deal was withdrawn: say so, rather than "0 deals held ()".
+        return "**Non-state** — no deal records held."
+
     if not with_usd:
         return ("**Non-state** — %d deals held (%s); amounts stated only in non-USD "
                 "currencies, so no USD total is computed.%s" % (len(rows), span, lead_clause))
@@ -170,7 +174,14 @@ def rewrite(iso3, write=False):
         elif body.startswith("Instrument mix: ") and mix:
             m = re.match(r'Instrument mix: .*?\.((?:\s\*\*.*)?)$', body)
             new = "Instrument mix: %s.%s" % (mix, m.group(1) if m else "")
-        if new != body:
+        elif body.startswith("Instrument mix: ") and not rows:
+            new = None     # no deals, so no mix: the line goes
+        if new is None:
+            lines[i] = ""
+            if i + 1 < len(lines) and not lines[i + 1].strip():
+                lines[i + 1] = ""
+            changed = True
+        elif new != body:
             lines[i] = new + eol
             changed = True
 

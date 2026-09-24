@@ -1,6 +1,6 @@
 # RULES.md — the rules pass
 
-Trigger: **the sweep cycle's last stage, on the Day B night** (`SWEEP-CYCLE.md` → *The Day B night*), or **"run rules"** by hand. Either way it is over the whole of `reviews/rule-candidates.md`. No selection: if CC finds itself asking which candidates to take, the answer is all of them.
+Trigger: **the sweep cycle's last stage, every night** (`SWEEP-CYCLE.md` → *The nightly close*), or **"run rules"** by hand. Either way it is over the whole of `reviews/rule-candidates.md`. No selection: if CC finds itself asking which candidates to take, the answer is all of them.
 
 **Rules change here and nowhere else.** A run that meets an edge case takes the conservative option, records it in the commit body, and drops one candidate line. It does not edit a process file, a spec, or `CLAUDE.md` — not to record what it learned, not to stop the case recurring, not while the case is fresh. That is `CLAUDE.md` → *How CC works*, and this file is the pass it points at.
 

@@ -26,7 +26,7 @@ Everything runs in git, so every action is reversible and a wrong call is a reve
 
 CC does not maintain queues of things for Bill to decide. There is no pending-decision register. If CC finds itself wanting to ask, it should choose the more conservative option and do it.
 
-**Rules change in the rules pass — the last stage of the Day B night, after every other pass has finished** (`RULES.md`). A run that meets an edge case takes the conservative option, records it in the commit body, and drops **one** candidate line in `reviews/rule-candidates.md`; the pass rules on the whole batch at once, where a candidate that has earned its line three times **in three separate runs** is visibly a rule and one that has earned it once is visibly not. Editing a rule inside the run that tripped over it is how a file becomes case law, and it is settled by an audience of one. A change to *this* file is still surfaced before it lands — not for permission, but because a rule change is worth reading rather than discovering.
+**Rules change in the rules pass — the last stage of every night, after every other pass has finished** (`RULES.md`). A run that meets an edge case takes the conservative option, records it in the commit body, and drops **one** candidate line in `reviews/rule-candidates.md`; the pass rules on the whole batch at once, where a candidate that has earned its line three times **in three separate runs** is visibly a rule and one that has earned it once is visibly not. Editing a rule inside the run that tripped over it is how a file becomes case law, and it is settled by an audience of one. A change to *this* file is still surfaced before it lands — not for permission, but because a rule change is worth reading rather than discovering.
 
 **Good beats perfect, at roughly 90% — not 95%. Dispose of the edge case in one move.**
 
@@ -98,9 +98,9 @@ Tag an entity if it is **an actor in the development the source reports** — no
 
 **Acquisitions** is the second: specific known documents the wiki wants and doesn't hold. It is a fetch list **for automated fetches**, not a research register — drained by the acquisition pass, never by reconcile. One automated attempt each; a document that only a hand-clip could get is dropped and its absence stated on the page, dated and naming the document exactly — never parked as a standing chore, and never a post-run note, which takes only what is irreversible or already public.
 
-**Housekeeping** is the third: lint-type work that is real and CC's to close, but too big for a batch — a corpus-wide sweep, a recompile of every hub. Registered in `X:\housekeeping-jobs.md` and worked in **the Day B session** — the rotation night that gives up its heavy sweeps to it (`BACKLOG.md`), one job a night, never folded into another pass.
+**Housekeeping** is the third: lint-type work that is real and CC's to close, but too big for a batch — a corpus-wide sweep, a recompile of every hub. Registered in `X:\housekeeping-jobs.md` and worked at **every night's close** (`BACKLOG.md`), one job a night, never folded into another pass.
 
-Three queues, each drained by CC by its own pass — reconcile for contradictions, acquire for acquisitions, the Day B session for housekeeping — over the whole queue at once, never a selection. Anything that can't be closed by any of them isn't work; it's a horizon, and belongs on the relevant page as a dated statement of what isn't established.
+Three queues, each drained by CC by its own pass — reconcile for contradictions, acquire for acquisitions, the nightly backlog for housekeeping — over the whole queue at once, never a selection. Anything that can't be closed by any of them isn't work; it's a horizon, and belongs on the relevant page as a dated statement of what isn't established.
 
 **CC cites only links it actually holds.** In a contradiction brief or anywhere else, never suggest a source from your own knowledge as though the wiki held it. Say plainly that nothing is on file — that absence is the finding.
 

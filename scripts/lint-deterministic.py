@@ -1034,6 +1034,10 @@ DEACCENT_EXEMPT = {
     "2023-06-15-guine-bissau-boletim-oficial-24-mapa-oficial-legislativas-2023",
     # cfe.gw is a parked domain — nothing to refetch, not a transient outage.
     "2025-04-30-cfe-guine-bissau-estatisticas-registo-empresas",
+    # The held PDFs' own all-caps headings print "L'ANNEE" unaccented; the title is
+    # faithful to the source (checked against budget-archive/SEN/2024/, 2026-09-24).
+    "2023-10-13-sen-plf-2024-companion",
+    "2023-12-15-sen-lfi-2024-loi-2023-18-companion",
 }
 
 
