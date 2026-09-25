@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # ACQUIRE.md — the acquisition pass
 
 Trigger: **"run acquisitions"**. No selection. The pass takes **every item in `reviews/acquisitions.md`**. One automated attempt each, then the item is resolved one way or the other — nothing is carried for a human loop.

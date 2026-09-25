@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # Off-list sweep — procedure
 
 Trigger: **"run the off-list sweep"**. The open-web companion to the domain-scoped daily sweep (`SWEEP-DAILY-LIST.md`). Where that one sweeps only the journals on `lookups/sweep-daily.csv`, this one sweeps **everything off that list** — the open web — on two thematic tracks, as an **acquisition sweep that files candidates**, not a read-only briefing.

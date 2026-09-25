@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # finance-iati-driver.md — IATI activity → finance record
 
 The driver `wiki/finance-record-spec.md` calls for an IATI activity. `SWEEP-IATI.md` selects which activities reach it; this file says how one becomes a record.

@@ -47,6 +47,26 @@ reading. Without `--usage`, or with an empty buffer, there is no `usage` block: 
 block is visible, where a block borrowed from another pass's night would be wrong. Only the
 sweep cycle passes it; CORPUS's reader accepts schemas 1 and 2 (register R07).
 
+**Schema 3 (2026-09-25, strategic review 5 R70): the `drops` block.** With `--drops`, the
+night's drops per sweep per code, from data files rather than prose: every sweep's own
+`sweep/*/…drop-log-*{night}*.csv` (`reason` column) as `sweep`, and ingest's coded drops
+(`sweep/ingest/drop-log-*.csv`, R69) whose `sweep_batch` is dated the night as `ingest`,
+beside `admitted` — the `raw/` records carrying such a `sweep_batch`. `ingest_drop_rate` is
+ingest drops over ingest drops plus admissions, per sweep: the number review 6 reads. A sweep
+is its batch label less the date (`domestic-finance-*` is `domestic`, the folder its drop-logs
+live in). The night is the collection stamp's `ingest_started` date unless `--night` names
+one. Where no ingest drop-log carries the night, `ingest` and the rate are absent, not zero —
+a night before R69 did not code its drops.
+
+**The `hygiene` block (2026-09-25, strategic review 5 R83; additive, schema 3 unchanged).** With
+`--hygiene`, what the night's writers left for a cleaner: `housekeeping_registered`, the rise
+in `X:\housekeeping-jobs.md`'s `NEXT JOB NUMBER`, and `words_trimmed` (with
+`pages_rewritten`), summed over the `logs/phaseb-trims.csv` rows Phase B's over-line rewrites
+added (R81). Both are measured since the previous manifest, whose `hygiene` block carries the
+two counters, and both should read near zero. Only the sweep cycle passes it, so "since the
+previous manifest" is the night. The first manifest to carry the block has nothing to
+compare with and writes the counters alone.
+
 Usage:
   python scripts/cycle-manifest.py --pass "sweep cycle" --usage \
       --count items_in=294 --count admitted=185 --count dropped=108
@@ -82,7 +102,10 @@ MANIFEST = os.path.join(V.ROOT, "cycle-manifest.json")
 CYCLE_LOG = os.path.join(V.ROOT, "logs", "sweep-cycle_log.md")
 STAMP = os.path.join(V.ROOT, "logs", "collection-stamp.json")
 STAGES = os.path.join(V.ROOT, "logs", "usage-stages.jsonl")
-SCHEMA = 2
+SWEEP_DIR = os.path.join(V.ROOT, "sweep")
+SCHEMA = 3
+DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+CODE_RE = re.compile(r"[a-z]+(-[a-z]+)*")
 
 STAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$")
 
@@ -232,7 +255,125 @@ def usage_block():
     return block or None
 
 
-def build(pass_name, counts, usage=False):
+def sweep_of(batch):
+    """`country-deep-2026-09-24` -> (`country-deep`, `2026-09-24`); the date is the last one."""
+    dates = DATE_RE.findall(batch or "")
+    if not dates:
+        return None, None
+    key = batch[:batch.rfind(dates[-1])].rstrip("-")
+    key = re.sub(r"-[A-Z]{3}(-\d{4})?$", "", key)            # per-country, per-FY batches
+    if key.startswith("domestic-finance"):
+        key = "domestic"
+    return key or None, dates[-1]
+
+
+def drops_block(night):
+    """Drops per sweep per code for one night; see the module note (schema 3)."""
+    import csv
+    import glob
+    sweeps = {}
+
+    def entry(k):
+        return sweeps.setdefault(k, {"sweep": {}, "ingest": {}, "admitted": 0})
+
+    for path in glob.glob(os.path.join(SWEEP_DIR, "*", f"*drop-log-*{night}*.csv")):
+        folder = os.path.basename(os.path.dirname(path))
+        if folder in ("ingest", "archive"):
+            continue
+        try:
+            with open(path, encoding="utf-8", errors="replace", newline="") as fh:
+                for r in csv.DictReader(fh):
+                    code = (r.get("reason") or "").strip() or "uncoded"
+                    if not CODE_RE.fullmatch(code):
+                        code = "malformed"        # a mis-quoted row shifts free text here
+                    d = entry(folder)["sweep"]
+                    d[code] = d.get(code, 0) + 1
+        except OSError:
+            continue
+
+    coded = False
+    for path in glob.glob(os.path.join(SWEEP_DIR, "ingest", "drop-log-*.csv")):
+        try:
+            with open(path, encoding="utf-8", errors="replace", newline="") as fh:
+                for r in csv.DictReader(fh):
+                    key, day = sweep_of(r.get("sweep_batch"))
+                    if day != night:
+                        continue
+                    coded = True
+                    d = entry(key)["ingest"]
+                    code = r.get("reason") or "uncoded"
+                    d[code] = d.get(code, 0) + 1
+        except OSError:
+            continue
+
+    batch_re = re.compile(r"^sweep_batch:\s*[\"']?([^\"'\r\n]+)", re.M)
+    for root, _, files in os.walk(os.path.join(V.ROOT, "raw")):
+        for f in files:
+            if not f.endswith(".md"):
+                continue
+            try:
+                with open(os.path.join(root, f), encoding="utf-8", errors="replace") as fh:
+                    head = fh.read(3000)
+            except OSError:
+                continue
+            m = batch_re.search(head)
+            if m and night in m.group(1):
+                key, day = sweep_of(m.group(1).strip())
+                if day == night:
+                    entry(key)["admitted"] += 1
+
+    for k, e in sweeps.items():
+        for side in ("sweep", "ingest"):
+            e[side] = dict(sorted(e[side].items(), key=lambda kv: (-kv[1], kv[0])))
+        if not coded:
+            del e["ingest"]
+            continue
+        n = sum(e["ingest"].values())
+        e["ingest_drop_rate"] = round(n / (n + e["admitted"]), 3) if n + e["admitted"] else None
+    return {"night": night, "ingest_coded": coded, "sweeps": dict(sorted(sweeps.items()))}
+
+
+HOUSEKEEPING = "X:\\housekeeping-jobs.md" if os.name == "nt" else "/x/housekeeping-jobs.md"
+TRIMS = os.path.join(V.ROOT, "logs", "phaseb-trims.csv")
+
+
+def hygiene_block(prev):
+    """What the writers left for a cleaner since the previous manifest (R83); see the note.
+
+    Both figures are deltas of a counter, never a parse of prose: the register's
+    `NEXT JOB NUMBER` line (numbers are never reused, so its rise is jobs registered) and the
+    row count of `logs/phaseb-trims.csv` (R81), whose rows past the previous count are summed
+    as `before - after`. The previous manifest carries both counters; with none to compare
+    against, the deltas are absent rather than zero."""
+    nxt = None
+    try:
+        with open(HOUSEKEEPING, encoding="utf-8", errors="replace") as fh:
+            m = re.search(r"^## NEXT JOB NUMBER:\s*(\d+)", fh.read(), re.M)
+            nxt = int(m.group(1)) if m else None
+    except OSError:
+        pass
+    rows = []
+    try:
+        import csv
+        with open(TRIMS, encoding="utf-8", newline="") as fh:
+            rows = list(csv.DictReader(fh))
+    except OSError:
+        pass
+    b = {"housekeeping_next": nxt, "trims_rows": len(rows)}
+    p = (prev or {}).get("hygiene") or {}
+    if nxt is not None and isinstance(p.get("housekeeping_next"), int):
+        b["housekeeping_registered"] = nxt - p["housekeeping_next"]
+    if isinstance(p.get("trims_rows"), int) and p["trims_rows"] <= len(rows):
+        new = rows[p["trims_rows"]:]
+        b["words_trimmed"] = sum(int(r["before"]) - int(r["after"]) for r in new
+                                 if r.get("before", "").isdigit() and r.get("after", "").isdigit())
+        b["pages_rewritten"] = len(new)
+    if prev:
+        b["since"] = prev.get("written_utc")
+    return b
+
+
+def build(pass_name, counts, usage=False, night=None, hygiene=False):
     head = git("rev-parse", "HEAD")
     m = {
         "schema": SCHEMA,
@@ -250,6 +391,10 @@ def build(pass_name, counts, usage=False):
         block = usage_block()
         if block:
             m["usage"] = block
+    if night:
+        m["drops"] = drops_block(night)
+    if hygiene:
+        m["hygiene"] = hygiene_block(read())
     return m
 
 
@@ -295,6 +440,12 @@ def main():
                     help="a count this pass measured; repeatable")
     ap.add_argument("--usage", action="store_true",
                     help="write the night's per-stage usage readings as the `usage` block")
+    ap.add_argument("--hygiene", action="store_true",
+                    help="write housekeeping_registered and words_trimmed since the last manifest")
+    ap.add_argument("--drops", action="store_true",
+                    help="write the night's drops per sweep per code as the `drops` block")
+    ap.add_argument("--night", metavar="YYYY-MM-DD",
+                    help="the night --drops counts (default: the stamp's ingest_started date)")
     ap.add_argument("--check", action="store_true",
                     help="exists, parses, and names the local HEAD")
     ap.add_argument("--print", dest="show", action="store_true",
@@ -335,7 +486,14 @@ def main():
         k, v = pair.split("=", 1)
         counts[k.strip()] = int(v) if v.strip().lstrip("-").isdigit() else v.strip()
 
-    m = build(a.pass_name, counts, usage=a.usage)
+    night = None
+    if a.drops:
+        night = a.night or ((collection() or {}).get("ingest_started") or "")[:10]
+        if not DATE_RE.fullmatch(night or ""):
+            print("cycle-manifest: --drops needs --night YYYY-MM-DD or a stamped "
+                  "ingest_started", file=sys.stderr)
+            return 2
+    m = build(a.pass_name, counts, usage=a.usage, night=night, hygiene=a.hygiene)
     text = json.dumps(m, indent=1, ensure_ascii=False) + "\n"
     if a.show:
         print(text, end="")

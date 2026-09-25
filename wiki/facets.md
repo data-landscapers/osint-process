@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # facets.md — facets and vocabularies — place, subject, entity types, the link-list bracket convention
 
 Split out of `reference.md`; section numbers are kept so a `§N` reference resolves unchanged. `CLAUDE.md` holds the principles and wins where the two disagree.

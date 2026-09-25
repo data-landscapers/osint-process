@@ -4,6 +4,9 @@
     promote-budget-companions.py                 dry run over every country, in order
     promote-budget-companions.py ETH KEN         dry run, those countries only
     promote-budget-companions.py --write [ISO3]  write the raw/ records and the URL index/log lines
+    promote-budget-companions.py --slug S [--slug S ...] [--write]
+                                                 promote the named companions whatever their class (notes-for-osint 171:
+                                                 a companion a published figure has to cite, outside the four classes below)
 
 **What it promotes.** A `budget-archive/` companion page is promoted when it describes one of four classes:
 - a full estimates volume: `budget-estimates` with `extracted_scope: cross-vote` on its manifest row;
@@ -34,6 +37,7 @@ STATUS = re.compile(r"^\*\(Companion page for (a )?budget documents? .*?\)\*[ \t
 NOT_EXTRACTED = re.compile(r"^\*\*Not extracted here\.\*\*.*\n?", re.M)
 TODAY = datetime.date.today().isoformat()
 WRITE = "--write" in sys.argv
+FORCE = {sys.argv[i + 1] for i, a in enumerate(sys.argv[:-1]) if a == "--slug"}
 PY = sys.executable
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
@@ -73,7 +77,9 @@ def promote(comp, raw_slugs, idx, scope):
     fm, body = m.group(1).split("\n"), t[m.end():]
     get = lambda k: next((l.split(":", 1)[1].strip().strip('"') for l in fm if l.startswith(k + ":")), "")
     doc = get("doc_type")
-    if not (doc in ALWAYS or (doc == "budget-estimates" and scope.get(comp.name) == "cross-vote")):
+    if FORCE and comp.stem not in FORCE:
+        return None, None
+    if not (comp.stem in FORCE or doc in ALWAYS or (doc == "budget-estimates" and scope.get(comp.name) == "cross-vote")):
         return None, None                                    # not a class this promotes; silent
     slug = comp.stem
     if slug in raw_slugs:
@@ -94,7 +100,7 @@ def promote(comp, raw_slugs, idx, scope):
         hero = get("title")[:140].replace('"', "'")
         out.append(f'catalogue_hero: "{hero}"')
     out.insert(next(i for i, l in enumerate(out) if l.startswith("topics:")), f"ingested: {TODAY}")
-    out.append(f"hub_line_none: {TODAY}  # budget-document companion, catalogued for citation (notes-for-osint 168, step 5)")
+    out.append(f"hub_line_none: {TODAY}  # budget-document companion, catalogued for citation (notes-for-osint {'171' if FORCE else '168, step 5'})")
     lead = (f"**Companion source page for a budget document.** Its artefact is filed at `budget-archive/{iso}/{fy}/` "
             f"and declared by its row in `new-budget/manifest.csv`. It is catalogued so that a figure read from the document can cite it by name.")
     if STATUS.search(body):

@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # RULES.md — the rules pass
 
 Trigger: **the sweep cycle's last stage, every night** (`SWEEP-CYCLE.md` → *The nightly close*), or **"run rules"** by hand. Either way it is over the whole of `reviews/rule-candidates.md`. No selection: if CC finds itself asking which candidates to take, the answer is all of them.
@@ -40,7 +41,7 @@ For each distinct case in `reviews/rule-candidates.md`:
 
 ## What is not a candidate
 
-A defect is not a rule. A script that mis-parses, a check that fires on the wrong thing, a stale claim in a process file — those are fixed in the run that finds them, immediately, and logged. The distinction is whether the file is **wrong** or **silent**: a wrong file is repaired on sight; a silent one waits for this pass.
+A defect is not a rule. A script that mis-parses, a check that fires on the wrong thing, a stale claim in a process file — those are fixed in the run that finds them, immediately, and logged. The distinction is whether the file is **wrong** or **silent**: a wrong file is repaired on sight; a silent one waits for this pass. **A line whose file slot names a script is a defect, never a candidate**: the run that meets it fixes the script, and a line that reaches the queue anyway is fixed and deleted by this pass, not counted towards three.
 
 A one-off ruling is not a rule either. `CLAUDE.md` → *Act. Log after. Never ask.* already disposes of it: take the conservative option, record it in the commit body, move on.
 

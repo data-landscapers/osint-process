@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # Sweep — journals (procedure)
 
 **Content-scoped, not time-scoped** (unlike the daily sweep): works the journal sources listed in `lookups/sweep-journals.csv` and picks up what those sources have published since it last ran. Run by `SWEEP-CYCLE.md` on **Day 1** of the nightly rotation; also runnable standalone from Claude Code on demand.
@@ -12,7 +13,7 @@ One of three content sweeps — newspapers, journals, thinktanks — on shared m
 
 **Column 1 (the URL) is the only field the sweep needs** — always the source's URL/domain, whatever the header says (the CSV carries a BOM and mixed header case; ignore it and take column 1). Everything else is an **optional head-start** for the staged frontmatter, validated at ingest: `Title` → `publisher`.
 
-**Row health.** Record every non-clean row outcome in `sweep/row-health.csv` and report a row that fails **twice consecutively**, or is `dormant`, to `reviews/post-run-notes.md` — `intake.md` §7 → *Row health*. Never edit the sweep source lists in `lookups/` — they are Bill's (`layout.md` §2).
+**Row health.** Record every non-clean row outcome in `sweep/row-health.csv` and mark a row that fails **twice consecutively**, or is `dormant`, `reported` there: the ledger is the report, and it is never copied into `reviews/post-run-notes.md` — `intake.md` §7 → *Row health*. Never edit the sweep source lists in `lookups/` — they are Bill's (`layout.md` §2).
 
 **Abstract + citation is the accepted record.** Where the publisher withholds full text, stage the abstract verbatim with a complete citation as `body_completeness: excerpt` and **set no `needs_clip`, raise no acquisition line and file no note** — `schemas.md` §4.
 

@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # Driver — finance from prose sources (news, releases, filings)
 
 Feeds `wiki/finance-record-spec.md` from **narrative sources** rather than a dataset: an on-the-record news report, a DFI or foundation press release, a company statement, a filing. One source may yield **zero, one or several** deal records.

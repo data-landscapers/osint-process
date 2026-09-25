@@ -1,3 +1,4 @@
+<!-- reader: cc; type: reference -->
 # reference.md — directory of the shared specs
 
 `CLAUDE.md` holds the principles and is what CC reasons from. The operational detail it demoted — vocabularies, layout, schemas, intake mechanics, hygiene thresholds — lives in five spec files, each keeping the section numbers it had when this was one file, so a `§N` reference resolves by filename alone. Look things up there; decide from `CLAUDE.md`, which wins where they disagree.

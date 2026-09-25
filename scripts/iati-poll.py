@@ -345,6 +345,11 @@ def main():
         return 0
 
     docs = metadata(key, fresh) if fresh else []
+    # A publisher that double-publishes one activity (Sida does) returns it twice here, and
+    # both copies reached the work order through the orphan inheritance (R74). First wins.
+    seen_ids = set()
+    docs = [d for d in docs if not (d.get("iati_identifier") in seen_ids
+                                    or seen_ids.add(d.get("iati_identifier")))]
     places_held = wiki_places()
     kept, region_census = [], collections.Counter()
     orphans = []

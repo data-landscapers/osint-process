@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # SWEEP-DAILY-LIST.md — the daily on-list sweep
 
 Trigger: **"run the daily sweep"**. Sweeps the domains in `lookups/sweep-daily.csv` for what they published since the last run and stages candidates into `new/`.

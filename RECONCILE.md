@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # RECONCILE.md — the reconcile pass
 
 Trigger: **"run reconcile"**. No argument, no selection, no scoping question. The pass takes **every item in `reviews/contradictions/open/`**. If CC finds itself asking which items to do, the answer is all of them.

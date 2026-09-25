@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # FINANCE-COMPILE.md — the finance compile pass
 
 Trigger: **"run finance compile"** (optionally scoped, `run finance compile for South Africa`). This pass **aggregates**: it reads the finance records already in `raw/` and, for each place in scope, writes **two** outputs from the one set of reads:
@@ -90,7 +91,7 @@ Compute the aggregation with a script and **write the result onto the page** —
 
 ## Close
 
-**Verify what was just published — `REPORT-LINT.md`, before the baseline moves.** `python scripts/report-lint.py`, scoped to the places compiled. Checks A/B/C must read clean before the baseline advances. Check D's misses go to `reviews/post-run-notes.md`; check E is hand work on the hub.
+**Verify what was just published — `REPORT-LINT.md`, before the baseline moves.** `python scripts/report-lint.py` over **every place, not the compiled scope**: a place no compile touched is exactly where a stale aggregate goes unseen, and the whole run takes seconds. A place failing outside the night's scope is recompiled with the same two scripts (`build-finance-page.py`, `compile-hub-financing.py --write`) and re-checked. Checks A/B/C must read clean before the baseline advances. Check D's misses go to `reviews/post-run-notes.md`; check E is hand work on the hub.
 
 **Advance the compile baseline.** Once the scoped hubs are written **and committed**, run `python scripts/finance-compile-scope.py --commit` to move the state ref (`reviews/finance-compile-state.json`) to `HEAD`, and commit that — otherwise the next run recomputes the same places. Skip only on a no-op run.
 

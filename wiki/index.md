@@ -1,3 +1,4 @@
+<!-- reader: cc; type: reference -->
 # Data Landscapers Intelligence Wiki — master index
 
 A compounding intelligence base on **data governance and digital transformation across Africa**, feeding the long-form output at data-landscapers.com. Built to **depth on demand**: deep where Bill is writing or asking, thin elsewhere. Thin coverage of a country nobody is writing about is the correct state, not a gap.
@@ -94,6 +95,10 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 |---|---|---|
 | Capture rule | [capture-rule.md](capture-rule.md) | The verbatim-capture rule (the `excerpt` / `paywalled` dispositions, local fetch first) and *Fetching without spending context* — parse in the shell, write bodies straight to `new/`. Baked into every fetching sub-agent's instructions. |
 | Origin screen | [origin-screen.md](origin-screen.md) | The inadmissible-origin gate: `logs/drop-list.csv`, the hostile shapes, the `watch → drop` promotion, the mining rule, the `inadmissible-origin` drop reason. Called by every sweep at its admissibility screen and by ingest at step 1. |
+| Ingest judgment | [ingest-judgment.md](ingest-judgment.md) | The reasoning behind `INGEST.md`'s rules: parallel slices and the shared registers, why a clean tier 1 settles nothing, staged facets as guesses, hub-line grouping and the classes that correctly get none. |
+| Lint checks | [lint-checks.md](lint-checks.md) | The reasoning and finer detail behind `LINT.md`'s checks, by check number. |
+| Sweep cycle notes | [sweep-cycle-notes.md](sweep-cycle-notes.md) | The reasoning and finer detail behind `SWEEP-CYCLE.md`'s wiring, by its own headings. |
+| Standing briefs | [brief-sweep.md](brief-sweep.md), [brief-ingest.md](brief-ingest.md) | What every sweep slice and ingest Phase A slice is given, pasted verbatim by the cycle parent under the night's own facts; rules only, capped at 600 words each (`SWEEP-CYCLE.md` → *What every sub-agent prompt carries*). |
 | The specs | [reference.md](reference.md) | Directory of the five shared specs — [facets.md](facets.md) §1, [layout.md](layout.md) §2–3, [schemas.md](schemas.md) §4–5a, [intake.md](intake.md) §6–7a, [operations.md](operations.md) §8–11a. |
 
 **Reporting**

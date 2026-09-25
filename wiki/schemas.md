@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # schemas.md — frontmatter schemas, entity tagging, admissibility detail
 
 Split out of `reference.md`; section numbers are kept so a `§N` reference resolves unchanged. `CLAUDE.md` holds the principles and wins where the two disagree.
@@ -53,7 +54,7 @@ catalogue_hero: "GPU cluster for African model training; first NVIDIA deployment
 - **Always a double-quoted scalar, whoever writes it — staging included.** The "figure; consequence" shape invites a colon, and an unquoted `: ` makes the whole frontmatter unparseable. A staged hero that is unquoted or over the cap is the producer's defect, and ingest fixes it rather than passing it on.
 - **Plain text.** No bolding, no `[[wikilinks]]`, no citation, no markdown of any kind — it is rendered as a subtitle by something that is not this vault.
 
-**It is `hub_line`'s shorter, blunter sibling, and it is not gated.** `hub_line` is an editorial claim that a dated development happened in a place, and the classes at `INGEST.md` → *The `hub_line` gate* correctly earn none. **Every one of them still earns a `catalogue_hero`**, because every record is in the catalogue — a finance record, an artefact companion, a reference study, a `cite_through:` capture alike. A hero is always derivable from the title and body in hand, which is why there is no `catalogue_hero_none:`.
+**It is `hub_line`'s shorter, blunter sibling, and it is not gated.** `hub_line` is an editorial claim that a dated development happened in a place, and the classes at `wiki/ingest-judgment.md` §4 correctly earn none. **Every one of them still earns a `catalogue_hero`**, because every record is in the catalogue — a finance record, an artefact companion, a reference study, a `cite_through:` capture alike. A hero is always derivable from the title and body in hand, which is why there is no `catalogue_hero_none:`.
 
 **The contract runs from 2026-09-05**, the first ingest after the field was minted. A source ingested before it carries none, is not a defect, and is the backfill lane's work: lint #34 counts that backlog and never fails on it.
 

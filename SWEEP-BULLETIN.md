@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # SWEEP-BULLETIN.md — the late-morning top-up
 
 Trigger: **"run the bulletin sweep"**, typed by hand, typically late morning. Manual only — like `SWEEP-CYCLE.md`, **no automatic or scheduled trigger exists or is planned**.

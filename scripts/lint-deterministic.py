@@ -91,7 +91,7 @@ XCHG_AFFECTS_NAMES = re.compile(
     r"\b(?:task|note|job)\s+\d+|"
     r"\b(?:bulletin|report|monthly|catalogue|dataset|page|site|ledger|index|brief|"
     r"byline|publication|output|manifest|chart|table|feed|compile|hub)\b", re.IGNORECASE)
-XCHG_NOTE_RE = re.compile(r"^(?:\*\*(\d+)\*\*[ (]|#{2,3} (\d+)[.  ])")
+XCHG_NOTE_RE = V.XCHG_NOTE_RE        # one parser, shared with status.py
 
 # The share's conventions live once, in `X:\README.md`, and every other file there carries a
 # pointer and its own content. Two things follow, and #24 asserts both. A **preamble cap**: the
@@ -524,6 +524,9 @@ def check_linklists(rows, d):
                 # invisible to any reader that stops at the delimiter.
                 d.add("1", r["path"], "frontmatter opens and never closes",
                       "add the closing `---`; until then no field on this page is readable")
+            elif w == "frontmatter-fence-glued":
+                d.add("1", r["path"], "closing `---` has body text glued to it",
+                      "put the body text on its own line below the fence")
             elif w.startswith("unparsed-line"):
                 d.add("1", r["path"], f"unreadable frontmatter line: {w.split(':', 1)[1]}")
             elif w.startswith("yaml-unparseable"):
@@ -979,7 +982,9 @@ def check_catalogue_hero(rows, d):
         title = str(fm.get("title") or "").strip()
         if title:
             a, b = hero.lower(), title.lower()
-            if a == b or a in b or b in a:
+            # Same test as catalogue-hero-set.py: a short title inside a hero is named, not
+            # restated, so containment counts from three words (R74).
+            if a == b or a in b or (b in a and len(b.split()) >= 3):
                 d.add("34", path, "`catalogue_hero` repeats the title",
                       "the hero says what the reader gets by opening the record, "
                       "not what it is called")
@@ -1267,6 +1272,46 @@ def _shape(real, body_words):
     return "synthesis"
 
 
+def measure_page(r):
+    """#8's measure of one page, or None for a page #8 does not measure.
+
+    Shared with `scripts/page-length.py`, which a Phase B slice runs on its landing
+    page before and after a write (`WIKI-SYNC.md` → *A landing page over its line*),
+    so the writer and the lint can never disagree about where the line is (R81).
+    `over` is the gate: over the classify line and not under a current `Length`
+    ruling — a ruled page's length was judged right, until an edit makes it stale.
+    """
+    dd = r["d"]
+    if dd.get("kind") not in BLOAT_KINDS:
+        return None
+    secs = dd.get("sections") or []
+    words = dd.get("words") or 0
+    exempt = 0
+    if dd.get("kind") == "place":
+        exempt = sum(n for h, n in secs if h.startswith(HUB_CHRONOLOGY))
+    furniture = sum(n for h, n in secs if h.startswith(FURNITURE))
+    effective = words - exempt - furniture
+    # The exempt block is out of the shape test as well as out of the count.
+    # Leaving it in made every hub read `unsectioned`, since a compiled
+    # chronology is by construction the largest section on its page.
+    skip = FURNITURE + ((HUB_CHRONOLOGY,) if exempt else ())
+    real = [(h, n) for h, n in secs if not any(h.startswith(s) for s in skip)]
+    shape = _shape(real, effective) if real else "unsectioned"
+    ruled = None
+    for h, _ in secs:
+        m = RULED_HEADING.match(h)
+        if m:
+            ruled = m.group(1) or "undated"
+            break
+    stale = bool(ruled and ruled != "undated"
+                 and (r["fm"].get("last_reviewed") or "") > ruled)
+    over_line = effective > CLASSIFY_LINE
+    return {"words": words, "exempt": exempt, "furniture": furniture,
+            "effective": effective, "real": real, "shape": shape, "ruled": ruled,
+            "stale": stale, "over_line": over_line,
+            "over": over_line and (not ruled or stale)}
+
+
 def check_page_bloat(rows, d):
     """LINT.md #8, which was specified and never implemented.
 
@@ -1288,35 +1333,15 @@ def check_page_bloat(rows, d):
     since its 2026-08-23 note.
     """
     for r in rows:
+        m8 = measure_page(r)
+        if not m8 or not m8["over_line"]:
+            continue
         dd = r["d"]
-        if dd.get("kind") not in BLOAT_KINDS:
-            continue
-        secs = dd.get("sections") or []
-        words = dd.get("words") or 0
-        exempt = 0
-        if dd.get("kind") == "place":
-            exempt = sum(n for h, n in secs if h.startswith(HUB_CHRONOLOGY))
-        furniture = sum(n for h, n in secs if h.startswith(FURNITURE))
-        effective = words - exempt - furniture
-        if effective <= CLASSIFY_LINE:
-            continue
-
-        # The exempt block is out of the shape test as well as out of the count.
-        # Leaving it in made every hub read `unsectioned`, since a compiled
-        # chronology is by construction the largest section on its page.
-        skip = FURNITURE + ((HUB_CHRONOLOGY,) if exempt else ())
-        real = [(h, n) for h, n in secs
-                if not any(h.startswith(s) for s in skip)]
-        shape = _shape(real, effective) if real else "unsectioned"
+        words, exempt, furniture, effective = (m8["words"], m8["exempt"],
+                                               m8["furniture"], m8["effective"])
+        real, shape, ruled = m8["real"], m8["shape"], m8["ruled"]
         biggest = max((n for _, n in real), default=effective)
         bigname = next((h for h, n in real if n == biggest), "(one block)")
-
-        ruled = None
-        for h, _ in secs:
-            m = RULED_HEADING.match(h)
-            if m:
-                ruled = m.group(1) or "undated"
-                break
 
         note = "{:,} words".format(effective)
         if exempt or furniture:
@@ -1447,6 +1472,11 @@ def main():
                     c = pop[folder]
                     print(f"  {folder:>14}: {sum(c.values()):>3} over the line  "
                           + ", ".join(f"{k} {v}" for k, v in c.most_common()))
+            # The gate's count: over the line with no current ruling. It registers no job
+            # (R66/R81) — the writer rewrites at the write — and goes on the manifest.
+            gate = sum(1 for r in rowset if ", ruled" not in r["defect"])
+            print(f"\n  pages_over_line={gate}  (unruled or stale ruling; the manifest's count, "
+                  f"expected near zero)")
             print()
         for r in rowset[:a.limit]:
             flag = " (soft)" if r["soft"] else ""

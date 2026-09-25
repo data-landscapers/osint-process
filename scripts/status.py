@@ -110,7 +110,8 @@ def sweep_gate():
             out.append(f"{os.path.basename(d)}: artefact {newest} ahead of mark {mark_local}")
     return out
 
-NOTE_ENTRY = r"^(?:\*\*[0-9]+\*\*[ (]|#{2,3} [0-9]+[.\u00a0 ])"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from vault_lib import XCHG_NOTE_RE as NOTE_ENTRY   # one parser, shared with lint (R74)
 
 counts = {
     "contradictions": contradictions(),

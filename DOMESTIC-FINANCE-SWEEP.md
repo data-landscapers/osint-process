@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # Domestic-state finance sweep — procedure
 
 **Acquisition sweep for one country and one fiscal year**, gathering the budget documents CORPUS extracts from and the wiki catalogues as sources: budget documents, outturn and audit reports, ministerial statements, on-the-record reporting of state digital spending.
@@ -145,8 +146,8 @@ entities: [[<institution-slug>]]
 retrieved: <YYYY-MM-DD>
 sweep_batch: domestic-finance-<ISO3>-<FY>-<YYYY-MM-DD>   # FY = bare start year, e.g. 2024
 fiscal_years_covered: ["2024/25", "2025/26"]
-doc_type: <one value from the canonical list in wiki/finance-load-domestic-state.md
-           → Source citation. Do not extend it here — one vocabulary, one home.>
+doc_type: <one value from the closed list in lookups/budget-doc-types.csv.
+           Do not extend it here — one vocabulary, one home.>
 source_tier: <budget-document | official-statement | project-document | reporting>
 artefact: <sibling filename, where this is a companion page in new-budget/>
 body_completeness: <full | excerpt>

@@ -225,7 +225,10 @@ COMPLETION = re.compile(
     r"wanted\s+\*{0,2}as an artefact|already the `?url:|already held|table of contents|"
     r"contents list|landing page|cut at the fetch cap|fetch cap|re-?capture|completion|"
     r"promulgation notice|announcement of|the announcement|press release|brief page|"
-    r"news item", re.I)
+    r"news item|"
+    # A document re-issued in place at a stable URL (the AU's treaty status lists): the want
+    # is the *current edition* of a held path, and the URL alone can never show it is met (R74).
+    r"current edition|re-?issued in place|overwritten in place", re.I)
 
 
 def held_index():

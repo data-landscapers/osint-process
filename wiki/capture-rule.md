@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # capture-rule.md — the standing verbatim-capture rule
 
 *(Shared object, called by every sweep that fetches. One copy; edit it here.)*

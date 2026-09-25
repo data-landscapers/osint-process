@@ -56,7 +56,7 @@ DB_PATH = os.path.join(INDEX_DIR, "vault.db")
 
 # Bumped when a row's shape changes, so an index built by an older builder is
 # stale by definition rather than silently half-populated.
-INDEX_VERSION = 1
+INDEX_VERSION = 2   # 2: stat signature replaces the mtime mark; #15 reads the frontmatter note
 
 # Walked in full. `logs/` is deliberately absent: it is append-only prose, not
 # artefacts with frontmatter, and log.md alone would double the read.
@@ -109,6 +109,9 @@ CHROME_RE = re.compile(r"(site sponsor|signiflow|read more about cookies|accept 
 # dirty run look identical; a dated line the detector itself can read is the fix, the
 # same way #9 whitelists intentionally-dead links rather than re-flagging them forever.
 ADJUDICATED_15_RE = re.compile(r"lint note.{0,40}\(#15\).{0,400}do not re-open", re.I | re.S)
+# The same adjudication recorded in frontmatter `note:`/`body_note:` — where ingest and
+# lint now write it — e.g. "`full` inspected 2026-09-22 (lint #15) and confirmed" (R74).
+FM_ADJUDICATED_15_RE = re.compile(r"#15\b.{0,200}\bconfirmed\b", re.I | re.S)
 
 # Query parameters that identify a *reader*, not a document. Everything else is
 # kept: some publishers carry the article ID in the query string, and stripping
@@ -354,6 +357,15 @@ def _split_top(inner):
     return parts + [cur]
 
 
+# One numbered note in an exchange file (`notes-for-osint.md`, `notes-for-corpus.md`):
+# `### 141. [ACT] …` or `**141** [ACT] (date) …`. The house shape opens a note with both,
+# so a reader treats a repeat of the number just seen as the same note. Shared by
+# `status.py` and `lint-deterministic.py`, whose two copies drifted into opposite bugs (R74).
+XCHG_NOTE_RE = re.compile(r"^(?:\*\*(\d+)\*\*[ (]|#{2,3} (\d+)[.  ])")
+
+FENCE_RE = re.compile(r"\n----?[ \t]*(?:\r?\n|$)")      # `----` residue handled below
+
+
 def parse_frontmatter(text):
     """(fm, warnings, body) from a markdown file's text.
 
@@ -363,19 +375,20 @@ def parse_frontmatter(text):
     warnings = []
     if not text.startswith("---"):
         return {}, ["no-frontmatter"], text
-    # This closes on the first line *opening* `---`, not the first line that *is*
-    # one, so a body's horizontal rule can close the frontmatter for a record whose
-    # own fence is missing. Tightening it to an exact fence is not free: a record
-    # whose fence has body text glued to it (`---MESRI : une nouvelle...`) then
-    # stops parsing at all, and the loose read recovers that one losslessly. Both
-    # shapes are malformed data, both were repaired on 2026-09-08, and one night is
-    # not enough evidence to choose which the parser should favour. Left as it is,
-    # and queued.
-    end = text.find("\n---", 3)
-    if end < 0:
-        return {}, ["frontmatter-unclosed"], text
+    # Close on the first line that *is* a fence; only where there is none, fall back
+    # to the first line that *opens* `---`, which recovers a fence with body text glued
+    # to it (`---MESRI : une nouvelle...`) losslessly — and say so, so lint #1 reports
+    # the malformed fence rather than the parser hiding it (R74).
+    m = FENCE_RE.search(text, 3)
+    if m:
+        end = m.start()
+    else:
+        end = text.find("\n---", 3)
+        if end < 0:
+            return {}, ["frontmatter-unclosed"], text
+        warnings.append("frontmatter-fence-glued")
     head = text[text.find("\n") + 1:end]
-    body = text[end + 4:].lstrip("\r\n")
+    body = text[end + 4:].lstrip(" \t\r\n")
     if body.startswith("-\n") or body.startswith("-\r\n"):   # `----` fence residue
         body = body[2:]
 
@@ -570,7 +583,9 @@ def _row(rel, st, text=None):
         if is_bare_domain(d["url_norm"]):
             d["bare_domain"] = True
     tail = norm[-400:]
-    if not CHROME_RE.search(tail) and not ADJUDICATED_15_RE.search(norm):
+    fm_note = " ".join(str(fm.get(k) or "") for k in ("note", "body_note"))
+    if (not CHROME_RE.search(tail) and not ADJUDICATED_15_RE.search(norm)
+            and not FM_ADJUDICATED_15_RE.search(fm_note)):
         hits = []
         if WALL_RE.search(tail):
             hits.append("wall")
@@ -614,12 +629,14 @@ def build_index(roots=INDEX_ROOTS, db=False, quiet=True):
     os.makedirs(INDEX_DIR, exist_ok=True)
     files, links = [], []
     mtime_max, warn_files = 0, 0
+    sig = hashlib.sha1()
     for rel, ap in _walk(roots):
         try:
             st = os.stat(ap)
         except OSError:
             continue                                    # vanished mid-walk; next build gets it
         mtime_max = max(mtime_max, st.st_mtime)   # float, to match index_state()
+        sig.update(_stat_key(rel, st))
         text = ""
         if rel.lower().endswith(".md"):
             text = open(ap, "rb").read().decode("utf-8", "replace")
@@ -639,6 +656,7 @@ def build_index(roots=INDEX_ROOTS, db=False, quiet=True):
             "files": len(files),
             "links": len(links),
             "mtime_max": mtime_max,
+            "stat_sig": sig.hexdigest(),
             "fm_warning_files": warn_files,
             "build_seconds": round(time.time() - t0, 2)}
     with open(META_JSON, "w", encoding="utf-8", newline="\n") as fh:
@@ -679,11 +697,9 @@ def index_state(roots=INDEX_ROOTS):
     consumer can afford it on every call, which pays for the index not being
     committed.
 
-    It does not make a stale read impossible, and saying so here was wrong: this
-    compares a high-water mark, so a file whose new mtime lands *below* the tree's
-    newest mtime is invisible to it, and the file count catches only additions and
-    deletions. A batched pass rewriting files in place read `fresh` over 700 of its
-    own writes on 2026-09-08. Force `build_index()` after a bulk in-place rewrite.
+    It compares a signature over every file's path, size and nanosecond mtime, not a
+    high-water mark: a mark missed any rewrite whose new mtime landed below the
+    tree's newest, and read `fresh` over 700 in-place writes on 2026-09-08 (R74).
     """
     if not (os.path.exists(FILES_JSONL) and os.path.exists(META_JSON)):
         return "missing", None, "no index/"
@@ -695,19 +711,23 @@ def index_state(roots=INDEX_ROOTS):
         return "stale-version", meta, f"built by v{meta.get('version')}, now v{INDEX_VERSION}"
     if list(meta.get("roots", [])) != list(roots):
         return "stale", meta, "roots changed"
-    n, newest = 0, 0
-    for _rel, ap in _walk(roots):
+    n, sig = 0, hashlib.sha1()
+    for rel, ap in _walk(roots):
         try:
             st = os.stat(ap)
         except OSError:
             continue
         n += 1
-        newest = max(newest, st.st_mtime)   # not int(): truncation hid sub-second rewrites
+        sig.update(_stat_key(rel, st))
     if n != meta.get("files"):
         return "stale", meta, f"{n:,} files on disk, {meta.get('files'):,} in index"
-    if newest > meta.get("mtime_max", 0):
+    if sig.hexdigest() != meta.get("stat_sig"):
         return "stale", meta, "a file changed since the build"
     return "fresh", meta, ""
+
+
+def _stat_key(rel, st):
+    return f"{rel}\0{st.st_size}\0{st.st_mtime_ns}\n".encode("utf-8", "surrogateescape")
 
 
 def ensure_fresh(roots=INDEX_ROOTS, db=False, quiet=True):

@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # DEAL-VOCAB.md
 
 Trigger: **"run deal vocab"**. The controlled vocabularies for the three filterable fields of a `## Deal record` — **Instrument**, **Status**, **Beneficiary type** — the rules for writing them, and what a bulk edit of deal records must do afterwards. Held by lint #28 (`LINT.md`), which surfaces and never auto-fixes.

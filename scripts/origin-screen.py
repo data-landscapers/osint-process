@@ -202,7 +202,8 @@ def verdict(domain, listed, seen):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", default="new", help="queue folder to screen (default new/)")
-    ap.add_argument("--domain", nargs="*", default=None, help="screen bare domains instead")
+    ap.add_argument("--domain", nargs="*", default=None,
+                    help="screen domains or full URLs instead; `-` reads them from stdin")
     ap.add_argument("--held", action="store_true", help="list raw/ sources on hold")
     a = ap.parse_args()
 
@@ -218,7 +219,12 @@ def main():
     seen = track_record()
 
     if a.domain is not None:
-        items = [("(--domain)", registrable(d)) for d in a.domain]
+        # Full URLs as readily as bare domains, and `-` reads them from stdin one a line —
+        # the shape `raw-url-index.py --check -` takes, so a slice pipes one list to both (R74).
+        given = a.domain
+        if given == ["-"]:
+            given = [ln.strip() for ln in sys.stdin if ln.strip()]
+        items = [(d if "/" in d else "(--domain)", registrable(d)) for d in given]
     else:
         items = candidates(a.dir)
         if not items:

@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # intake.md — filing rules, the two run logs, sweep intake and containment, the gap probe
 
 Split out of `reference.md`; section numbers are kept so a `§N` reference resolves unchanged. `CLAUDE.md` holds the principles and wins where the two disagree.
@@ -62,8 +63,9 @@ Acquisition sweeps run *upstream* of the wiki and stage into `new/`.
   | `date-unestablished` | in scope, but no instrument settles a publication date at all, so the window cannot be applied either way |
   | `not-this-slice` | in scope and wanted, but belongs to a row, financier or place this slice was not handed — it is another slice's or another night's |
   | `fails-record-test` | polled from a structured feed and rejected on that feed's own required fields — geography, vintage or amount — rather than on scope |
+  | `no-value` | **ingest only** — in scope, not a twin, but adds nothing material to what the wiki holds (`CLAUDE.md` → *Duplicates*, "Drop"); a sweep never drops on value |
 
-  **No free-text code and no `other`.** Where none fits, use the closest, and return the gap as a recommendation — a sub-agent does not amend this table.
+  **No free-text code and no `other`.** Where none fits, use the closest, and return the gap as a recommendation — a sub-agent does not amend this table. **Ingest codes its own drops from this same table** into `sweep/ingest/drop-log-YYYY-MM-DD.csv` (`INGEST.md` step 11), keyed by the item's `sweep_batch:`, so a class ingest throws back is counted against the sweep that staged it; `scripts/url-log-append.py` holds the list as `DROP_CODES` and refuses anything off it.
 
   **`already-held` is distinct from `already-seen` and from `duplicate-in-run`, and the distinction is what the sweep knew.** `already-seen` means this URL was adjudicated before; `duplicate-in-run` means a sibling caught it tonight; `already-held` means the vault holds the story and this URL never would have matched. Coding the third as either of the first two, or as `out-of-window`, records a reason the sweep did not have.
 - **Origin screen.** Every sweep runs [`origin-screen.md`](origin-screen.md) — the shared inadmissible-origin gate (`logs/drop-list.csv`, the hostile shapes, the `watch → drop` promotion, the mining rule). It is a called object, not a pass, so a new sweep adopts it in one line and writes no origin rules of its own. Ingest runs it again at step 1, because ingest is the only door into the base.

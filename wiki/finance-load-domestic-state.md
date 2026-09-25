@@ -1,10 +1,11 @@
+<!-- reader: cc; type: spec -->
 # Driver — domestic-state finance (budgets and expenditure)
 
 Feeds `wiki/finance-record-spec.md` from **national and sub-national budget documents and from reporting and official statements about them**. **One record per budget line, per fiscal year**: a single object that accretes every stage it is observed at, the appropriation its baseline.
 
 Invocation: **"run domestic finance capture"** (one document or item at a time), **"run domestic finance load"** (a prepared CSV of lines), or **"run domestic finance back-swing"** (a pass over `raw/` items already carrying `finance.*` that report domestic state spend and have no `deal_id`). `INGEST.md` step 2a also calls it for any item tagged `finance.budget`. Run it from Claude Code.
 
-**Record-minting is retired** (strategic review R57, 2026-09-24): OSINT builds no domestic-state records, and none of the invocations above runs. The records already in `raw/` stand unedited, because CORPUS's migrated rows cite them. This file is kept as the schema of those records and as the home of the closed `doc_type` list, which `BUDGET-COLLECT.md` uses to catalogue budget documents.
+**Record-minting is retired** (strategic review R57, 2026-09-24): OSINT builds no domestic-state records, and none of the invocations above runs. The records already in `raw/` stand unedited, because CORPUS's migrated rows cite them. This file is kept as the schema of those records.
 
 ## Provenance — budget documents *and* reporting
 
@@ -178,11 +179,7 @@ Filename: **`{published}-{deal_id}.md`** in `new/` — no `-{short-title-slug}`.
 
 Every record carries **`doc_type`** and **`doc_locator`**:
 
-- `doc_type` — **the canonical list, one vocabulary for both the record and the sweep's staging frontmatter**:
-
-  `appropriation-act` | `budget-estimates` | `mtef` | `implementation-report` | `audited-accounts` | `ifmis-extract` | `treasury-release` | `board-budget` | `procurement-plan` | `executive-instrument` | `project-document` | `statement` | `reporting`
-
-  `executive-instrument` covers a decree, despacho or supplementary-credit order; `project-document` a financier's appraisal or financing document.
+- `doc_type` — one value from the closed list in `lookups/budget-doc-types.csv`, which also states what each type is and the stage it evidences.
 - `doc_locator` — page, table and line reference as printed (`p. 412, head 0522, line 23050113`).
 
 Both apply to `source_tier: budget-document`; a record built from reporting or a statement cites that source per the spec and leaves both blank.

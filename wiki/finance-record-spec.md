@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # Finance record — builder spec (source-agnostic)
 
 Given a **single finance item** — a commitment, investment, guarantee, MoU or agreement, from any source — produce **one structured markdown record in `new/`**, ready for the normal ingest pass. This spec defines the record's shape and how to derive every field. **It never reads a particular file.** A **driver** pulls the fields out of a given source and hands them here: `wiki/finance-news-driver.md` (prose; back-swing and capture modes), `wiki/finance-load-domestic-state.md` (domestic-state budgets), `wiki/finance-iati-driver.md` (IATI activities), and the finished `archived-procs/finance-load-nonstate-csv.md`.

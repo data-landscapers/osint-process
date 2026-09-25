@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # Sweep — regional (procedure)
 
 **Institution- and region-scoped deep research, in two loops.** The **first loop** walks the **regional institutions** in `lookups/sweep-regional-orgs.csv` (maintained by Bill); the **second loop** walks the **regions** — the X-region rows of `lookups/countries.csv`, **with XSS "Sub-Saharan Africa" and XAF "Africa" conflated into a single entry**.

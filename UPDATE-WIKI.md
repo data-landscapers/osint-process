@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # UPDATE-WIKI.md — the update-wiki orchestrator
 
 Trigger: **"update wiki"** / **"run update-wiki"**, and **"update wiki backfill"** for **one iteration** of it with `INGEST.md`'s backfill lane open (*Lanes* below). Callable manually, or from a sweep or batch (*Running it* below). Not called from the nightly cycle: `SWEEP-CYCLE.md` calls `INGEST.md`'s Phase A directly, and the rotation's deliberative catch-up is `WIKI-SYNC.md`. **Capped at 3 iterations and governed by the stop rule under *Termination*; `update wiki backfill` runs one.**

@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # BACKLOG.md — one housekeeping job, unattended
 
 Trigger: **`SWEEP-CYCLE.md`'s close**, at its housekeeping position — after the first mirror, before the rules pass. **It runs every night (`SWEEP-CYCLE.md`); this file decides what the night's backlog act is.** Also runnable by hand as **"run the backlog"**. A session spent on the register ("run housekeeping", "run housekeeping job N") works under the same rules below, minus the one-job limit.

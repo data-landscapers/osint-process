@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # FINANCE-PAGES.md — the per-country finance exports
 
 Trigger: **"rebuild finance pages"** (all countries) or **"rebuild finance page for <country>"** (one). Runs `scripts/build-finance-page.py`.

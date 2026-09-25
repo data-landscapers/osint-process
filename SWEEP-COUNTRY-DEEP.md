@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # Sweep — country deep (procedure)
 
 **Per-country deep research.** Four Exa Agent briefs per country — non-state finance, governance, data exchange, demand/political economy — for the *institutional and analytical* depth the news sweeps skim past. The one sweep that deliberately overlaps the others; the overlap is managed at staging, not avoided (§0, §5).

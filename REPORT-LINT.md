@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # REPORT-LINT.md — the verification pass over OSINT's own finance/hub compile
 
 Trigger: **"run report lint"**. Runs as the closing step of `FINANCE-COMPILE.md`, which itself fires from ingest whenever a run admits a finance record; not at the cycle close. Read-only.

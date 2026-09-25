@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # Origin screen — the shared inadmissible-origin gate
 
 **A shared object, not a pass. It has no trigger.** Every sweep calls it at its admissibility screen (before staging), and `INGEST.md` step 1 calls it again on whatever reaches `new/` by any other route. A new sweep adopts it in one line — *"apply the origin screen (`wiki/origin-screen.md`)"* — and needs no rules of its own.
@@ -10,7 +11,7 @@ It screens **where an item came from**, not what it says. Content screening — 
 
 ## The list
 
-`logs/drop-list.csv` — `domain,network,status,rule,added,note`.
+`logs/drop-list.csv` — `domain,network,status,rule,added,note`. **`note` is one line of at most 20 words**: the sighting (first, second), its date and sweep, and the shape in a few words. How it was handled goes in the commit body, not the row *(strategic review 5 R90)*.
 
 | `status` | Meaning | Action |
 |---|---|---|

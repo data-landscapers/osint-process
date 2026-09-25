@@ -48,7 +48,11 @@ def check(n):
     if not pages:
         print(f"trim-job: entry {n} names no `slug` (N,NNN) pages")
         sys.exit(2)
-    r = {"pages": pages, "before": re.search(r"([\d,]+) words", entry).group(1), "fail": []}
+    # the registered total is the largest word figure in the bold title: a title can name the band
+    # first ("between 2,000 and 2,500 words, 58,136 words"), which the first match would take
+    title = entry.split(".**", 1)[0]
+    before = max(re.findall(r"([\d,]+) words", title), key=lambda s: int(s.replace(",", "")))
+    r = {"pages": pages, "before": before, "fail": []}
     print(f"job {n}: {len(pages)} pages, registered {r['before']} words")
     v = run(PY, "scripts/trim-verify.py", *pages)
     if v.returncode:

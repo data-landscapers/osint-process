@@ -1,3 +1,4 @@
+<!-- reader: cc; type: doc -->
 # CLAUDE.md — Data Landscapers Intelligence Wiki
 
 *(In force from 2026-07-20. This file is principles; CC reasons from here. **Every standalone runnable process lives in the repo root as its own procedure file; `wiki/` holds the drivers and specs those processes call, and `wiki/reference.md` holds the shared schemas, thresholds and vocabularies they draw on.** `wiki/index.md` → *Processes* is the directory of them — every trigger phrase and what it does — and is **kept current** whenever a process is added, moved or retired: the same edit that creates or moves the file updates the index. This file names no process, because a second list is a list that goes stale — the one deleted here had drifted by six.)*
@@ -5,6 +6,21 @@
 ## Writing
 
 **One line per paragraph. Never wrap by hand.** A hard-wrapped paragraph is harder to read, and it diffs badly: change one word near the start and every following line reflows, so the diff shows a rewritten paragraph instead of a changed word. This holds for everything CC writes — process files, wiki pages, logs, registers, commit bodies. It does **not** apply where the break carries meaning: frontmatter, code blocks, tables, and the verbatim body of a source in `raw/`, which is someone else's text and immutable besides. `scripts/reflow-md.py` applies it; `--check` reports what still wraps.
+
+## Documentation caps
+
+**Every process and documentation file names its reader, and the cap follows the reader** *(Bill, 2026-09-25, strategic review 5 R65)*. The reader goes on the first line as `<!-- reader: cc; type: runbook -->`. That keeps it out of frontmatter, which these files do not carry and which a parser would read. A Bill file is written in lines, not paragraphs. A CC file keeps the rule and drops the incident: the record goes in the commit body, and a table that grows with every run is a CSV. `scripts/lint-docs.py` reads this table and fails on a breach and on a missing `reader:`. It runs over root `*.md`, `documentation/*.md` and `wiki/*.md`, not the wiki's page folders:
+
+| reader | class | `type:` values | cap |
+|---|---|---|---|
+| cc | runbook | runbook, procedure, task, tasks, guide | 1,500 words |
+| cc | spec | spec, doc, design-note, decision, reference, review, documentation | 3,000 words |
+| cc | brief | brief | 600 words |
+| bill | preamble | any | 100 words |
+| bill | block | any | 80 words |
+| bill | annotation | any | 25 words |
+
+A Bill file's preamble is what comes before its first `##`. A block is a paragraph or a bullet, a note or a message. An annotation is a register line's italic *Done …* closing. The same table is in CORPUS's `global-claude.md`, and the two change together.
 
 ## Purpose
 

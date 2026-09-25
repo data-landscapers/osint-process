@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # STATUS.md — read and show wiki status
 
 Trigger: **"wiki status"** / **"display status"**. **Single source of truth** for the counts, the gates, the standing tally line, the one-line `log.md` entry form, the announce banner and the close report; no pass file redefines them.

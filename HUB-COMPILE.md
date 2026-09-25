@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # HUB-COMPILE.md — compile place hubs from their sources
 
 Trigger: **"run hub compile"**. Recomputes each place hub's **Recent developments** section from the sources `raw/` already holds. **Aggregates only — ingests nothing, researches nothing.**
@@ -61,7 +62,7 @@ Hub bullets dated before the **2026-07-30** cut-over were written into the hub a
 
 - Everything dated **before the cut-over** stays where it is, below the compiled block, under `### Before <cut-over date>`, hand-authored and untouched by any pass.
 - Everything from the cut-over on is compiled, and is therefore derivable, rebuildable and linked to its evidence.
-- The block shrinks by ordinary means — page-hygiene trimming (`LINT.md` #8), and opportunistic backfill when a pass is in a hub for another reason and can see which source a bullet came from. **It is registered nowhere**: it is not a prerequisite for anything and must never block a run. The same demand-driven rule governs pre-contract sources carrying no `hub_line` (`INGEST.md` → *The `hub_line` gate*).
+- The block shrinks by ordinary means — page-hygiene trimming (`LINT.md` #8), and opportunistic backfill when a pass is in a hub for another reason and can see which source a bullet came from. **It is registered nowhere**: it is not a prerequisite for anything and must never block a run. The same demand-driven rule governs pre-contract sources carrying no `hub_line` (`wiki/ingest-judgment.md` §4).
 
 ## Scope and cadence
 

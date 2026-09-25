@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # REPO-STATUS.md — repository status report
 
 Trigger: **"repo status"**. Read-only. Counts what's in `raw/` and writes a markdown report to `reviews/repo-status.md`. Ingests nothing, touches no wiki page, changes no state — run it any time.

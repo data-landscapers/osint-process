@@ -60,6 +60,7 @@ spellings a `FLAG-SLUG` for nothing.
 import csv
 import datetime
 import os
+import re
 import sys
 import unicodedata
 import urllib.parse
@@ -107,6 +108,9 @@ def _fold(seg):
     seg = urllib.parse.unquote(seg)
     seg = unicodedata.normalize("NFKD", seg)
     return "".join(c for c in seg if not unicodedata.combining(c)).lower()
+
+
+YM_RE = re.compile(r"/(?:19|20)\d{2}/\d{1,2}/")
 
 
 def slug_key(url_norm):
@@ -269,7 +273,12 @@ def cmd_check(urls):
             continue
         k, h, hit = slug_key(n), host_of(n), None
         for r in by_slug.get(k, []) if k else []:
-            if host_of(r["url_normalized"]) == h:
+            # Blogspot-style outlets reuse a slug across `/YYYY/MM/` folders for different
+            # stories (lexpress.mg), so a differing year/month is a different item — a
+            # FLAG-SLUG for tier 3, never a mechanical drop (R74).
+            ym_a, ym_b = YM_RE.search(n), YM_RE.search(r["url_normalized"])
+            if host_of(r["url_normalized"]) == h and not (
+                    ym_a and ym_b and ym_a.group(0) != ym_b.group(0)):
                 hit = ("DUP-SLUG", r)
                 break
             hit = hit or ("FLAG-SLUG", r)

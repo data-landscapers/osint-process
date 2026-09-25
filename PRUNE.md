@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # PRUNE.md — retention and register maintenance
 
 Trigger: **"run prune"**. Also **lint #18**, which is this file's call — the numbered handle is permanent, cited by `RECONCILE.md` and both registers.

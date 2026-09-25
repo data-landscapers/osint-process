@@ -65,6 +65,9 @@ FM_LIST_RE = re.compile(r"^(?:sources|entities):[ \t]*\[(.*)\][ \t\r]*$", re.M)
 FM_ITEM_RE = re.compile(r"\[([^\[\]]+)\]")
 AGGREGATED_RE = re.compile(r"^(finance_origin|deal_id|retired_deal_id):", re.M)
 CITE_THROUGH_RE = re.compile(r"^cite_through:", re.M)
+# A budget-document companion is a catalogue record CORPUS cites; the domestic-state layer
+# that linked it from wiki/ is retired, so no wiki page owes it a citation (R74, 2026-09-25).
+BUDGET_DOC_RE = re.compile(r"^source_tier:[ \t]*[\"']?budget-document", re.M)
 # Files that *document* the link convention rather than citing — same exclusion
 # lint #4 makes. A quoted example is not a citation.
 SKIP_WIKI = {"reference.md", "facets.md", "layout.md", "schemas.md", "intake.md", "operations.md", "finance-record-spec.md", "finance-load-domestic-state.md",
@@ -80,6 +83,7 @@ def scan_raw():
     """-> {slug: meta} for prose sources, plus the excluded counts and the set of
     slugs those excluded records cite (the budget-document companions)."""
     prose, aggregated, cited_through, by_record = {}, 0, {}, set()
+    scan_raw.budget_docs = 0
     for f, path in raw_sources(RAW):
         slug = f[:-3]
         with open(path, "rb") as fh:
@@ -93,6 +97,9 @@ def scan_raw():
             by_record |= {s.strip() for s in LINK_RE.findall(text)}
             for inner in FM_LIST_RE.findall(text):
                 by_record |= {s.strip() for s in FM_ITEM_RE.findall(inner)}
+            continue
+        if BUDGET_DOC_RE.search(head):
+            scan_raw.budget_docs += 1
             continue
         meta = {"published": field(head, "published"), "ingested": field(head, "ingested"),
                 "places": field(head, "places") or field(head, "place"),
@@ -180,7 +187,8 @@ def main():
 
     total = len(prose)
     print(f"raw/ prose sources:       {total:,}   "
-          f"(excluded: {aggregated:,} finance/budget records, aggregated not cited)")
+          f"(excluded: {aggregated:,} finance/budget records, aggregated not cited; "
+          f"{scan_raw.budget_docs:,} budget-document companions, catalogued for CORPUS)")
     print(f"cited somewhere in wiki/: {total - len(prose.keys() - cited):,}")
     print(f"cited NOWHERE:            {len(uncited):,}"
           + (f"   [filtered]" if (a.year or a.place or a.recent) else ""))

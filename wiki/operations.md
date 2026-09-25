@@ -1,3 +1,4 @@
+<!-- reader: cc; type: spec -->
 # operations.md — page hygiene, dead-link triage, querying, lint, the standing whitelist
 
 Split out of `reference.md`; section numbers are kept so a `§N` reference resolves unchanged. `CLAUDE.md` holds the principles and wins where the two disagree.

@@ -323,7 +323,7 @@ def main(argv=None):
         budget = budget_declared(root)
         rows = read_index(root)
         have = {r["artefact"] for r in rows}
-        added = 0
+        added, replaced, new_rows = 0, False, []
         for p in args.append:
             p = os.path.abspath(p)
             if not os.path.isfile(p):
@@ -332,9 +332,20 @@ def main(argv=None):
             r = row_for(root, p, held, budget)
             if r["artefact"] in have:
                 rows = [x for x in rows if x["artefact"] != r["artefact"]]
+                replaced = True
             rows.append(r)
+            new_rows.append(r)
             added += 1
-        print("%s: %d row(s), %d added" % (INDEX, write_index(root, rows), added))
+        # A new row is appended, never a rewrite of the file: a rewrite re-sorts every row,
+        # so a concurrent writer's rows move and can be lost (R74, 2026-09-25). Only a row
+        # that replaces an existing one needs the whole file written.
+        if replaced or not os.path.isfile(os.path.join(root, INDEX)):
+            total = write_index(root, rows)
+        else:
+            with open(os.path.join(root, INDEX), "a", encoding="utf-8", newline="") as fh:
+                csv.DictWriter(fh, FIELDS, lineterminator="\n").writerows(new_rows)
+            total = len(rows)
+        print("%s: %d row(s), %d added" % (INDEX, total, added))
         args.check = True
 
     if args.lint:

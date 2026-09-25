@@ -1,3 +1,4 @@
+<!-- reader: cc; type: reference -->
 # Budget extraction — strategy library
 
 **How to get figures out of a shape of document.** One entry per *structural

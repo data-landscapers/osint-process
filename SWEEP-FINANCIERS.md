@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # Sweep — financiers (procedure)
 
 **Financier-scoped deep research, one loop.** It walks `lookups/sweep-financiers.csv` (maintained by Bill) and runs one Exa Agent brief per financier, hunting what the money is doing — commitments, plans, reviews and the critique of them — from the *financier's* side rather than the recipient's.

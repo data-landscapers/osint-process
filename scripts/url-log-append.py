@@ -15,6 +15,14 @@ Phase A slices write this file at once and every loss here has been silent.
 
 `acquisition` is refused for a URL whose disposition is already `admitted` — see
 `already_admitted()` — and the call exits 3 having written its other URLs.
+
+Ingest's drops also carry a code (INGEST.md step 11):
+        python scripts/url-log-append.py dropped --code off-topic --batch deep-3-2026-09-24 URL
+`--code` writes one row per URL to `sweep/ingest/drop-log-YYYY-MM-DD.csv`
+(`sweep_batch,url,reason`, the sweeps' own drop-log columns) under the same lock, so the
+manifest can join what ingest threw back to the sweep that staged it. The code is refused
+unless it is in DROP_CODES. A sweep calling `dropped` passes no `--code`: its drop-log is
+its own.
 """
 import csv, re, sys, os, time, datetime
 
@@ -28,6 +36,15 @@ LOCK_STALE_SECS = 30
 LOCK_TIMEOUT_SECS = 10
 # TRACK and FRAGMENT_IS_IDENTITY now live in vault_lib, with normalise_url() itself.
 VALID = ("admitted", "dropped", "contradiction", "acquisition")
+# intake.md §7's closed vocabulary, plus `no-value` — the one reason only ingest can give
+# (CLAUDE.md -> *Duplicates*, "Drop"). Change it there first, then here.
+DROP_CODES = (
+    "out-of-window", "already-seen", "duplicate-in-run", "inadmissible-origin", "off-topic",
+    "off-place", "no-development", "headline-only-stub", "url-dead", "fetch-blocked",
+    "already-held", "syndicated-copy", "date-unestablished", "not-this-slice",
+    "fails-record-test", "no-value",
+)
+INGEST_DROP_LOG = "sweep/ingest/drop-log-{}.csv"
 
 
 def norm(u):
@@ -106,10 +123,39 @@ def already_admitted(normed, text):
     return None
 
 
+def pop_flag(args, name):
+    if name not in args:
+        return None
+    i = args.index(name)
+    if i + 1 >= len(args):
+        sys.exit("url-log-append.py: %s needs a value" % name)
+    value = args[i + 1]
+    del args[i:i + 2]
+    return value
+
+
+def append_drop_codes(today, code, batch, normed):
+    """One `sweep_batch,url,reason` row per URL; called under the log's lock."""
+    path = INGEST_DROP_LOG.format(today)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    new = not os.path.exists(path)
+    with open(path, "a", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh, lineterminator="\n")
+        if new:
+            w.writerow(["sweep_batch", "url", "reason"])
+        for n in normed:
+            w.writerow([batch, n, code])
+
+
 def main():
-    if len(sys.argv) < 3 or sys.argv[1] not in VALID:
-        sys.exit("usage: url-log-append.py {%s} URL [URL ...]" % "|".join(VALID))
-    disp, urls = sys.argv[1], sys.argv[2:]
+    args = sys.argv[1:]
+    code, batch = pop_flag(args, "--code"), pop_flag(args, "--batch") or ""
+    if len(args) < 2 or args[0] not in VALID:
+        sys.exit("usage: url-log-append.py {%s} [--code CODE --batch SWEEP_BATCH] URL [URL ...]"
+                 % "|".join(VALID))
+    disp, urls = args[0], args[1:]
+    if code is not None and (disp != "dropped" or code not in DROP_CODES):
+        sys.exit("url-log-append.py: --code goes with `dropped` and one of: %s" % ", ".join(DROP_CODES))
     today = datetime.date.today().isoformat()
 
     refused = []
@@ -186,6 +232,8 @@ def main():
                     if attempt == 49:
                         raise
                     time.sleep(0.1)
+        if code is not None and normed:
+            append_drop_codes(today, code, batch, normed)
     finally:
         release_lock()
 

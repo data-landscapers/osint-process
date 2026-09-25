@@ -141,15 +141,22 @@ def main():
     if not pages:
         sys.exit("no pages selected")
 
-    sample = pages[:: max(1, len(pages) // 10)][:10]
+    # Per page, not a document mean: a hybrid PDF (native cover, scanned body — Galaxy
+    # Backbone's 2024 statements) averaged above the threshold and was refused, so its body
+    # was never captured. Refuse only when no selected page is image-only (R74).
+    sample = pages
     chars = text_layer_chars(doc, sample)
-    if chars >= NATIVE_THRESHOLD and not args.force:
+    scanned = [i + 1 for i in pages if text_layer_chars(doc, [i]) < NATIVE_THRESHOLD]
+    if not scanned and not args.force:
         sys.exit(
-            f"{args.pdf} already has a text layer ({chars:.0f} chars/page over "
-            f"{len(sample)} sampled pages). Use pdftotext -enc UTF-8 -layout, "
-            f"not OCR. "
+            f"{args.pdf} already has a text layer on every selected page ({chars:.0f} "
+            f"chars/page). Use pdftotext -enc UTF-8 -layout, not OCR. "
             f"Pass --force to override."
         )
+    if scanned and len(scanned) < len(pages):
+        print(f"hybrid PDF: {len(scanned)} of {len(pages)} pages have no text layer "
+              f"(first {scanned[0]}, last {scanned[-1]}); OCR runs over the selection",
+              file=sys.stderr)
 
     print(f"OCR {os.path.basename(args.pdf)}: {len(pages)}/{n} pages, "
           f"lang={args.lang}, {args.dpi}dpi, psm={args.psm}, {args.jobs} jobs "

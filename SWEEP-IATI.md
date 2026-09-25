@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # SWEEP-IATI.md — the donor-finance sweep
 
 Trigger: **"run the IATI poll"**, or its day of the rotation (`logs/sweep-cycle_log.md`).

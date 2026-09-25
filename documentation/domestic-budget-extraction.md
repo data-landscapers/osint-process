@@ -1,3 +1,4 @@
+<!-- reader: cc; type: reference -->
 # Domestic budget extraction — accumulated method notes
 
 Working notes on **how to find the digital lines** in state budget documents, by

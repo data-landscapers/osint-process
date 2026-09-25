@@ -9,7 +9,7 @@ progress-filler or dataset batch is staged by CORPUS against this vault's own or
 news price on it buys nothing, so the backfill lane skips those three steps.
 
 The lane is read off `sweep_batch:` and is a **whitelist**: a batch prefixed
-`status-acquire-`, `progress-filler-` or `dataset-` is backfill, and everything else — including an item
+`status-acquire-`, `progress-filler-`, `dataset-` or `budget-poll-` is backfill, and everything else — including an item
 carrying no `sweep_batch:` at all — is news. A new producer therefore costs a full-price run
 rather than a silent skip.
 
@@ -35,7 +35,9 @@ import json
 import pathlib
 import sys
 
-BACKFILL_PREFIXES = ("status-acquire-", "progress-filler-", "dataset-")
+# `budget-poll-`: CORPUS's `budget-watch.py poll` stages budget documents already screened
+# against the held URL and md5 indexes (strategic review 5 R103, R105).
+BACKFILL_PREFIXES = ("status-acquire-", "progress-filler-", "dataset-", "budget-poll-")
 
 
 def sweep_batch(path):

@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # Budget collect batch — procedure
 
 **Collects one country's budget documents for FY2024, FY2025 and FY2026 and catalogues them as sources.** It does not read them for figures. **Trigger: "run the budget collect batch for `<country>`"** runs one country by name. **"run the budget collect sweep"** runs the next three blank rows of `lookups/budget-init-backlog.csv`, one at a time.
@@ -21,7 +22,7 @@ Reordering the queue is a file edit. The sweep takes the first three blank rows 
 1. **Domestic finance sweep, FY2024, FY2025, FY2026** (`DOMESTIC-FINANCE-SWEEP.md`), in its collect scope: **priority tiers 0–3, plus the own-source funds and the data-protection authority's budget (Blocks 4c and 6)**. The prose blocks (4, 4b, 5, 7) run only where they are cheap, meaning the document library already fetched names the item. Budget documents stage to `new-budget/{ISO3}/{FY}/`, artefact and companion together. Manifest rows go to `new-budget/{ISO3}/manifest-rows.csv`, never straight to the shared `new-budget/manifest.csv`.
 2. **Catalogue.** Each staged companion page becomes a source record in `new/`, on the shape `new/2026-07-16-mdg-lfr-2026-tome-2-livre-1-companion.md` shows:
    - **filename:** the companion's own filename;
-   - **frontmatter keeps:** the publisher URL, `source_tier: budget-document`, `doc_type` from the closed list in `wiki/finance-load-domestic-state.md`, `fiscal_years_covered`, `catalogue_hero`, and `hub_line_none:` with its reason;
+   - **frontmatter keeps:** the publisher URL, `source_tier: budget-document`, `doc_type` from the closed list in `lookups/budget-doc-types.csv` (its `stages` column names the ladder stage the type evidences: where two are named the document's own cover decides, `none` evidences no stage, `as-stated` is the stage the source states), `fiscal_years_covered`, `catalogue_hero`, and `hub_line_none:` with its reason;
    - **frontmatter drops:** any `artefact:` key, because the manifest row is the declaration (`wiki/schemas.md` §4);
    - **body:** `## Document` (instrument, scope, currency and printed scale, extent), `## Source` and `## Notes`, with `body_completeness: excerpt`.
 3. **Archive.** Each artefact and its companion move to `budget-archive/{ISO3}/{FY}/`. Its manifest row gets the new paths and `archive_path`, leaving `extracted` blank. `new-budget/{ISO3}/` is then deleted.

@@ -77,7 +77,9 @@ def check(hero, title):
         return "carries markdown"
     if title:
         a, b = hero.lower(), title.lower()
-        if a == b or a in b or b in a:
+        # A hero *containing* a one- or two-word title (`IFMIS`, `Lusaka IX`) is naming what
+        # it is about, not restating it; containment counts from three words (R74).
+        if a == b or a in b or (b in a and len(b.split()) >= 3):
             return "repeats the title"
     return None
 

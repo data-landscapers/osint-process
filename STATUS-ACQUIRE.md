@@ -1,3 +1,4 @@
+<!-- reader: cc; type: runbook -->
 # STATUS-ACQUIRE.md — absorbing CORPUS's status-report batches
 
 Trigger: **"run status acquire"**. The close runs it unattended every night (`SWEEP-CYCLE.md`), so the trigger is the repair path, not the normal one.
