@@ -11,7 +11,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 ## Cadence
 
-**nightly** — quick lint runs the check's script and applies only fixes needing no reading of page content. **nightly (new records)** — **#6, #4, #5, #34, #14, #20, #7**: quick lint also reads and judges, over the `raw/` files this run admitted (`git diff --name-only --diff-filter=A <ingest-commit>^ <ingest-commit> -- raw/`); **#6 runs whole-corpus every time**. **batched** — **#8, #9, #23, #13, #17 and #3's fix half**: full lint only; a whole-vault check moves to nightly once it carries a looked-and-left stamp. A check finding nothing reports a zero.
+**nightly** — quick lint runs the check's script and applies only fixes needing no reading of page content. **nightly (new records)** — **#6, #4, #5, #34, #14, #20, #7**: quick lint also reads and judges, over the `raw/` files this run admitted (`git diff --name-only --diff-filter=A <ingest-commit>^ <ingest-commit> -- raw/`); **#6 runs whole-corpus every time**. **batched** — **#8, #9, #23, #13, #17 and #3's fix half**: full lint only; a whole-vault check moves to nightly once it carries a looked-and-left stamp. Nothing found reports a zero.
 
 ## Running it
 
@@ -47,7 +47,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 **15. `body_completeness` backfill** — auto-resolve, scripted, nightly. Set from the stored body by markers; ambiguous → inspect or leave blank. Never set `full` on a body no check has passed over.
 
-**7. Duplicates** — auto-fix, nightly (new records). `scripts/lint-duplicate-deals.py` and `scripts/lint-duplicate-sources.py` cluster on **event + entities + date** — candidates, never verdicts; adjudications to `reviews/source-duplicate-decisions.csv`. Resolve per `CLAUDE.md` → *Duplicates*; a retirement rewires `sources:` in `wiki/` **and `raw/`**, removes the URL-index row, appends a `dropped` URL-log line and names the `survivor`. Differing payloads → keep both, or #9.
+**7. Duplicates** — auto-fix, nightly (new records). `scripts/lint-duplicate-deals.py` and `scripts/lint-duplicate-sources.py` cluster on **event + entities + date**, candidates not verdicts; adjudications to `reviews/source-duplicate-decisions.csv`. Resolve per `CLAUDE.md` → *Duplicates*; a retirement rewires `sources:` in `wiki/` **and `raw/`**, removes the URL-index row, appends a `dropped` URL-log line and names the `survivor`. Differing payloads → keep both, or #9.
 
 **14. `url:` quality** — auto-fix, nightly (new records). A bare-domain, blank or missing `url:` needs the document URL, found and verified by title and date, never constructed from a pattern; exhausted → `url unrecovered as of YYYY-MM-DD`. Never edit `published`.
 
@@ -59,7 +59,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 **20. Unsourced lede figures** — auto-resolve, nightly (new records). `python scripts/lint-unsourced-figures.py`. A `[[link]]` is not provenance: cite what `raw/` holds, else write the dated absence and drop the figure.
 
-**8. Page bloat** — **count only, scripted, batched; it trims nothing and registers no job.** `--check 8 --all` prints `pages_over_line` for the manifest; the gate is at the writer (`WIKI-SYNC.md` → *A landing page over its line*), so a climbing count is a writer missing it. Shard an oversized index.
+**8. Page bloat** — **count only, scripted, batched; trims nothing, registers no job.** `--check 8 --all` prints `pages_over_line`; the gate is the writer (`WIKI-SYNC.md` → *A landing page over its line*). Shard an oversized index. A ruling `## Length — reviewed <date> (at N words)` holds until the page outgrows N by 10%; one without its size goes stale at the next `last_reviewed`.
 
 **13. Quarantine leaks** — auto-fix, batched. A `wiki/` citation of `reviews/contradictions/research/` or a `DO-NOT-INGEST` file: rewire to the primary or remove.
 
@@ -71,7 +71,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 **22. Acquisition names a held document** — auto-fix, nightly. `python scripts/lint-acquisition-held.py`: apply **STRIKE**, read and rule on **CANDIDATE**, never the other way round. `--fix-markers` repairs a line hidden from the count.
 
-**27. `raw/` URL index matches `raw/`** — rebuild on mismatch, scripted, nightly. `python scripts/raw-url-index.py --lint`; mismatch → `--rebuild`, never an investigation.
+**27. `raw/` URL index matches `raw/`** — rebuild on mismatch, scripted, nightly. `python scripts/raw-url-index.py --lint`; mismatch → `--rebuild`.
 
 **30. Every adjudication in `sweep-url_log.md` has a record** — surface, scripted, nightly. `python scripts/lint-url-log.py`. Never auto-fix.
 
@@ -79,9 +79,9 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 **29. The hand-stamped log** — surface, scripted, nightly. `python scripts/log-append.py --check`. Never auto-fix; `log-append.py` is the writer.
 
-**19. Mirror HEAD matches local HEAD** — surface, scripted, nightly. `python scripts/lint-mirror-head.py`; the mirror's `cycle-manifest.json` must name the same commit. Never gating; `--gate` exits 1 for a close step that wants it.
+**19. Mirror HEAD matches local HEAD** — surface, scripted, nightly. `python scripts/lint-mirror-head.py`; the mirror's `cycle-manifest.json` must name the same commit. `--gate` exits 1 for a close step that wants it.
 
-**33. Per-item effort cap** — surface, scripted, nightly. `python scripts/effort-cap.py`. An item named in three of the run's `log.md` entries: drop it, or write the dated absence — never a fourth pass.
+**33. Per-item effort cap** — surface, scripted, nightly. `python scripts/effort-cap.py`. An item named in three of the run's `log.md` entries: drop it, or write the dated absence.
 
 **24. Register caps** — auto-fix, scripted, nightly. `post-run-notes.md` against `CLAUDE.md` → *Reporting*; over the open cap, take the conservative option and say so. On the share, an over-cap preamble or a convention restated outside `X:\README.md` → *Conventions* fails, and every open note needs a reachable `Affects:` line — hard on OSINT's files, soft on CORPUS's.
 

@@ -17,7 +17,7 @@ Every in-window item you put aside — already held, already seen, a sibling's c
 
 ## Before you fetch, before you write
 
-- Grep `logs/sweep-url_log.md` for the normalised URL before fetching; a hit is already ruled on.
+- Check `logs/sweep-url_log.md` for each URL on its own before fetching, normalised by `vault_lib.normalise_url()` — never one combined pattern file. Any hit is already ruled on: do not stage it; log it `already-seen`.
 - Re-check `new/` for the same URL **immediately before writing** a staged file. On a collision the later writer withdraws its own copy and logs `already-seen`.
 - Delete only an exact path you wrote, one file at a time — never a glob, a `find`, or a match on frontmatter. `sweep_batch:` is the run's label, not yours.
 

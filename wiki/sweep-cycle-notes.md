@@ -11,10 +11,6 @@ Only the parent can see every spawn, so only the parent can count them. A slice 
 
 The 2026-09-18 trial screened 480 candidates on Sonnet and re-screened all 312 drops on Opus: no false drops. So screening moved to Sonnet, and nothing downstream of `new/` changed model: ingest is where value is judged, and it is the expensive stage. The model attaches to the night, not the lane, so the night's `usage` block measures one thing and a stage-cost table can read it. Day 2 ran one more night on Opus, while its `Start` was before 2026-09-19, to give a sweep-stage figure to compare against; that clause is spent and was removed on 2026-09-25.
 
-## The screening monitor
-
-A standing check, not a second trial, hence the 30-row cap. It re-screens in the batch's own window: the daily and off-list lanes run on their own high-water mark, and the wrong window makes a re-screen more permissive than the screen, so it measures nothing. The retirement count lives in the sweep commits' bodies, so it needs no register or state file.
-
 ## Budget and usage
 
 The 90-sub-agent brake, its override and the run-cost line were removed on 2026-09-08; `budget-check.py` and `run-cost.py` are deleted. `usage-log.py` inserts `Date`, `Time (UTC)`, `7d usage` and `Session usage` (the weekly plan limit used and its rise since the row below) at the top of `logs/usage-log.csv`. It is a record, not a budget: nothing reads the CSV back and nothing is stopped by it. The per-stage buffer, `logs/usage-stages.jsonl`, is what the manifest's `usage` block reads; a stage's cost is its reading less the one before. An unreadable figure is written `n/a`. The closing row lands after the last commit and rides the next night's first commit.

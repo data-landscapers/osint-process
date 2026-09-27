@@ -17,7 +17,7 @@ instrument,15,Unknown,The source does not state the instrument.
 status,1,Pipeline,"Proposed, identified or under negotiation. Nothing is committed."
 status,2,Approved,"Committed, approved or signed, but not yet operating."
 status,3,Active,"Operating: implementation under way, facility inaugurated, activities launched, funds disbursing."
-status,4,Closed,"Finished or fully disbursed, and IATI's finalisation stage where financial closure is outstanding."
+status,4,Completed,"Finished or fully disbursed, and IATI's finalisation stage where financial closure is outstanding."
 status,5,Cancelled,Abandoned before completion. IATI activity-status 5.
 status,6,Suspended,"Halted, to resume or be decided. IATI activity-status 6."
 status,7,Unknown,The source does not state the status.

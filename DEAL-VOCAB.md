@@ -12,7 +12,7 @@ Trigger: **"run deal vocab"**. The controlled vocabularies for the four controll
 **Every `value` a map produces must exist in `deal-vocabs.csv` for that field.**
 
 - **Instrument** — Bond, Buyer's Credit, Commercial Loan, Concessional Loan, Equity, Grant, Guarantee, Joint Venture, Line of Credit, Mezzanine, MoU, PPP, Self Funded, Technical Assistance, Unknown.
-- **Status** — Pipeline, Approved, Active, Closed, Cancelled, Suspended, Unknown.
+- **Status** — Pipeline, Approved, Active, Completed, Cancelled, Suspended, Unknown.
 - **Beneficiary type** — Public Sector, Private Sector, NGO, Multilateral, Research, Fund, Multi-stakeholder, Individuals, PPP, Unknown.
 - **Amount quality** — Exact, Rounded, Stated, Reported, Verified, Estimated, Imputed, Interpolated, Unknown *(added 2026-09-26, notes-for-osint 176: a published column needs a closed list)*. No map file: its legacy wordings were sentences, each ruled once and moved to the record's Notes.
 

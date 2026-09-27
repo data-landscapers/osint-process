@@ -17,10 +17,6 @@ One CC run; the parent is a **thin loop** — it selects the day, runs its proce
 
 **Screening runs on Sonnet; everything else on Opus** *(Bill, 2026-09-18)*. Start the session on `--model opus`; **the sweep-stage batches name `sonnet` on the spawn and are the only spawns that name a model.** Every screening batch a night runs takes the same model.
 
-### The screening monitor — until it retires
-
-**On every Sonnet-screened night, one Opus sub-agent re-screens the largest drop log the night's batches wrote**, capped at **30 rows**, in that batch's own window, after the sweeps return and before the sweep commit. It returns `false_drops=N`: a false drop is staged, and the count, zero included, goes in the sweep commit's body. **It retires after three consecutive Sonnet nights with `false_drops=0`** — the rules pass deletes this subsection on the third night; a finding restarts the count, read from the sweep commits' bodies.
-
 ### Budget and usage
 
 **No step checks a budget and the night's cost is neither measured nor reported** *(Bill, 2026-09-08)*. `python scripts/usage-log.py` writes the plan's usage percentages: `--reset --stage start --csv` first, `--stage <name>` after each stage boundary into a git-ignored buffer the manifest reads, `--stage end --csv` after the last commit. It never fails the night.
@@ -50,7 +46,6 @@ window from D's (old) Start                                                     
 
 SWEEP-DAILY-LIST, SWEEP-DAILY-OFFLIST              stage-only, batched, sonnet     [exa]
 D's unprefixed Jobs, in order                      stage-only, batched, sonnet; unbuilt -> "Day D: <NAME> not built" in logs/log.md   [exa]
-screening monitor                                   # Opus, <=30 rows, until retired
 stage-check.py --apply
 assert-containment.py --stage sweep ; git commit ; usage-log.py --stage sweep
 

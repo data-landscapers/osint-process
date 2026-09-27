@@ -1272,7 +1272,8 @@ def check_stranded(d):
 CLASSIFY_LINE = 2500          # operations.md §8: "stop and classify"
 SMALL_SECTION = 400           # a section too short to be a theme
 HUB_CHRONOLOGY = "Recent developments"   # compiled, not written — LINT.md #8 exempts it
-RULED_HEADING = re.compile(r"^Length\s*[-\u2013\u2014]\s*reviewed\s*(\d{4}-\d{2}-\d{2})?")
+RULED_HEADING = re.compile(r"^Length\s*[-\u2013\u2014]\s*reviewed\s*(\d{4}-\d{2}-\d{2})?(?:\s*\(at\s*([\d,]+)\s*words\))?")
+RULED_GROWTH = 0.10           # a ruling that records its size holds until the page outgrows it by this share
 SECTION_DATE = re.compile(r"(?:19|20)\d\d")
 BLOAT_KINDS = ("concept", "place", "intersection")
 # Page furniture: out of the word count and out of the shape test both, because
@@ -1327,18 +1328,24 @@ def measure_page(r):
     skip = FURNITURE + ((HUB_CHRONOLOGY,) if exempt else ())
     real = [(h, n) for h, n in secs if not any(h.startswith(s) for s in skip)]
     shape = _shape(real, effective) if real else "unsectioned"
-    ruled = None
+    ruled, ruled_words = None, None
     for h, _ in secs:
         m = RULED_HEADING.match(h)
         if m:
             ruled = m.group(1) or "undated"
+            ruled_words = int(m.group(2).replace(",", "")) if m.group(2) else None
             break
-    stale = bool(ruled and ruled != "undated"
-                 and (r["fm"].get("last_reviewed") or "") > ruled)
+    # A ruling that records its size goes stale on growth, not on the next edit; one
+    # without a size keeps the date test (LINT.md #8).
+    if ruled_words:
+        stale = effective > ruled_words * (1 + RULED_GROWTH)
+    else:
+        stale = bool(ruled and ruled != "undated"
+                     and (r["fm"].get("last_reviewed") or "") > ruled)
     over_line = effective > CLASSIFY_LINE
     return {"words": words, "exempt": exempt, "furniture": furniture,
             "effective": effective, "real": real, "shape": shape, "ruled": ruled,
-            "stale": stale, "over_line": over_line,
+            "ruled_words": ruled_words, "stale": stale, "over_line": over_line,
             "over": over_line and (not ruled or stale)}
 
 
@@ -1391,9 +1398,13 @@ def check_page_bloat(rows, d):
             note += " · a hub is a derived view; only its hand-written sections are in scope"
 
         if ruled:
-            stale = (ruled != "undated"
-                     and (r["fm"].get("last_reviewed") or "") > ruled)
-            if stale:
+            stale = m8["stale"]
+            if stale and m8["ruled_words"]:
+                d.add("8", r["path"],
+                      "over §8's classify line; the `Length` ruling of %s predates the page's growth past the %s words it was taken at"
+                      % (ruled, format(m8["ruled_words"], ",")),
+                      note + " · %s — re-rule it" % shape, soft=True)
+            elif stale:
                 d.add("8", r["path"],
                       "over §8's classify line; the `Length` ruling of %s predates the page's last substantive edit (%s)"
                       % (ruled, r["fm"].get("last_reviewed")),

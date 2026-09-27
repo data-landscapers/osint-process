@@ -42,7 +42,7 @@ Everything is read from the source's own words; nothing is normalised — **exce
 | title | a plain descriptive title CC writes: `<financier> — <recipient or purpose>, <year>`. The article's headline is usually editorialised; don't reuse it |
 | description | **the source's own sentences describing the deal**, quoted, not paraphrased |
 | instrument | only if stated (loan, grant, equity, guarantee, concessional facility). **Blank is normal and is not a failure** |
-| status | only if stated; map to the enum (`Approved` / `Active` / `Closed` / `Pipeline`) |
+| status | only if stated; map to the enum (`Approved` / `Active` / `Completed` / `Pipeline`) |
 | commitment / original amount + currency | the announcing party's own currency; a USD figure written as a dated conversion per `CLAUDE.md` → *Currency* |
 | co-financing | named co-funders and sums if given; they stay in the body, not as entity tags |
 | commitment / start / end year | the event year per fact 4 |

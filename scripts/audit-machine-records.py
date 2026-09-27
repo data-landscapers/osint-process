@@ -144,6 +144,8 @@ def truncated(body, fam):
     tail = re.sub(r"[%s\s\]\)\}]+$" % re.escape(QW), "", tail)
     if not tail:
         return None
+    if re.search(r"(?:^|\s)(?:[A-Z]\.){1,3}[A-Z]?$", tail):
+        return None          # a byline's initials ("S.A", "J.K.") close a complete body
     if tail.endswith((",", ";")):
         return "3a ends on comma/semicolon"
     if DANGLING.search(tail):
