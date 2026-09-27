@@ -44,6 +44,8 @@ A **paywall that still serves a free lede** (HTTP 200, first 1–3 paragraphs) i
 - **`entities:` takes slugs the wiki already uses.** Grep `raw/` (`grep -rl "entities:.*\[slug\]"`) before writing one. Where the slug is not obvious, **tag fewer**: `CLAUDE.md` → *Entities* wants three to six actors, not every name in the piece, and an untagged name is still in the verbatim body and still greppable.
 - **Never write `origin_status:`.** The key is retired (`wiki/origin-screen.md` → *Hold — retired*); it was the origin screen's output, never an input.
 - **`places:` and `topics:` likewise** — codes from `countries.csv`, slugs from `taxonomy.md`. A value outside the vocabulary is rejected, so inventing one only moves work to ingest.
+- **`finance.*` only where the item reports money**: a sum committed, disbursed, budgeted or raised. An authorisation, a partnership or an MoU with no sum is not finance; where in doubt, leave the facet for ingest.
+- **`published:` is the item's own date, never the page's served date.** A listing stamped with the day it renders, a crawl date, or an old article republished under today's timestamp all look like a publication date. Date from the item's own byline, imprint or metadata; where they disagree, the item-level date wins, and where none is found the date is unestablished.
 - **Never write `lens:`.** The facet is retired (`schemas.md` §4) and is not in the schema; a staging writer that emits it is writing a key nothing reads.
 
 **The general rule: if a field has an authority, the authority is consulted, not guessed.** Where consulting it is not possible in the staging context, leave the field blank — a blank is a fact about what the sweep knew, and ingest fills it.

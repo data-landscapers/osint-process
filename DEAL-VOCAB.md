@@ -1,11 +1,11 @@
 <!-- reader: cc; type: spec -->
 # DEAL-VOCAB.md
 
-Trigger: **"run deal vocab"**. The controlled vocabularies for the three filterable fields of a `## Deal record` — **Instrument**, **Status**, **Beneficiary type** — the rules for writing them, and what a bulk edit of deal records must do afterwards. Held by lint #28 (`LINT.md`), which surfaces and never auto-fixes.
+Trigger: **"run deal vocab"**. The controlled vocabularies for the four controlled fields of a `## Deal record` — **Instrument**, **Status**, **Beneficiary type**, **Amount quality** — the rules for writing them, and what a bulk edit of deal records must do afterwards. Held by lint #28 (`LINT.md`), which surfaces and never auto-fixes.
 
 ## 1. The vocabularies
 
-**`lookups/deal-vocabs.csv` is the authority on what may be written.** One file for all three fields — `field, sort order, value, definition` — so a value is added or reworded in one place. `sort order` is the order values appear in on a page or in a filter: the lifecycle for status, rough likelihood elsewhere, never the alphabet. **The definitions live there, one line each, and are not repeated here.**
+**`lookups/deal-vocabs.csv` is the authority on what may be written.** One file for all four fields — `field, sort order, value, definition` — so a value is added or reworded in one place. `sort order` is the order values appear in on a page or in a filter: the lifecycle for status, rough likelihood elsewhere, never the alphabet. **The definitions live there, one line each, and are not repeated here.**
 
 **Three map files say what a legacy wording becomes**: `lookups/deal-instrument-map.csv`, `lookups/deal-status-map.csv`, `lookups/deal-beneficiary-type-map.csv`, each `value, source_value, review, note`. They are remediation, not vocabulary — their job is to catch a legacy wording arriving late from IATI or a re-ingest. A row is a **mapping**: that wording, wherever it appears, becomes that value. A row whose value is blank and whose `review` reads `REVIEW` is a wording nobody has ruled on.
 
@@ -14,6 +14,7 @@ Trigger: **"run deal vocab"**. The controlled vocabularies for the three filtera
 - **Instrument** — Bond, Buyer's Credit, Commercial Loan, Concessional Loan, Equity, Grant, Guarantee, Joint Venture, Line of Credit, Mezzanine, MoU, PPP, Self Funded, Technical Assistance, Unknown.
 - **Status** — Pipeline, Approved, Active, Closed, Cancelled, Suspended, Unknown.
 - **Beneficiary type** — Public Sector, Private Sector, NGO, Multilateral, Research, Fund, Multi-stakeholder, Individuals, PPP, Unknown.
+- **Amount quality** — Exact, Rounded, Stated, Reported, Verified, Estimated, Imputed, Interpolated, Unknown *(added 2026-09-26, notes-for-osint 176: a published column needs a closed list)*. No map file: its legacy wordings were sentences, each ruled once and moved to the record's Notes.
 
 **Five values carry a rule rather than a description.** `Concessional Loan` takes IDA credits. `MoU` is only for an agreement whose instrument is genuinely unstated — never shorthand for unclear. `Unknown` is not the same as blank. `Fund` is deliberately not `Private Sector`: it is one step removed from the ultimate recipient. `NGO` takes not-for-profit membership bodies and industry associations.
 
@@ -21,7 +22,7 @@ Trigger: **"run deal vocab"**. The controlled vocabularies for the three filtera
 
 ## 2. Rules for writing a deal record
 
-**The three fields take a value from the vocabulary, spelled exactly as the vocabulary spells it.** Nothing else is admissible. This overrides `wiki/finance-news-driver.md` ("nothing is normalised") *for these three fields only* — the rest of the record keeps the source's own words (`wiki/finance-record-spec.md`).
+**The four fields take a value from the vocabulary, spelled exactly as the vocabulary spells it.** Nothing else is admissible. This overrides `wiki/finance-news-driver.md` ("nothing is normalised") *for these four fields only* — the rest of the record keeps the source's own words (`wiki/finance-record-spec.md`).
 
 **Where the source says more than the value carries, the extra goes in `## Notes`, never in the cell.** A table cell holds a value. A source label, an "unverified" flag or a correction written beside the value — `Concessional loan *(source label, unverified — see Notes)*`, `IDA grant *(corrected from the source's "Concessional loan"; PAD00070 records an SDR 69.5m IDA grant)*` — belongs in Notes, where it can be read, not in a column where it splits the count.
 
@@ -39,6 +40,16 @@ Trigger: **"run deal vocab"**. The controlled vocabularies for the three filtera
 
 **A wording that maps to nothing takes a ruling, recorded as a map row**: a value from the vocabulary, a new vocabulary value — added to `deal-vocabs.csv` and the map in the same edit — or a decision that the record is not a deal at all (money flowing *to* the state for a spectrum or licence award runs the opposite direction from everything else in the register). A value outside the vocabulary after a pass is a bug in the pass, not a new vocabulary member.
 
+**The misreadings the 2026-09-26 audit found most** *(407 of 1,493 records corrected; notes-for-osint 176)*. Classify the recipient named, not the programme around it, and never read a value off the source's own label:
+
+- **A named recipient is never `Unknown`.** A ministry, a state-owned operator or a named company has a type; `Unknown` is only for a recipient no source names.
+- **An LP commitment into a VC, PE, debt or infrastructure fund is `Fund`**, never `Private Sector`, whoever manages it.
+- **UN agencies, their regional offices, the World Bank's own programmes, central banks of a currency union and REC institutions are `Multilateral`**; a national central bank is `Public Sector`.
+- **Universities, research institutes and think tanks are `Research`**; companies inside a foundation's grant list stay `Private Sector`, and core grants to a named NGO are `NGO` even when a government donor makes them.
+- **An operator's or hyperscaler's spend on its own network, data centre or licence is `Self Funded`**, not `Equity`: no stake changes hands.
+- **A subscription to a bond issue is `Bond`**; a convertible note or Tier 2 capital is `Mezzanine`; a loan whose text says buyer's credit is `Buyer's Credit`.
+- **Keep two instruments apart when one source carries both**: a grant and the concessional loan signed beside it are two records, each with its own instrument.
+
 ## 3. After a bulk edit of deal records
 
 **Scope.** Every file under `raw/*/` carrying a `## Deal record` section. Records retired by merge — no `finance_origin:`, a `retired_deal_id:` and a `cite_through:` instead — are out of scope: their stale deal tables may be left or stripped and reach no output either way.
@@ -51,4 +62,6 @@ Trigger: **"run deal vocab"**. The controlled vocabularies for the three filtera
 
 **CORPUS: both stages must run — the compile, then the render.** CORPUS has no queue: `rebuild.py --finance` runs `build-finance-page.py --all`, and `scan_all()` walks every record under `raw/` on every run, so edited records are picked up because they are read. The compile rewrites `outputs/non-state-finance/*.csv`; the render turns that into pages, and `editions.publish` cuts a new dated edition of each CSV because the bytes moved. Compile and stop, and the site still serves yesterday's values from yesterday's edition.
 
-**Verify.** After compile and render, check the distinct values in `outputs/non-state-finance/all-nonstate.csv`: every value in the vocabulary for its field, and no blanks in any of the three.
+**Retire, don't delete, a deal that leaves the dataset but not the base** *(2026-09-26)*. A deal that fails the five-fact test after admission (an issuer-level aggregate, a pledge, an estimated ticket; `wiki/finance-record-spec.md`) stays a source: `finance_origin:` removed, `deal_id:` renamed `retired_deal_id:`, `cite_through:` where a component survives, a dated `## Notes` line. Delete only what is out of scope altogether, and then unlink the companion sources' `Deal record built: [[…]]` lines, rebuild `raw-url-index.py --rebuild` and `build-index.py`, and trim any hub `Material deals:` line report-lint E names. Once the dataset is published, every deletion retires a slug a reader may already cite.
+
+**Verify.** After compile and render, check the distinct values in `outputs/non-state-finance/all-nonstate.csv`: every value in the vocabulary for its field, and no blanks in any of the four.

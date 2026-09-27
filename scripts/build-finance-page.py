@@ -362,6 +362,16 @@ def csv_summary(ns, dom, lab, path, fx):
                        + [n, (f"{usd:.0f}" if usd else "")])
 
 # ---------------------------------------------------------------- assemble
+NONSTATE_FLOOR = 2015
+
+def pre_floor(T):
+    """True for a deal whose own year (Commitment year, else Start year) is before 2015."""
+    for k in ("Commitment year", "Start year"):
+        m = re.match(r"\s*(\d{4})", T.get(k, "") or "")
+        if m:
+            return int(m.group(1)) < NONSTATE_FLOOR
+    return False
+
 def scan_all():
     """One pass over raw/: bucket every finance record under each place it tags."""
     by_place = {}
@@ -388,6 +398,13 @@ def scan_all():
                    topics=[x.strip() for x in tm.group(1).split(",")] if tm else [],
                    url=fm_get(fm, "url"), title=fm_get(fm, "title"),
                    deal_id=fm_get(fm, "deal_id"), currency=fm_get(fm, "currency"))
+        # The 2015 floor (finance-record-spec fact 4; notes-for-osint 178, Bill 2026-09-26):
+        # the non-state dataset covers commitments made since 2015. The 16 older deal records
+        # stay in raw/ because reports cite them, so they are skipped here, by the same test
+        # the spec states: Commitment year, else Start year. (First written Start-first, as
+        # CORPUS's compile had it; that dated a 2016 top-up loan by its project's 2014 start.)
+        if rec["origin"] == "non-state" and pre_floor(rec["table"]):
+            continue
         for pl in places:
             b = by_place.setdefault(pl, {"ns": [], "dom": []})
             b["ns" if rec["origin"] == "non-state" else "dom"].append(rec)

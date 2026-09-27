@@ -228,7 +228,8 @@ def metadata(key, ids):
     docs = []
     fl = ("iati_identifier,recipient_country_code,recipient_region_code,"
           "recipient_region_vocabulary,title_narrative,description_narrative,"
-          "related_activity_ref,related_activity_type")
+          "related_activity_ref,related_activity_type,"
+          "transaction_recipient_country_code,transaction_recipient_region_code")
     for i in range(0, len(ids), CHUNK):
         chunk = ids[i:i + CHUNK]
         q = "iati_identifier:(%s)" % " OR ".join('"%s"' % c.replace('"', '') for c in chunk)
@@ -269,6 +270,23 @@ def geography(doc, places_held):
         if r in AFRICA_REGIONS:
             places.append(AFRICA_REGIONS[r])
     return sorted(set(places)), regions
+
+
+def publishes_geography(doc):
+    """True where the activity names any recipient country or region of its own, at activity or
+    transaction level. Such a child is not silent on geography, so it inherits none — its own
+    non-African value is a claim, not a gap for the parent to fill."""
+    return any(as_list(doc.get(f)) for f in (
+        "recipient_country_code", "recipient_region_code",
+        "transaction_recipient_country_code", "transaction_recipient_region_code"))
+
+
+def mixed_list(doc, places_held):
+    """True where a parent's country list mixes African and non-African states. Such a list is
+    programme context and says nothing about where one child's money goes, so it is not
+    inherited."""
+    codes = [ISO2_TO_ISO3.get(str(c).strip().upper()) for c in as_list(doc.get("recipient_country_code"))]
+    return any(c not in places_held for c in codes)
 
 
 def parent_refs(doc):
@@ -363,7 +381,7 @@ def main():
                          "title": " ".join(as_list(d.get("title_narrative")))[:400],
                          "description": " ".join(as_list(d.get("description_narrative")))[:1200],
                          "dataset": doc_of.get(d.get("iati_identifier"), "")})
-        elif parent_refs(d):
+        elif parent_refs(d) and not publishes_geography(d):
             orphans.append(d)
 
     # Step 5 of the procedure: inherit, then screen. An activity that publishes no country of
@@ -378,7 +396,7 @@ def main():
         parent_places = {}
         for pd in metadata(key, wanted):
             pl, _ = geography(pd, places_held)
-            if pl:
+            if pl and not mixed_list(pd, places_held):
                 parent_places[pd.get("iati_identifier")] = pl
         for d in orphans:
             pl = sorted({c for r in parent_refs(d) for c in parent_places.get(r, [])})

@@ -7,7 +7,7 @@ Procedure only: §3 is `layout.md`, §4 `schemas.md`, §8–9 `operations.md`, d
 
 ## Lint acts and logs. It does not report.
 
-Every check has one correct action; lint takes it, in git, and records a count. It surfaces **only** a genuine contradiction, to `reviews/contradictions/open/` — **never a to-do list**; a wrong auto-fix is a revert.
+Every check has one correct action; lint takes it, in git, and counts it. It surfaces **only** a genuine contradiction, to `reviews/contradictions/open/`, **never a to-do list**.
 
 ## Cadence
 
@@ -95,9 +95,9 @@ Every check has one correct action; lint takes it, in git, and records a count. 
 
 **9. Contradictions** — surface, batched. File any conflict uncovered to `reviews/contradictions/open/`; report the count.
 
-**23. Region place code** — surface, scripted, batched (judgment). Three countries of one region with no `X__` code is a candidate: a cross-border framework earns it, one operator in three markets does not.
+**23. Region place code** — surface, scripted, batched (judgment). Three countries of one region with no `X__` code is a candidate: a cross-border framework earns it, one operator in three markets does not. A candidate looked at and left goes in `lookups/region-place-ruled.csv`.
 
-**28. Deal-record vocabulary** — surface, scripted, nightly. Controlled fields against `lookups/deal-vocabs.csv` (`DEAL-VOCAB.md`). Never auto-fix.
+**28. Deal-record vocabulary** — surface, scripted, nightly. Four controlled fields against `lookups/deal-vocabs.csv` (`DEAL-VOCAB.md`), plus a named recipient typed `Unknown`, an issuer aggregate, `¿` or U+FFFD, a new pre-2015 deal. Never auto-fix.
 
 **10. Stranded queue items** — surface, scripted, nightly. Anything left in `new/` after an ingest; report the count.
 

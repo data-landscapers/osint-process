@@ -31,6 +31,8 @@ Level-2 topics. **Tag pages with the slug**, never the label.
 - `dpi.mis` — Sectoral management information systems (HMIS, EMIS, etc.)
 - `dpi.govtech` — Other GovTech and e-Gov
 
+**Boundaries the finance audit settled (2026-09-26, notes-for-osint 176).** File by what the money or the activity is chiefly *for*, never by a donor's own category label — the initial load's crosswalk from World Bank DT categories is where most misfiling came from. A health, education, social-protection or agriculture **information system** (DHIS2, HMIS, EMIS, a social registry's MIS) is `dpi.mis`, not `tech.innovate`. **Venture funds, incubators, start-up hubs and accelerators** are `tech.innovate`; `tech.industry` is established ICT companies and operators. **Safe City, CCTV and video-surveillance systems** and intelligent transport systems are `dpi.govtech` — never `gov.protect`, which is data protection. **Statistical capacity** is `data.statistics`, not `gov.policy`; **land information systems** are `dpi.registry`; **pay-as-you-go solar and asset finance** repaid by mobile money is `dpi.pay`. A grid control centre or an electricity project is `infra.energy`, and as a deal it is out of the finance dataset unless it has a digital purpose (`wiki/finance-record-spec.md` → fact 5).
+
 ### Governance
 - `gov.legislate` — Legislation and regulation
 - `gov.policy` — Strategies, plans and policies

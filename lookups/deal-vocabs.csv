@@ -31,3 +31,12 @@ beneficiary_type,7,Multi-stakeholder,"Several types together, where no one of th
 beneficiary_type,8,Individuals,"People rather than organisations — students, entrepreneurs, households."
 beneficiary_type,9,PPP,A public-private vehicle receiving as one party. Distinct from the PPP value in the instrument vocabulary.
 beneficiary_type,10,Unknown,The source does not state who receives.
+amount_quality,1,Exact,"The source publishes the figure to the unit."
+amount_quality,2,Rounded,"The source publishes a rounded figure — US$45m, over US$1bn."
+amount_quality,3,Stated,"The figure as the financier's or recipient's own document states it; precision not otherwise assessed."
+amount_quality,4,Reported,"The figure as an announcement or secondary source reports it, not checked against a primary."
+amount_quality,5,Verified,"The figure checked against a primary document — the financier's release, a decree, a project document."
+amount_quality,6,Estimated,"An estimate of a figure the source discloses only approximately."
+amount_quality,7,Imputed,"A figure derived from other stated figures — a share of a stated total — which no source states itself."
+amount_quality,8,Interpolated,"Constructed between two anchored milestones so a series sums to a source-stated cumulative; also carried in frontmatter."
+amount_quality,9,Unknown,"The amount's quality was not recorded when the deal was built."

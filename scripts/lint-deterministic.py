@@ -20,7 +20,7 @@ This answers all nine in about a second, off `index/`, against
   #10  stranded queue       anything left in `new/`
   #24  register caps        post-run notes: 60 words each, 10 open, `[CRITICAL]` only
   #25  procedure length     `CLAUDE.md` over its line cap - that file only, from 2026-08-20
-  #28  deal-record vocab    Instrument/Status/Beneficiary type against `deal-vocabs.csv`
+  #28  deal-record vocab    Instrument/Status/Beneficiary type/Amount quality against `deal-vocabs.csv`
   #34  catalogue hero       the subtitle every post-contract source carries, and its shape
   #8   page bloat          over §8's ~2,500-word classify line, by shape; hubs' compiled chronology exempt
 
@@ -565,7 +565,15 @@ def check_region_place(rows, d):
 
     The converse is deliberately **not** checked. A national development that names a regional
     programme is correctly national (`facets.md` §1 -> PLACE), and a check that flagged those
-    would ask for exactly the over-tagging the rule forbids."""
+    would ask for exactly the over-tagging the rule forbids.
+
+    A candidate looked at and left sits in `lookups/region-place-ruled.csv` and is not
+    reported again, as #36 does with `entity-slugs-ruled.csv`."""
+    ruled = set()
+    rp = os.path.join(V.ROOT, "lookups", "region-place-ruled.csv")
+    if os.path.exists(rp):
+        for row in csv.DictReader(open(rp, encoding="utf-8")):
+            ruled.add(row["path"].strip())
     parent = {}
     with open(COUNTRIES, encoding="utf-8-sig", newline="") as fh:
         for row in csv.reader(fh):
@@ -577,7 +585,7 @@ def check_region_place(rows, d):
             kids[up].add(code)
     for r in rows:
         fm, path = r["fm"], r["path"]
-        if fm.get("type") != "source":
+        if fm.get("type") != "source" or path in ruled:
             continue
         pl = [str(p).strip() for p in V.as_list(fm.get("places"))]
         if any(p.startswith("X") for p in pl):
@@ -860,7 +868,8 @@ def check_proc_length(d, today=None):
 
 
 DEAL_FIELDS = {"Instrument": "instrument", "Status": "status",
-               "Beneficiary type": "beneficiary_type"}
+               "Beneficiary type": "beneficiary_type",
+               "Amount quality": "amount_quality"}   # notes-for-osint 176
 
 
 def check_deal_vocab(rows, d):
@@ -893,6 +902,27 @@ def check_deal_vocab(rows, d):
                       f"`{field}` value in lookups/deal-vocabs.csv",
                       "map the wording in the field's map file, or rule it a new "
                       "vocabulary value; the extra wording belongs in ## Notes")
+        # The three shapes the 2026-09-26 audit kept finding (notes-for-osint 176,
+        # DEAL-VOCAB.md -> the misreadings): cheap to catch here, costly to find by reading.
+        fm = r["fm"]
+        fin, rec = str(fm.get("financier_slug") or ""), str(fm.get("recipient_slug") or "")
+        if rec and re.search(r"^\|\s*Beneficiary type\s*\|\s*Unknown\s*\|", text, re.M):
+            d.add("28", r["path"], f"Beneficiary type `Unknown` but the recipient is named (`{rec}`)",
+                  "DEAL-VOCAB.md -> a named recipient is never Unknown; classify it")
+        if fin and fin == rec and not re.search(r"^\|\s*Instrument\s*\|\s*Self Funded\s*\|", text, re.M):
+            d.add("28", r["path"], f"financier and recipient are both `{fin}` and the instrument is not Self Funded",
+                  "an issuer-level aggregate is not a deal (finance-record-spec -> Store of record); "
+                  "retire it, or it is Self Funded")
+        # The 2015 floor (finance-record-spec fact 4; notes-for-osint 178). The 16 older records
+        # predate the ruling and are kept for the reports that cite them; a new one is a builder slip.
+        ym = (re.search(r"^\|\s*Commitment year\s*\|\s*(\d{4})", text, re.M)
+              or re.search(r"^\|\s*Start year\s*\|\s*(\d{4})", text, re.M))
+        if ym and int(ym.group(1)) < 2015 and str(fm.get("ingested") or "") > "2026-09-26":
+            d.add("28", r["path"], f"deal record for a {ym.group(1)} commitment, before the 2015 floor",
+                  "finance-record-spec -> fact 4: a pre-2015 commitment takes the source route")
+        if any(c in text for c in ("¿", "�", "\\u00bf", "\\ufffd")):   # literal and YAML-escaped (note 177)
+            d.add("28", r["path"], "broken character (¿ or U+FFFD) in a deal record",
+                  "restore the source's character; it reaches the published CSV")
 
 
 def check_entity_referents(rows, d):

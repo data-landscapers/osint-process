@@ -55,12 +55,12 @@ Donors split the fields differently, and in opposite directions:
 A child that publishes no recipient country fails the geography screen while its parent, which carries the country, fails drop rule 1 for having no money — so the screens run in this order:
 
 1. **Resolve the parent before screening.** A candidate with `related_activity_type` `1` names its parent in the matching `related_activity_ref`. One extra lookup per child, bounded by the diff.
-2. **Inherit only what the child is silent on.** `recipient_country_code` / `recipient_region_code`, `sector_code`, `default_aid_type_code`, `default_finance_type_code`, and `description_narrative`. **Never overwrite a value the child publishes** — the child is the reporting unit and its own value always wins.
+2. **Inherit only what the child is silent on.** `recipient_country_code` / `recipient_region_code`, `sector_code`, `default_aid_type_code`, `default_finance_type_code`, and `description_narrative`. **Never overwrite a value the child publishes**, a transaction-level country included. **A parent list mixing African and non-African states is programme context, never inherited.**
 3. **Screen geography after inheritance, not before.**
 4. **Drop rule 1 still applies to the child's own transactions.** A child with no value is dropped like any other activity. A parent is never staged, whatever it carries.
 5. **Record that inheritance happened** — the record's QA line names each inherited field and the parent id it came from. An inherited recipient country is not the child's own claim.
 
-**Do not generalise the field list to other donors without looking.** A third publisher may split the fields differently again, and inheriting a field a donor deliberately left blank would manufacture a fact.
+**Do not generalise the field list to other donors without looking**: inheriting a field a donor deliberately left blank manufactures a fact.
 
 ## Two drop rules — no money, and no recent vintage
 
@@ -87,9 +87,9 @@ python scripts/iati-poll.py --baseline    # rebuild the master list, select noth
 python scripts/iati-poll.py --limit 40    # cap a night's record-building
 ```
 
-`IATI_API_KEY` comes from `.env`, sent as `Ocp-Apim-Subscription-Key`. Two failure modes: the gateway **403s a default `python-urllib` User-Agent** and wants a browser string, and it **429s** readily — back off on `Retry-After` and give up loudly rather than silently short-polling.
+`IATI_API_KEY` comes from `.env`, sent as `Ocp-Apim-Subscription-Key`. The gateway **403s a default `python-urllib` User-Agent** and **429s** readily: back off on `Retry-After`, and give up loudly.
 
-**A poll that cannot reach the API returns `stopped=error`, never `staged=0 stopped=complete`** (`SWEEP-CYCLE.md`). A nil is reportable only when the instrument demonstrably ran.
+**A poll that cannot reach the API returns `stopped=error`, never `staged=0 stopped=complete`**: a nil needs an instrument that ran.
 
 ## State, and what is versioned
 
