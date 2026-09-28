@@ -9,7 +9,7 @@
 
 Capture the **full verbatim article body** at fetch time. The captured bodies are never republished — this is a private personal research vault, matching the curator's established web-clipper practice, under the UK CDPA s.29 research / private-study exception. State this up front to any agent doing the fetch.
 
-The stored body is always the source's own words — the full text where the page yields it, a verbatim partial where it doesn't (`CLAUDE.md` → *The material*); the `web_search_exa` excerpt or an AI paraphrase is **never** an acceptable body. A browser-translated clip is not a verbatim body either: where a publisher runs parallel language editions, its own other-language edition is a legitimate source and a machine translation of the first is not.
+The stored body is always the source's own words — the full text where the page yields it, a verbatim partial where it doesn't (`CLAUDE.md` → *The material*); the `web_search_exa` excerpt or an AI paraphrase is **never** an acceptable body. A browser-translated clip is not a verbatim body either: where a publisher runs parallel language editions, its own other-language edition is a legitimate source and a machine translation of the first is not. **Nothing of the fetcher's own goes inside the body**: no `## Sweep note`, no bracketed dating, fetch or cut-off note, no gloss or translation. Those go in frontmatter `note:`, and a body that ends in its own truncation is `excerpt`, never `full`.
 
 Treat a refusal or a hard fetch failure as a logged, retryable **per-item** failure — stage the verbatim partial (or a one-line failure note) + the URL with `body_completeness: excerpt`, routed to manual clip — **never** a run-stopper.
 

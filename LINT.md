@@ -11,7 +11,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 ## Cadence
 
-**nightly** — quick lint runs the check's script and applies only fixes needing no reading of page content. **nightly (new records)** — **#6, #4, #5, #34, #14, #20, #7**: quick lint also reads and judges, over the `raw/` files this run admitted (`git diff --name-only --diff-filter=A <ingest-commit>^ <ingest-commit> -- raw/`); **#6 runs whole-corpus every time**. **batched** — **#8, #9, #23, #13, #17 and #3's fix half**: full lint only; a whole-vault check moves to nightly once it carries a looked-and-left stamp. Nothing found reports a zero.
+**nightly** — quick lint runs the check's script and applies only fixes needing no reading of page content. **nightly (new records)** — **#6, #4, #5, #34, #14, #20, #7**: quick lint also reads and judges, over the `raw/` files the night's ingest commit added; **#6 runs whole-corpus every time**. **batched** — **#8, #9, #23, #13, #17 and #3's fix half**: full lint only; a whole-vault check moves to nightly once it carries a looked-and-left stamp. Nothing found reports a zero.
 
 ## Running it
 
@@ -47,7 +47,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 **15. `body_completeness` backfill** — auto-resolve, scripted, nightly. Set from the stored body by markers; ambiguous → inspect or leave blank. Never set `full` on a body no check has passed over.
 
-**7. Duplicates** — auto-fix, nightly (new records). `scripts/lint-duplicate-deals.py` and `scripts/lint-duplicate-sources.py` cluster on **event + entities + date**, candidates not verdicts; adjudications to `reviews/source-duplicate-decisions.csv`. Resolve per `CLAUDE.md` → *Duplicates*; a retirement rewires `sources:` in `wiki/` **and `raw/`**, removes the URL-index row, appends a `dropped` URL-log line and names the `survivor`. Differing payloads → keep both, or #9.
+**7. Duplicates** — auto-fix, nightly (new records). `scripts/lint-duplicate-{deals,sources}.py` cluster on **event + entities + date**, candidates not verdicts; adjudications to `reviews/source-duplicate-decisions.csv`. Resolve per `CLAUDE.md` → *Duplicates*; a retirement rewires `sources:` in `wiki/` **and `raw/`** and every pending-writes row citing it, removes the URL-index row, appends a `dropped` URL-log line and names the `survivor`; taken before Phase B, #4 re-runs after it. Differing payloads → keep both, or #9.
 
 **14. `url:` quality** — auto-fix, nightly (new records). A bare-domain, blank or missing `url:` needs the document URL, found and verified by title and date, never constructed from a pattern; exhausted → `url unrecovered as of YYYY-MM-DD`. Never edit `published`.
 
@@ -67,7 +67,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 **17. Sweeps call the origin screen** — auto-fix, batched. Every root `*SWEEP*.md` references `wiki/origin-screen.md`; every `drop-list.csv` row is `drop`/`watch`; every #6 domain has its row.
 
-**40. A record no parser can read** — auto-fix, nightly. `raw/*.md` read **as bytes** against the one frontmatter regex; a doubled CR or lost newline at the fence is a **hard finding**. Repair the terminators only, asserting that stripping every CR leaves both sides identical — never a re-capture.
+**40. A record no parser can read** — auto-fix, nightly. `raw/*.md` read **as bytes** against the one frontmatter regex; a doubled CR or lost newline at the fence is a **hard finding**. Repair the terminators only, never a re-capture: stripping every CR leaves both sides identical.
 
 **22. Acquisition names a held document** — auto-fix, nightly. `python scripts/lint-acquisition-held.py`: apply **STRIKE**, read and rule on **CANDIDATE**, never the other way round. `--fix-markers` repairs a line hidden from the count.
 
@@ -83,7 +83,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 **33. Per-item effort cap** — surface, scripted, nightly. `python scripts/effort-cap.py`. An item named in three of the run's `log.md` entries: drop it, or write the dated absence.
 
-**24. Register caps** — auto-fix, scripted, nightly. `post-run-notes.md` against `CLAUDE.md` → *Reporting*; over the open cap, take the conservative option and say so. On the share, an over-cap preamble or a convention restated outside `X:\README.md` → *Conventions* fails, and every open note needs a reachable `Affects:` line — hard on OSINT's files, soft on CORPUS's.
+**24. Register caps** — auto-fix, scripted, nightly. `post-run-notes.md` against `CLAUDE.md` → *Reporting*; over the open cap, take the conservative option. On the share, an over-cap preamble or a convention restated outside `X:\README.md` → *Conventions* fails, and every open note needs a reachable `Affects:` line — hard on OSINT's files, soft on CORPUS's.
 
 **41. Documentation caps** — surface, scripted, nightly. `python scripts/lint-docs.py --report`: every root, `documentation/` and `wiki/*.md` file names its reader on its first line and stays under `CLAUDE.md` → *Documentation caps*. A missing reader is stamped on sight; **a length breach is listed, never trimmed by lint**.
 
