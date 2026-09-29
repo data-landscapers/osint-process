@@ -111,7 +111,7 @@ places: [KEN, NGA, ZAF]
 entities: [[data-protection-authority-kenya]]
 status: active            # active | stub | needs-review
 last_reviewed: 2026-07-10
-sources: [[2026-06-16-cassava-nvidia-deal]]    # bare, never a path — see §3
+sources: [[2026-06-16-cassava-nvidia-deal]]    # the raw file's name without .md — never a path, never a title — see §3
 ---
 ```
 
