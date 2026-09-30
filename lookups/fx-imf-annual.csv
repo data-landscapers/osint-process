@@ -222,3 +222,12 @@ XDR,2023,0.7497,IMF SDR valuation - annual average of daily rates
 XDR,2024,0.7531,IMF SDR valuation - annual average of daily rates
 XDR,2025,0.7408,IMF SDR valuation - annual average of daily rates
 XDR,2026,0.7317,provisional - IMF SDR valuation daily average to 2026-08-04 (no final annual average yet)
+LYD,2024,4.83,IMF/WB annual average
+LYD,2025,5.30,IMF/WB annual average - devalued Apr 2025
+MRU,2024,39.67,approx annual average (ball-park) - market mid-rate; WB/IMF average not published
+MRU,2025,39.81,approx annual average (ball-park) - market mid-rate; WB/IMF average not published
+MRU,2026,40.00,provisional (ball-park)
+SCR,2024,14.53,IMF/WB annual average
+SCR,2025,14.73,IMF/WB annual average
+SCR,2026,14.70,provisional (ball-park)
+ZWL,2024,11320,HIGHLY UNCERTAIN - Z$ was replaced by ZiG on 5 Apr 2024. Derived from the 2024 Mid-Term Review restating the Z$ budget in ZiG (Table 24: Z$58.2tn to ZiG87.9bn; 662 Z$ per ZiG) x ZWG 2024 17.10. WB's 3266 is a part-year blend

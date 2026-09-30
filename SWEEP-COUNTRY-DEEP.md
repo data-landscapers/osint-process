@@ -51,7 +51,7 @@ Each search runs on the **Exa Agent** (`agent_run`, `effort: "medium"`), which t
 ### Search 1 — Non-state finance
 - **Intent:** Every discussion, MoU, commitment or actual deal financing any aspect of the wiki's scope in `{country}`. Excludes the financiers' own portfolio lists and portals, and the daily-list sources — both covered by other sweeps.
 - **Seek:** Any item naming a financier or recipient; an intent to finance; deal or MoU detail; a change to an existing deal or MoU; third-party comment or critique on one.
-- **Topic head-start:** place = ISO-3; a `finance.*` slug first (`finance.new` / `finance.mou`), plus the sector topic(s) financed.
+- **Topic head-start:** place = ISO-3; a `finance.*` slug first (`finance.new` / `finance.mou`) **only where the item states a sum** (`wiki/capture-rule.md`), plus the sector topic(s) financed. A named funder, a tender, a launch or a meeting with no sum takes the sector topic alone.
 
 ### Search 2 — Governance (institutions and instruments, excluding data exchange)
 - **Intent:** The institutions and individuals responsible for governing the wiki's scope in `{country}`, and progress on policies, strategies, plans, laws and regulations — **except** data-exchange governance, which is Search 3's.
