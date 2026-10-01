@@ -31,6 +31,7 @@ Every in-window item you put aside — already held, already seen, a sibling's c
 
 ## Files
 
+- **Staged frontmatter**: every candidate carries `type`, `title`, `url`, `publisher`, `published`, `date_precision`, `date_source`, `retrieved`, `places` (a list, never `place:`), `topics` and `sweep_batch`. Run `python scripts/stage-check.py` over `new/` before you return and fix what it names in your own files.
 - **Line endings**: write a file back with the endings it had at `git show HEAD:<path>`; add a missing final newline. Test with bytes, never a shell grep:
 
 ```

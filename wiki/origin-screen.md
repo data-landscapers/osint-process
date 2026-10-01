@@ -11,7 +11,7 @@ It screens **where an item came from**, not what it says. Content screening — 
 
 ## The list
 
-`logs/drop-list.csv` — `domain,network,status,rule,added,note`. **`note` is one line of at most 20 words**: the sighting (first, second), its date and sweep, and the shape in a few words. How it was handled goes in the commit body, not the row *(strategic review 5 R90)*.
+`logs/drop-list.csv` — `domain,network,status,rule,added,note`. **`note` is one line of at most 20 words**: the sighting (first, second), its date and sweep, and the shape in a few words. How it was handled goes in the commit body, not the row *(strategic review 5 R90)*. **A changed verdict is a new row, never an edit**: the file is append-only, `origin-screen.py` reads a domain's last row, and a domain carrying a `watch` row and a later `drop` row is correct as it stands, not a lint finding.
 
 | `status` | Meaning | Action |
 |---|---|---|

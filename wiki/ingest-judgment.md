@@ -11,7 +11,7 @@ So only a register with a locking appender is written by slices in parallel (tod
 
 Registers are appended, rows removed by their own text and never by line number, because siblings shift every index; no whole-file formatter runs over one, because its line breaks are records. A candidate leaves `new/` only by the exact path on the slice's list: `sweep_batch:` is the run's label, not the slice's, and `new/` is untracked, so what a pattern takes from a sibling git cannot return.
 
-**A story's same-night twins go to one slice.** A slice cannot see its siblings' lists, so two slices each admit their own account of one event, each expecting the other to drop. Before spawning, the parent collapses exact-URL duplicates in `new/` and lists the candidates it can see cover one event together; a pair that still reaches `raw/` from two slices is collapsed by the parent at the register write, keeping the primary or fuller capture and logging the other's URL `already-held`.
+**A story's same-night twins go to one slice.** A slice cannot see its siblings' lists, so two slices each admit their own account of one event, each expecting the other to drop. Before spawning, the parent collapses exact-URL duplicates in `new/` and lists the candidates it can see cover one event together; a pair that still reaches `raw/` from two slices is collapsed by the parent at the register write, keeping the primary or fuller capture and logging the other's URL `already-held`. **The same holds for acquisition lines**: slices that each raise one document write it twice, often worded differently, so the parent writes it once at the register merge, pointed at the surviving record.
 
 ## 2. Why a clean tier 1 settles nothing
 
