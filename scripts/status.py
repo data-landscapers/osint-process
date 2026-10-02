@@ -117,7 +117,7 @@ counts = {
     "contradictions": contradictions(),
     "acquisitions": acquisitions(),
     "awaiting ingest": awaiting_ingest(),
-    "housekeeping": count_lines(X + "housekeeping-jobs.md", r"^[0-9]+\. "),
+    "housekeeping": count_lines(X + "osint-housekeeping.md", r"^[0-9]+\. "),
     # The fifth queue, and the last to reach this line (2026-09-08). It filled for twelve days
     # to 77 lines before anyone looked, because nothing counted it anywhere a pass would see:
     # `RULES.md` is triggered by hand and its own concurrency rule keeps it out of the cycle,

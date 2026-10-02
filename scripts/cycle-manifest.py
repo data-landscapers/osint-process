@@ -60,7 +60,7 @@ a night before R69 did not code its drops.
 
 **The `hygiene` block (2026-09-25, strategic review 5 R83; additive, schema 3 unchanged).** With
 `--hygiene`, what the night's writers left for a cleaner: `housekeeping_registered`, the rise
-in `X:\housekeeping-jobs.md`'s `NEXT JOB NUMBER`, and `words_trimmed` (with
+in `X:\osint-housekeeping.md`'s `NEXT JOB NUMBER`, and `words_trimmed` (with
 `pages_rewritten`), summed over the `logs/phaseb-trims.csv` rows Phase B's over-line rewrites
 added (R81). Both are measured since the previous manifest, whose `hygiene` block carries the
 two counters, and both should read near zero. Only the sweep cycle passes it, so "since the
@@ -333,7 +333,7 @@ def drops_block(night):
     return {"night": night, "ingest_coded": coded, "sweeps": dict(sorted(sweeps.items()))}
 
 
-HOUSEKEEPING = "X:\\housekeeping-jobs.md" if os.name == "nt" else "/x/housekeeping-jobs.md"
+HOUSEKEEPING = "X:\\osint-housekeeping.md" if os.name == "nt" else "/x/osint-housekeeping.md"
 TRIMS = os.path.join(V.ROOT, "logs", "phaseb-trims.csv")
 
 

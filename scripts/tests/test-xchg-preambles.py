@@ -65,23 +65,23 @@ def run(files, readme=README):
 
 
 CLEAN = "# Register\n\n*(Pointer to README.)*\n\n## The bar\n\nreal substance\n"
-assert run({"housekeeping-jobs.md": CLEAN}) == []
+assert run({"osint-housekeeping.md": CLEAN}) == []
 
 # an over-long preamble on an OSINT file is hard; the same on CORPUS's is reported
 LONG = "# Register\n\n" + "word " * 400 + "\n\n## The bar\n\nreal substance\n"
-rows = run({"housekeeping-jobs.md": LONG})
+rows = run({"osint-housekeeping.md": LONG})
 assert len(rows) == 1 and "preamble runs 402 words" in rows[0][1] and rows[0][2] is False
 rows = run({"notes-for-osint.md": "# Notes\n\n" + "word " * 400
             + "\n\n## Standing constraints\n\nx\n"})
 assert len(rows) == 1 and rows[0][2] is True, rows
 
 # a convention restated away from home is a finding wherever in the file it sits
-rows = run({"housekeeping-jobs.md": "# R\n\n*(P.)*\n\n## The bar\n\n"
+rows = run({"osint-housekeeping.md": "# R\n\n*(P.)*\n\n## The bar\n\n"
             "**Closing means moving, and nothing is\nleft at the number.**\n"})
 assert len(rows) == 1 and rows[0][1] == "restates a share convention", rows
 
 # --- the self-disarm guard ---------------------------------------------------------
-rows = run({"housekeeping-jobs.md": CLEAN}, readme=README.replace(RULE.capitalize(), "gone"))
+rows = run({"osint-housekeeping.md": CLEAN}, readme=README.replace(RULE.capitalize(), "gone"))
 assert len(rows) == 1 and rows[0][0] == ld.XCHG_README and rows[0][2] is False, rows
 
 # --- the live share, if it is mounted ----------------------------------------------

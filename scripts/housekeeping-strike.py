@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""housekeeping-strike.py — standing. Strike a job from `X:\\housekeeping-jobs.md`.
+"""housekeeping-strike.py — standing. Strike a job from `X:\\osint-housekeeping.md`.
 
 Written 2026-09-24 for housekeeping jobs 190-202. Does `BACKLOG.md` §5's strike
 in one move: removes entry N and its *Rough sizing* row from the register, and
 appends `xN. *(cleared YYYY-MM-DD)* <entry text> <closing text>` to
-`X:\\housekeeping-jobs-resolved.md`. Writes the share only; commits nothing.
+`X:\\osint-housekeeping-resolved.md`. Writes the share only; commits nothing.
 
 usage: python scripts/housekeeping-strike.py <N> <closing-text-file> [--date YYYY-MM-DD]
 Exit 2 if entry N or its sizing row is not found exactly once.
@@ -14,8 +14,8 @@ import datetime
 import pathlib
 import sys
 
-REG = pathlib.Path("X:/housekeeping-jobs.md")
-RES = pathlib.Path("X:/housekeeping-jobs-resolved.md")
+REG = pathlib.Path("X:/osint-housekeeping.md")
+RES = pathlib.Path("X:/osint-housekeeping-resolved.md")
 
 
 def main():

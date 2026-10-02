@@ -33,7 +33,7 @@ Every check has one correct action; lint takes it, in git, and counts it. It sur
 
 **2. Vocabulary** — auto-fix, scripted, nightly. Correct a `topics` or place slug to the controlled value; a genuinely new value → surface.
 
-**11. Missing date prefix, or wrong shard** — auto-fix, scripted, nightly. Rename to the `YYYY-MM-DD` prefix, updating links; unestablished → `date_source: proxy` at best precision; a corrected date moves the file.
+**11. Missing date prefix, or wrong shard** — auto-fix, scripted, nightly. Rename to the `YYYY-MM-DD` prefix, updating links, **only a record not yet committed**: a committed `raw/` filename is a slug and is never reissued, so a committed miss is reported, not renamed; unestablished → `date_source: proxy` at best precision; a corrected date moves the file.
 
 **4. Orphans & dead links** — auto-fix, scripted, nightly. Index absent pages; rewire or retire broken `[[links]]` per §9's bands, never touching entity slugs, the intentional-dead whitelist, convention files or dated logs.
 

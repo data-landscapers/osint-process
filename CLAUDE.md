@@ -114,7 +114,7 @@ Tag an entity if it is **an actor in the development the source reports** — no
 
 **Acquisitions** is the second: specific known documents the wiki wants and doesn't hold. It is a fetch list **for automated fetches**, not a research register — drained by the acquisition pass, never by reconcile. One automated attempt each; a document that only a hand-clip could get is dropped and its absence stated on the page, dated and naming the document exactly — never parked as a standing chore, and never a post-run note, which takes only what is irreversible or already public.
 
-**Housekeeping** is the third: lint-type work that is real and CC's to close, but too big for a batch — a corpus-wide sweep, a recompile of every hub. Registered in `X:\housekeeping-jobs.md` and worked at **every night's close** (`BACKLOG.md`), one job a night, never folded into another pass.
+**Housekeeping** is the third: lint-type work that is real and CC's to close, but too big for a batch — a corpus-wide sweep, a recompile of every hub. Registered in `X:\osint-housekeeping.md` and worked at **every night's close** (`BACKLOG.md`), one job a night, never folded into another pass.
 
 Three queues, each drained by CC by its own pass — reconcile for contradictions, acquire for acquisitions, the nightly backlog for housekeeping — over the whole queue at once, never a selection. Anything that can't be closed by any of them isn't work; it's a horizon, and belongs on the relevant page as a dated statement of what isn't established.
 

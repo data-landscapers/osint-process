@@ -23,7 +23,7 @@ One CC run; the parent is a **thin loop** — it selects the day, runs its proce
 
 ### What every sub-agent prompt carries
 
-**A slice's brief is its template pasted verbatim** — [`wiki/brief-sweep.md`](wiki/brief-sweep.md) or [`wiki/brief-ingest.md`](wiki/brief-ingest.md) — under a few lines of the night's own facts: for a sweep the window, the high-water mark and **`python scripts/drop-digest.py`'s output**; for ingest the lane, iteration, list directory, sibling count and origin tally. **A rule a slice needs goes into its template, never into a night's copy.**
+**A slice's brief is its template pasted verbatim** — [`wiki/brief-sweep.md`](wiki/brief-sweep.md) or [`wiki/brief-ingest.md`](wiki/brief-ingest.md) — under a few lines of the night's own facts: for a sweep the window, the high-water mark and **`python scripts/drop-digest.py`'s output**; for ingest the lane, iteration, list directory, sibling count and origin tally. **A rule a slice needs goes into its template, never into a night's copy.** **A list the parent writes for a slice is LF**: a carriage return rides into every path read under bash.
 
 **`python scripts/stall-watch.py --quiet-minutes 25`**, armed under `Monitor` at step 0 and left all night: on waking, if the outstanding step has not moved, **kill that spawn and re-spawn it once**.
 

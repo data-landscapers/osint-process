@@ -3,7 +3,7 @@
 
 Written 2026-09-24 for housekeeping jobs 190-202 (the append-log trim), worked
 under `wiki/append-log-trim.md`. Reads the job's page list from its entry in
-`X:\\housekeeping-jobs.md` (every `` `slug` (N,NNN) `` pair).
+`X:\\osint-housekeeping.md` (every `` `slug` (N,NNN) `` pair).
 
 usage (from the repo root):
   python scripts/trim-job.py <N>                              check only
@@ -38,10 +38,10 @@ def run(*args):
 
 
 def check(n):
-    reg = pathlib.Path("X:/housekeeping-jobs.md").read_text(encoding="utf-8")
+    reg = pathlib.Path("X:/osint-housekeeping.md").read_text(encoding="utf-8")
     m = re.search(rf"^{n}\. (.*)$", reg, re.M)
     if not m:
-        print(f"trim-job: no open entry {n} in X:\\housekeeping-jobs.md")
+        print(f"trim-job: no open entry {n} in X:\\osint-housekeeping.md")
         sys.exit(2)
     entry = m.group(1)
     pages = re.findall(r"`([a-z0-9-]+--[a-z0-9-]+)` \([\d,]+\)", entry)
@@ -111,7 +111,7 @@ def commit(n, label, calls_file, r):
     state = f"synthesis ({syn}) or under the line ({under})" if syn and under else ("synthesis" if syn else "under the line")
     log = run(PY, "scripts/log-append.py", "BACKLOG",
               f"job {n} closed — {len(pages)} append-log intersections to {state}, {r['before']} → ~{r['after']} words, {r['added']} slugs added to sources:",
-              f"git revert this commit; restore entry {n} from X:\\housekeeping-jobs-resolved.md")
+              f"git revert this commit; restore entry {n} from X:\\osint-housekeeping-resolved.md")
     print(log.stdout.strip(), log.stderr.strip())
     if log.returncode:
         sys.exit(1)

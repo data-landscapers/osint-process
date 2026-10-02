@@ -25,7 +25,7 @@ Values outside the vocabularies are rejected.
 - [sweep-url_log.md](../logs/sweep-url_log.md) — machine index of every URL already adjudicated, with its disposition. Sweeps `grep` it to filter their returns before fetching. Pruned to **one rotation** by `SWEEP-CYCLE.md`.
 - `reviews/contradictions/` — the reconcile worklist.
 - `reviews/acquisitions.md` — the fetch list.
-- `X:\housekeeping-jobs.md` — the housekeeping register: lint-type jobs too big for a batch, worked one session at a time. On the share, with `X:\housekeeping-jobs-resolved.md` beside it; open jobs only in the live file. Not in this repository — OSINT writes it, CORPUS commits it.
+- `X:\osint-housekeeping.md` — the housekeeping register: lint-type jobs too big for a batch, worked one session at a time. On the share, with `X:\osint-housekeeping-resolved.md` beside it; open jobs only in the live file. Not in this repository — OSINT writes it, CORPUS commits it.
 - `X:\strategic-reviews\` — the review series and its numbered task lists, both systems' reviews together, oldest 2026-07-24. On the share; not in this repository *(moved out of `documentation/reviews/` 2026-09-08)*. A dated record: read for the commissioning of a task, never edited after its own date.
 
 ## Processes
@@ -58,7 +58,7 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 | `run prune` | [PRUNE.md](../PRUNE.md) | The single retention register: what ages out, when, and which pass deletes it. Runs the jobs no other pass owns; `logs/log.md` is `scripts/rotate-log.py`'s. Called by `full lint` as check #18, or standalone. |
 | `run rules` | [RULES.md](../RULES.md) | Drains `reviews/rule-candidates.md` as every night's **last stage**, or on the manual trigger in its own session — the only place a rule changes, and the parent's own work, never a sub-agent's. Three lines from separate runs is a rule, fewer is not; a ruled case's lines are deleted, an unruled one's age out at 21 days. |
 | `run the backlog` | [BACKLOG.md](../BACKLOG.md) | One housekeeping job, oldest first, prepared work on `X:\prepared\` applied first; split above 120 minutes, otherwise whole job or largest slice. Called by the sweep cycle's close every night, before rules, or on demand. |
-| `run housekeeping` / `run housekeeping job N` | `X:\housekeeping-jobs.md` | Works the housekeeping register in a session of its own, under `BACKLOG.md`'s rules without the one-job limit. The register holds the jobs. |
+| `run housekeeping` / `run housekeeping job N` | `X:\osint-housekeeping.md` | Works the housekeeping register in a session of its own, under `BACKLOG.md`'s rules without the one-job limit. The register holds the jobs. |
 
 **Finance**
 

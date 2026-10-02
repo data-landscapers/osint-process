@@ -12,7 +12,7 @@ Trigger: **"wiki status"** / **"display status"**. **Single source of truth** fo
 - **awaiting ingest** — **every item in `new/`, whatever its extension**; exclude only dotfiles and any `README`: `ls -A new/ | grep -v '^\.' | grep -vi readme | wc -l`
 - **contradictions** — files in `reviews/contradictions/open/`, **excluding the folder's `README.md`**: `ls reviews/contradictions/open/*.md 2>/dev/null | grep -vi readme | wc -l`
 - **acquisitions** — **every list line under the one `## Open items` heading** of `reviews/acquisitions.md`, never by marker or URL: `awk '/^## Open items/{f=1;next} /^## /{f=0} f' reviews/acquisitions.md | grep -cE '^\s*[-*] '`
-- **housekeeping** — unstruck numbered jobs in `X:\housekeeping-jobs.md` (a struck job carries an `x` prefix): `grep -cE '^[0-9]+\. ' /x/housekeeping-jobs.md`
+- **housekeeping** — unstruck numbered jobs in `X:\osint-housekeeping.md` (a struck job carries an `x` prefix): `grep -cE '^[0-9]+\. ' /x/osint-housekeeping.md`
 - **rule-candidates** — open lines in `reviews/rule-candidates.md`, the queue `RULES.md` drains: `grep -cE '^- ' reviews/rule-candidates.md`. The pass runs as every night's last stage (`SWEEP-CYCLE.md`), so this reads as the **open** queue — cases still under three occurrences and under 21 days old — not as a backlog waiting on a trigger. **A number that climbs is a case recurring**, which is what it is there to show.
 - **osint-notes** — open notes in `X:\notes-for-osint.md`, the CORPUS→OSINT queue. Both note files hold unresolved issues only (resolved ones move to the `-resolved` file), so every entry counts. **Both entry shapes count**, the bold lead `**N** (date) —` and the `### N. [TAG]` heading: `grep -cE '^(\*\*[0-9]+\*\*[ (]|#{2,3} [0-9]+[. ])' /x/notes-for-osint.md`
 - **corpus-notes** — open notes in `X:\notes-for-corpus.md`, the OSINT→CORPUS queue; the **same** pattern: `grep -cE '^(\*\*[0-9]+\*\*[ (]|#{2,3} [0-9]+[. ])' /x/notes-for-corpus.md`
@@ -100,7 +100,7 @@ The standing tally line above, and nothing after it.
 
 | The limit is… | Do |
 |---|---|
-| the work is genuinely too big for a session | split it, per `X:\housekeeping-jobs.md` → *How a job is worked* |
+| the work is genuinely too big for a session | split it, per `X:\osint-housekeeping.md` → *How a job is worked* |
 | **CC's remaining context in a long conversation** | **say so; recommend restarting; leave a clean restart point** |
 
 **A clean restart point**: everything committed, the register consolidated, and the method already worked out written onto the job.

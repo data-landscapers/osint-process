@@ -8,7 +8,7 @@ XAF and XGL are never minted: their cells move into the page's `## Key material`
 Africa-wide or global page would duplicate the concept page itself. Stops before writing the
 register or committing if a citation is lost, a lint check fails, or a line is left over the bar
 that this job should have cleared. Prints the resolution text and log line; `--close` also
-strikes the job on X:\\housekeeping-jobs.md and appends the log line.
+strikes the job on X:\\osint-housekeeping.md and appends the log line.
 """
 import io, os, re, subprocess, sys, json, glob, datetime
 
@@ -155,7 +155,7 @@ print(log)
 json.dump({"res": res, "log": log, "minted": minted, "merged": merged}, open(os.path.join(os.environ.get("TEMP", "."), f"job-{job}.json"), "w"))
 
 if CLOSE:
-    H, R = "X:/housekeeping-jobs.md", "X:/housekeeping-jobs-resolved.md"
+    H, R = "X:/osint-housekeeping.md", "X:/osint-housekeeping-resolved.md"
     t = io.open(H, encoding="utf-8", newline="").read()
     eol = "\r\n" if "\r\n" in t else "\n"
     m = re.search(r"^" + job + r"\. .*?(\r?\n)+", t, re.M)

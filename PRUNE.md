@@ -16,9 +16,9 @@ Everything in the vault that ages out, and who does it. **A rule lives in exactl
 | What | Rule | Owner |
 |---|---|---|
 | `reviews/post-run-notes.md` | closed entries deleted **3 days** after their cleared date | **this pass** |
-| `X:\housekeeping-jobs.md` | struck jobs **moved to `X:\housekeeping-jobs-resolved.md`, not deleted** — the move happens when the job is struck, so nothing here ages | the striking session |
+| `X:\osint-housekeeping.md` | struck jobs **moved to `X:\osint-housekeeping-resolved.md`, not deleted** — the move happens when the job is struck, so nothing here ages | the striking session |
 | `reviews/acquisitions.md` | a section with no `[untried]`/`[blocked]` line left is deleted **3 days** after its heading / drained date | **this pass** |
-| `X:\fetch-list.md` | struck (`x`-prefixed) lines deleted **3 days** after their fetched date | **this pass** |
+| `X:\fetch-list.md` | struck (`x`-prefixed) lines deleted **3 days** after their fetched date; an absence a struck line implies was the striker's to state, and the prune writes none | **this pass** |
 | `logs/collection-stamp.json` | never — a single overwritten object, not a rolling log | — |
 | `reviews/contradictions/open/` | brief deleted **on closure** — never aged | `RECONCILE.md` |
 | `logs/sweep-url_log.md` | pruned to **one rotation** at the close of each night | `SWEEP-CYCLE.md` |
@@ -59,7 +59,7 @@ Undated per-country logs (`sweep/archive/drop-log-{ISO3}.csv`) are not in scope 
 | Register | Closed means | Ages from |
 |---|---|---|
 | `reviews/post-run-notes.md` | `x`-prefixed | *(cleared YYYY-MM-DD)* on the entry |
-| `X:\housekeeping-jobs.md` | `x`-prefixed | — *(not aged; struck jobs leave the file at once)* |
+| `X:\osint-housekeeping.md` | `x`-prefixed | — *(not aged; struck jobs leave the file at once)* |
 | `reviews/acquisitions.md` | no `[untried]`/`[blocked]` line left in the section | the section heading / drained note |
 | `X:\fetch-list.md` | `x`-prefixed | *(YYYY-MM-DD)* on the struck line |
 
@@ -76,7 +76,7 @@ Undated per-country logs (`sweep/archive/drop-log-{ISO3}.csv`) are not in scope 
 | Register | Header line |
 |---|---|
 | `reviews/post-run-notes.md` | `## NEXT NOTE NUMBER: N` |
-| `X:\housekeeping-jobs.md` | `## NEXT JOB NUMBER: N` |
+| `X:\osint-housekeeping.md` | `## NEXT JOB NUMBER: N` |
 
 Take it, write the entry, increment the line.
 

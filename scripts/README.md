@@ -121,7 +121,7 @@ A new script imports both rather than re-implementing either. The one duplicatio
 | `repair-eol.py` | by hand, after a sub-agent stage | Repairs line-ending flips against HEAD, preserving each file's own mixture — the defect `assert-containment.py` refuses a stage for. Listed here 2026-09-08; it was standing and unregistered. |
 | `trim-verify.py` | sub-agents under `wiki/append-log-trim.md` | Checks rewritten intersection pages against HEAD: line endings, every old `sources:` slug and body `[[link]]` kept, identity frontmatter unchanged, body-cited raw slugs listed in `sources:`; prints words before/after and dated headings. Exit 1 on a problem, 2 on an unknown slug. |
 | `trim-job.py` | a page-trim housekeeping session | A job's finish-line check from its register entry: verifier, lint #8/#4/#12, reflow, sources added. `--commit LABEL CALLS-FILE` then logs, commits, pushes and strikes it — only on a clean check. Jobs 190–202. |
-| `housekeeping-strike.py` | `trim-job.py --commit`, or by hand | `BACKLOG.md` §5's strike in one move: entry and *Rough sizing* row out of `X:\housekeeping-jobs.md`, struck entry plus closing text into `-resolved.md`. Share only; commits nothing. |
+| `housekeeping-strike.py` | `trim-job.py --commit`, or by hand | `BACKLOG.md` §5's strike in one move: entry and *Rough sizing* row out of `X:\osint-housekeeping.md`, struck entry plus closing text into `-resolved.md`. Share only; commits nothing. |
 | `pdf-geom-rows.py` | by hand, writing an extractor | Dumps a PDF's pages as geometry-bound rows (characters by baseline, columns by x-gap) — the generic form of the binding the `extractors/{ISO3}/` scripts each hard-code. Needs `pdfplumber`. |
 
 ## Bespoke — `extractors/{ISO3}/`

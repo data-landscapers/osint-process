@@ -107,8 +107,8 @@ XCHG_PREAMBLE_CAP = 250
 # may not edit is reported and never fails, because a lint that fails on someone else's work is
 # one that gets skipped.
 XCHG_PREAMBLES = {
-    "housekeeping-jobs.md": ("## Rough sizing", False),
-    "housekeeping-jobs-resolved.md": ("## Done", False),
+    "osint-housekeeping.md": ("## Rough sizing", False),
+    "osint-housekeeping-resolved.md": ("## Done", False),
     "notes-for-corpus.md": ("## Unresolved", False),
     "notes-for-corpus-resolved.md": ("## ", False),
     "notes-for-osint.md": ("## Standing constraints", True),
