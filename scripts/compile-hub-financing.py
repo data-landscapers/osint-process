@@ -9,7 +9,7 @@ writes from `raw/` — same scan, same numbers.
 
 **What it rewrites, and only this:**
   - the `**Non-state** — …` paragraph (total, deal count, year range, non-USD note,
-    top financiers grouped on `financier_slug`, leading subjects);
+    top financiers grouped on `financier_slug`, the origin breakdown, leading subjects);
   - the counts in `Instrument mix: …`;
   - the *as of* date in the section's italic header — **only when one of those two
     actually moved** (2026-08-22, note 34, closing post-run note 207). It was stamped
@@ -39,6 +39,65 @@ PLACES = "wiki/places"
 # exactly the staleness CLAUDE.md -> Currency exists to keep visible.
 # (Was pinned at 2026-07-28 until housekeeping job 11, 2026-07-29.)
 ASOF = os.environ.get("COMPILE_ASOF") or datetime.date.today().isoformat()
+
+
+# Origin display names. African codes come from lookups/countries.csv; the rest are
+# the non-African owners the financier record uses. An unlisted code renders as itself
+# rather than failing, so a new origin shows up on the page and gets a name added here.
+ORIGIN_NAMES = {
+    "MULTI": "multilateral", "ARE": "UAE", "AUS": "Australia", "BEL": "Belgium",
+    "CAN": "Canada", "CHE": "Switzerland", "CHN": "China", "DEU": "Germany",
+    "DNK": "Denmark", "ESP": "Spain", "FIN": "Finland", "FRA": "France",
+    "GBR": "UK", "IDN": "Indonesia", "IND": "India", "IRL": "Ireland", "ITA": "Italy",
+    "JPN": "Japan", "KOR": "South Korea", "LUX": "Luxembourg", "NLD": "Netherlands",
+    "NOR": "Norway", "POL": "Poland", "PRT": "Portugal", "QAT": "Qatar",
+    "RUS": "Russia", "SAU": "Saudi Arabia", "SGP": "Singapore", "SWE": "Sweden",
+    "TUR": "Turkey", "USA": "US", "VNM": "Vietnam",
+}
+
+
+def origin_names():
+    names = dict(ORIGIN_NAMES)
+    p = os.path.join("lookups", "countries.csv")
+    if os.path.exists(p):
+        with open(p, encoding="utf-8-sig") as fh:
+            for r in csv.DictReader(fh):
+                names.setdefault(r["iso-3"].strip(), r["country-name"].strip())
+    return names
+
+
+def pct(part, whole):
+    v = 100.0 * part / whole if whole else 0
+    return "<1%" if 0 < v < 0.5 else "%.0f%%" % v
+
+
+def origin_clause(with_usd, total):
+    """`By financier origin: …` — share of the USD total by the financier record's
+    origin (ownership, not headquarters; `wiki/finance-record-spec.md` -> *Entities*),
+    the top three named and the rest summed, then the African-owned share, always
+    stated: a hub where it is 0% says so."""
+    if not total:
+        return ""
+    names = origin_names()
+    by, afr, unknown = defaultdict(float), 0.0, 0.0
+    for r in with_usd:
+        v = float(r["commitment_usd_m"])
+        o = (r.get("financier_origin") or "").strip()
+        if not o:
+            unknown += v
+            continue
+        by[o] += v
+        if (r.get("financier_african") or "").strip() == "true":
+            afr += v
+    ranked = sorted(by.items(), key=lambda kv: (-kv[1], kv[0]))
+    parts = ["%s %s" % (names.get(o, o), pct(v, total)) for o, v in ranked[:3]]
+    rest = ranked[3:]
+    if rest:
+        parts.append("%d other%s %s" % (len(rest), "" if len(rest) == 1 else "s",
+                                        pct(sum(v for _, v in rest), total)))
+    if unknown:
+        parts.append("origin not established %s" % pct(unknown, total))
+    return " By financier origin: %s; African-owned %s." % (", ".join(parts), pct(afr, total))
 
 
 def money(m):
@@ -117,8 +176,9 @@ def non_state_paragraph(rows):
                   "source — the series sums to a published cumulative, the annual split "
                   "does not." % (interp, " is" if interp == 1 else "s are"))
 
-    return ("**Non-state** — %s across %d deals (%s).%s%s Top financiers: %s.%s"
-            % (money(total), len(with_usd), span, basis, note, tops, lead_clause))
+    return ("**Non-state** — %s across %d deals (%s).%s%s Top financiers: %s.%s%s"
+            % (money(total), len(with_usd), span, basis, note, tops,
+               origin_clause(with_usd, total), lead_clause))
 
 
 def instrument_counts(rows):

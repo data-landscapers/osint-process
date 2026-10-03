@@ -211,6 +211,9 @@ def check_patch(directory):
     for name, path in found:
         if path in denied:
             breaches.append((name, path, "process file — CORPUS sends commits, not rules"))
+        elif ".." in path.split("/") or path.startswith("/"):
+            # `scripts/../raw/x` starts with `scripts/`, so the prefix test alone would pass it.
+            breaches.append((name, path, "a path that climbs out of its folder"))
         elif path in PATCH_ALLOW_FILES or inside(path, PATCH_ALLOW_PREFIXES):
             continue
         elif path.startswith("raw/"):

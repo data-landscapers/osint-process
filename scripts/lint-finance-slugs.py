@@ -21,9 +21,13 @@ Hard defects — FINANCIER only (exit 1):
   B  malformed financier_slug (not lowercase kebab-case)
   C  financier_slug value absent from the record's `entities:`
   D  known NON-CANONICAL financier alias (e.g. world-bank-group -> world-bank)
+  E  financier_slug with no row in lookups/financier-names.csv (the financier record)
+  F  malformed financier-names.csv row: origin not ISO-3 or MULTI, financier_type
+     outside FIN_TYPES, african not true/false, or african set without an origin
 
 Soft notes — surfaced for a human glance, never failed (exit 0):
   R  recipient_slug malformed / non-canonical alias / absent from `entities:`
+  O  financier-names.csv row with origin not established (origin and african blank)
   N  novel financier_slug — well-formed, in `entities`, not aliased, and used
      by only this one record. Minting a new consistent slug is allowed
      (spec); this just flags a one-off for a second look. **Used to also
@@ -64,6 +68,27 @@ def _sovereign_aliases():
 
 ALIASES.update(_sovereign_aliases())
 
+# financier-names.csv is the financier record: one row per slug, carrying
+# origin (ISO-3 of the owning state, MULTI for a multilateral), type, url and
+# whether the owner is African. `wiki/finance-record-spec.md` -> *Entities*.
+# origin: by ownership, not headquarters — a subsidiary takes its parent's (Vodacom
+# GBR, Airtel Africa IND); headquarters only where ownership is not public; blank
+# where neither is established. african: true where the owner is African — an
+# African state, African-owned capital, or a multilateral owned by African states
+# (AfDB, Afreximbank, BOAD); blank exactly when origin is. url: the financier's
+# own site, entered only once it has resolved.
+FIN_TYPES = {"multilateral", "bilateral-agency", "bilateral-dfi", "domestic-state",
+             "state-owned", "foundation", "nonprofit", "private"}
+ORIGIN_RE = re.compile(r"^(?:[A-Z]{3}|MULTI)$")
+
+def load_financiers(root):
+    import csv as _csv
+    p = os.path.join(root, "lookups", "financier-names.csv")
+    if not os.path.exists(p):
+        return {}
+    with open(p, encoding="utf-8") as fh:
+        return {r["financier_slug"].strip(): r for r in _csv.DictReader(fh) if r.get("financier_slug")}
+
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 def fm_of(text):
@@ -101,6 +126,21 @@ def main():
     hard = collections.defaultdict(list)   # class -> [(file, detail)]
     soft = collections.defaultdict(list)
 
+    fins = load_financiers(a.root)
+    FN = "lookups/financier-names.csv"
+    for slug, r in sorted(fins.items()):
+        origin, ftype, afr = ((r.get(k) or "").strip() for k in ("origin", "financier_type", "african"))
+        if origin and not ORIGIN_RE.match(origin):
+            hard["F malformed financier record"].append((FN, "%s origin=%r" % (slug, origin)))
+        if ftype not in FIN_TYPES:
+            hard["F malformed financier record"].append((FN, "%s financier_type=%r" % (slug, ftype)))
+        if afr not in ("true", "false", ""):
+            hard["F malformed financier record"].append((FN, "%s african=%r" % (slug, afr)))
+        elif bool(afr) != bool(origin):
+            hard["F malformed financier record"].append((FN, "%s african and origin must both be set or both blank" % slug))
+        if not origin:
+            soft["O financier origin not established"].append((FN, slug))
+
     for rel, fm in recs:
         ents = set(entity_slugs(fm))
         fin = val(fm, "financier_slug")
@@ -129,6 +169,8 @@ def main():
             hard["D non-canonical financier alias"].append((rel, "%s -> use %s" % (fin, ALIASES[fin])))
         if fin not in ents:
             hard["C financier_slug not in entities"].append((rel, "financier_slug=%s" % fin))
+        if fin not in fins:
+            hard["E financier_slug has no financier record"].append((rel, "add %s to %s" % (fin, FN)))
         # --- recipient: soft (entity pass owns recipient drift) ---
         if rec:
             if not SLUG_RE.match(rec):

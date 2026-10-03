@@ -97,13 +97,17 @@ def promote(comp, raw_slugs, idx, scope):
     if "source_tier" not in keys:
         out.append("source_tier: budget-document")
     if "catalogue_hero" not in keys:
-        hero = get("title")[:140].replace('"', "'")
+        # Never the title: schemas.md §4 says a hero repeats nothing the title says (lint #34).
+        hero = f"{(doc or 'budget document').replace('-', ' ').capitalize()}, fiscal year {comp.parts[2]}; full document held in the budget archive"[:120]
         out.append(f'catalogue_hero: "{hero}"')
     out.insert(next(i for i, l in enumerate(out) if l.startswith("topics:")), f"ingested: {TODAY}")
-    out.append(f"hub_line_none: {TODAY}  # budget-document companion, catalogued for citation (notes-for-osint {'171' if FORCE else '168, step 5'})")
+    if "hub_line_none" not in keys:                          # the brief's companion shape may carry it already
+        out.append(f"hub_line_none: {TODAY}  # budget-document companion, catalogued for citation (notes-for-osint {'171' if FORCE else '168, step 5'})")
     lead = (f"**Companion source page for a budget document.** Its artefact is filed at `budget-archive/{iso}/{fy}/` "
             f"and declared by its row in `new-budget/manifest.csv`. It is catalogued so that a figure read from the document can cite it by name.")
-    if STATUS.search(body):
+    if "**Companion source page for a budget document.**" in body:
+        pass                                                 # the brief already wrote the lead
+    elif STATUS.search(body):
         body = STATUS.sub(lead, body, count=1)
     else:
         body = re.sub(r"^(# .*\n)", r"\1\n" + lead.replace("\\", "\\\\") + "\n", body, count=1, flags=re.M)
@@ -118,7 +122,7 @@ def promote(comp, raw_slugs, idx, scope):
                 return None, "status note sits inside a long paragraph"
             paras[i] = None
     body = "\n\n".join(p for p in paras if p is not None)
-    if lead not in body:
+    if lead not in body and "**Companion source page for a budget document.**" not in body:
         body = re.sub(r"^(# .*\n)", r"\1\n" + lead.replace("\\", "\\\\") + "\n", body, count=1, flags=re.M)
     if not re.search(r"^## Source\b", body, re.M):
         ret = get("retrieved") or "date not recorded"
@@ -153,7 +157,7 @@ def main():
                 dest.write_text(text, encoding="utf-8", newline="")
                 raw_slugs.add(dest.stem)
                 subprocess.run([PY, "scripts/raw-url-index.py", "--append", url, dest.as_posix(), pub], check=True, capture_output=True)
-                subprocess.run([PY, "scripts/url-log-append.py", "admitted", url], check=True, capture_output=True)
+                subprocess.run([PY, "scripts/url-log-append.py", "admitted", "--ingest", url], check=True, capture_output=True)
         total += n
         print(f"{iso}: {n} {'promoted' if WRITE else 'to promote'}")
     print(f"total {total} {'promoted' if WRITE else 'to promote (dry run; --write to apply)'}; {len(skipped)} skipped")

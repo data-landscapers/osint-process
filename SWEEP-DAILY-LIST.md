@@ -47,7 +47,7 @@ first run (no state.json): window_start = now − 24h
 
 ### 1. Search
 
-For each domain, run **one** query cluster — **D1**, or **D2** where the domain's file says its beat is infrastructure and economy rather than DPI and governance — as a domain-scoped `web_search_exa`, date-bounded to the window, `numResults` **10**. No month-slicing.
+For each domain, run **one** query cluster — **D1**, or **D2** where the domain's file says its beat is infrastructure and economy rather than DPI and governance — as a `web_search_advanced_exa` call with `includeDomains: [<domain>]` and `startPublishedDate`/`endPublishedDate` set to the window, `numResults` **10**, `textMaxCharacters` 2000 so a large platform cannot overflow the tool's output. `web_search_exa` has no domain filter and is never the instrument here. No month-slicing.
 
 **FR and AR variants only where that domain has produced a non-English admitted source**, recorded in `sweep/domains/{domain}.md`.
 

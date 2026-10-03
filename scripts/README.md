@@ -2,6 +2,10 @@
 
 *(Written 2026-08-03, review task 25. The wiki was at 53 scripts with 40 countries still to initialise and roughly four one-off scripts per country: the arithmetic said 170 more. This file, the lifecycle labels and the two shared libraries are what stop that.)*
 
+## Tests
+
+`python scripts/tests/run-all.py` runs every `scripts/tests/test-*.py` and exits 1 on any failure. Run it before committing a change to a script a test imports: `test-guards.py` covers the containment patch check, the URL-log admission gate, the log-entry form, the ingest lane whitelist, page-length's growth gate, lint #15's stamp and the budget promoter; `test-compile-hubs.py` the hub compile.
+
 ## Two libraries, and the line between them
 
 **`vault_lib.py` is the read layer.** One frontmatter parser, one URL normalisation, and `index/` — the rebuildable index of every artefact's frontmatter plus the citation graph. Anything that needs to know *what the vault holds* imports this.

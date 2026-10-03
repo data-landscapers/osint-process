@@ -141,6 +141,6 @@ assert list(b) == ["start", "sweep"], "stages keep their order; a malformed line
 assert b["sweep"]["seven_day"] == 64.0, "a stage read twice keeps its last reading"
 assert "usage" not in cm.build("t", {}), "without --usage there is no block, buffer or not"
 m = cm.build("t", {}, usage=True)
-assert m["schema"] == 2 and m["usage"] == b
+assert m["schema"] == cm.SCHEMA and m["usage"] == b
 
 print("test-cycle-manifest: all assertions pass")

@@ -548,7 +548,10 @@ def check_completeness(rows, d):
         if not bc:
             d.add("15", path, "no `body_completeness`",
                   "missing means unverified — establish it from the stored body, never assume `full`")
-        elif bc == "full" and r["d"].get("trunc_markers"):
+        elif (bc == "full" and r["d"].get("trunc_markers")
+              # An inspection stamp in `note:` settles it, as `origin_status: cleared` does for #6.
+              and not ("inspected" in str(fm.get("note") or "")
+                       and "#15" in str(fm.get("note") or ""))):
             d.add("15", path, "`full`, but the body carries a "
                                f"{'/'.join(r['d']['trunc_markers'])} marker",
                   "the dedup tiebreak and the paywall gate both trust this field")

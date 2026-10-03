@@ -183,6 +183,7 @@ def fx_rate(fx, cur, yr):
 
 
 _FINNAME = None
+_FINREC = None
 
 
 def load_financier_names(path="lookups/financier-names.csv"):
@@ -197,6 +198,19 @@ def load_financier_names(path="lookups/financier-names.csv"):
                     _FINNAME[row["financier_slug"].strip()] = \
                         (row.get("canonical_name") or "").strip()
     return _FINNAME
+
+
+def fin_attr(slug, key):
+    """One column of a financier's record in `financier-names.csv` (`origin`,
+    `african`, ...); blank for an unmapped slug, which REPORT-LINT check D catches."""
+    global _FINREC
+    if _FINREC is None:
+        _FINREC = {}
+        if os.path.isfile(_abs("lookups/financier-names.csv")):
+            for row in read_csv("lookups/financier-names.csv"):
+                if row.get("financier_slug"):
+                    _FINREC[row["financier_slug"].strip()] = row
+    return (_FINREC.get((slug or "").strip(), {}).get(key) or "").strip()
 
 
 def fin_name(slug):

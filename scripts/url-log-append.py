@@ -6,7 +6,7 @@ end of the run, so a run that dies takes no adjudication record with it. All fou
 dispositions, not just admissions — a dropped item is exactly the one a sweep must not
 fetch again.
 
-Usage:  python scripts/url-log-append.py admitted https://example.com/a-story
+Usage:  python scripts/url-log-append.py admitted --ingest https://example.com/a-story
         python scripts/url-log-append.py dropped  URL [URL ...]
 Normalisation is INGEST.md step 2's, shared with the sweeps' pre-fetch filter.
 
@@ -150,10 +150,16 @@ def append_drop_codes(today, code, batch, normed):
 def main():
     args = sys.argv[1:]
     code, batch = pop_flag(args, "--code"), pop_flag(args, "--batch") or ""
+    by_ingest = "--ingest" in args
+    args = [a for a in args if a != "--ingest"]
     if len(args) < 2 or args[0] not in VALID:
-        sys.exit("usage: url-log-append.py {%s} [--code CODE --batch SWEEP_BATCH] URL [URL ...]"
+        sys.exit("usage: url-log-append.py {%s} [--ingest] [--code CODE --batch SWEEP_BATCH] URL [URL ...]"
                  % "|".join(VALID))
     disp, urls = args[0], args[1:]
+    if disp == "admitted" and not by_ingest:
+        # Admission is ingest's disposition. A sweep stages; it never admits (brief-sweep.md).
+        sys.exit("url-log-append.py: `admitted` is ingest's alone and takes --ingest; "
+                 "a sweep that staged an item writes nothing here")
     if code is not None and (disp != "dropped" or code not in DROP_CODES):
         sys.exit("url-log-append.py: --code goes with `dropped` and one of: %s" % ", ".join(DROP_CODES))
     today = datetime.date.today().isoformat()

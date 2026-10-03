@@ -41,6 +41,9 @@ FM = re.compile(r"\A---\r?\n(.*?)\r?\n---\r?\n", re.S)
 FIRST_LINE = re.compile(r"\A<!--\s*(reader:[^>]*?)\s*-->")
 CODE = re.compile(r"^```.*?^```", re.S | re.M)
 COMMENT = re.compile(r"<!--.*?-->", re.S)
+# A block a script writes between BEGIN/END GENERATED markers is a listing, not prose a
+# reader is asked to read through: the index pages' *Every intersection* lists. Out of the count.
+GENERATED = re.compile(r"<!-- BEGIN GENERATED.*?<!-- END GENERATED[^>]*-->", re.S)
 ROW = re.compile(r"^\|\s*(cc|bill)\s*\|\s*([a-z-]+)\s*\|\s*([^|]*)\|\s*([\d,]+) words\s*\|\s*$", re.M)
 ANNOTATION = re.compile(r"\*Done\b[^*]*\*")
 
@@ -83,7 +86,7 @@ def split(text: str) -> tuple[dict, str]:
                 k, _, v = pair.partition(":")
                 if v.strip():
                     fields[k.strip()] = v.strip()
-    body = COMMENT.sub(" ", CODE.sub(" ", body))
+    body = COMMENT.sub(" ", CODE.sub(" ", GENERATED.sub(" ", body)))
     return fields, body
 
 

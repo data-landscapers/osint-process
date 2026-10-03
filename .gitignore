@@ -47,8 +47,7 @@ index/
 # outputs/reports/ and outputs/catalogue/ retired from git 2026-08-16 (OSINT/
 # CORPUS migration, R6) — CORPUS now authors its own reports and catalogue
 # from raw/ / wiki/, so OSINT's copies are dead. outputs/non-state-finance/
-# and outputs/budgets/ stay tracked: OSINT's own compile, still written every
-# ingest-fired FINANCE-COMPILE.
+# stays tracked: OSINT's own compile, written every ingest-fired FINANCE-COMPILE.
 outputs/reports/
 outputs/catalogue/
 __pycache__/

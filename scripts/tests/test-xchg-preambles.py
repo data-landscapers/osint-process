@@ -64,11 +64,11 @@ def run(files, readme=README):
         ld.XCHG = keep
 
 
-CLEAN = "# Register\n\n*(Pointer to README.)*\n\n## The bar\n\nreal substance\n"
+CLEAN = "# Register\n\n*(Pointer to README.)*\n\n## Rough sizing\n\nreal substance\n"
 assert run({"osint-housekeeping.md": CLEAN}) == []
 
 # an over-long preamble on an OSINT file is hard; the same on CORPUS's is reported
-LONG = "# Register\n\n" + "word " * 400 + "\n\n## The bar\n\nreal substance\n"
+LONG = "# Register\n\n" + "word " * 400 + "\n\n## Rough sizing\n\nreal substance\n"
 rows = run({"osint-housekeeping.md": LONG})
 assert len(rows) == 1 and "preamble runs 402 words" in rows[0][1] and rows[0][2] is False
 rows = run({"notes-for-osint.md": "# Notes\n\n" + "word " * 400
@@ -76,7 +76,7 @@ rows = run({"notes-for-osint.md": "# Notes\n\n" + "word " * 400
 assert len(rows) == 1 and rows[0][2] is True, rows
 
 # a convention restated away from home is a finding wherever in the file it sits
-rows = run({"osint-housekeeping.md": "# R\n\n*(P.)*\n\n## The bar\n\n"
+rows = run({"osint-housekeeping.md": "# R\n\n*(P.)*\n\n## Rough sizing\n\n"
             "**Closing means moving, and nothing is\nleft at the number.**\n"})
 assert len(rows) == 1 and rows[0][1] == "restates a share convention", rows
 

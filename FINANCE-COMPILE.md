@@ -33,6 +33,7 @@ Compute the aggregation with a script and **write the result onto the page** —
 1. **Aggregate its deal records, split by `finance_origin`** (the section holds both **non-state** and **domestic-state**):
    - total committed (USD), deal count, commitment-year range;
    - top financiers by committed amount, **grouped on `financier_slug`, never on the descriptive `Financier` string**. Each slug is rendered once under a single canonical display name (`ifc` and `miga` stay separate — the World Bank Group is not rolled up);
+   - USD share by financier `origin`, top three and the rest, and the African-owned share;
    - instrument mix and top subject slugs.
 
    Currency discipline (`CLAUDE.md` → *Currency*): head the section **"as of `<compile date>`"**; sum the USD field only — never restate one commitment in three currencies.
@@ -74,24 +75,21 @@ Compute the aggregation with a script and **write the result onto the page** —
 
 3. **List an individual deal only when it is large or multi-party.** Everything else is **not** named on the hub.
 
-4. **Write/replace the full CSV exports** for the place — `python scripts/build-finance-page.py {ISO3}`. Not §8-bound: every non-state deal. Two files, each row carrying its source record:
+4. **Write/replace the full CSV exports** for the place — `python scripts/build-finance-page.py {ISO3}`. Not §8-bound: every non-state deal, each row carrying its source record:
 
    - **`outputs/non-state-finance/{ISO3}-nonstate.csv`** — one row per deal: year, financier, recipient, instrument, US$m, original amount, **sector** (taxonomy slug), **subject** (≤5-word deal description), status, source link.
-   - **`outputs/non-state-finance/{ISO3}-summary.csv`** — aggregates by subject × fiscal year: non-state rows (US$m) and domestic-state rows (US$m at the IMF annual average), primary subject per record, plus one **`origin: excluded`** row per reason a domestic line sits outside the total (`excluded_lines`, `excluded_usd_m`).
-
-   **The domestic budget export is retired** (R57, 2026-09-24): budget rows are CORPUS's, built from the documents OSINT catalogues (`BUDGET-COLLECT.md`). `outputs/budgets/` keeps its last-built content and nothing rewrites it.
 
    Derived snapshots (`CLAUDE.md` → *Working the base*), rebuilt each run — never hand-edit; changes belong in the records.
 
-   **The deal export is keyed on the financier-id.** Its 18 columns: `recipient_country` (ISO-3, the join key), `start_year` (commitment year where no start is stated), `end_year`, `financier` (**canonical name looked up from `financier_slug`**), `sector`, `instrument`, `commitment_usd_m`, `status`, `title`, `description` (full record block), `beneficiary_type`, `recipient_organisation` (name only), `original_amount`, `project_id`, `iati_activity_id`, `url`, **`financier_slug`** (the group/join key), `record`. The display name resolves via `lookups/financier-names.csv` (`financier_slug → canonical_name`), falling back to the entity-page title then a prettified slug; a new financier is added there.
+   **The deal export is keyed on the financier-id.** Its 22 columns: `recipient_country` (ISO-3, the join key), `start_year` (commitment year where no start is stated), `end_year`, `financier` (**canonical name looked up from `financier_slug`**), `sector`, `instrument`, `commitment_usd_m`, `amount_basis`, `amount_quality`, `status`, `title`, `description` (full record block), `beneficiary_type`, `recipient_organisation` (name only), `original_amount`, `project_id`, `iati_activity_id`, `url`, **`financier_slug`** (the group/join key), `record`, `financier_origin`, `financier_african` (from the financier record). The display name resolves via `lookups/financier-names.csv` (`financier_slug → canonical_name`), falling back to the entity-page title then a prettified slug; a new financier is added there.
 
-   **One combined export.** `--all` also writes `outputs/non-state-finance/all-nonstate.csv` — every non-state deal, **one row per deal**, same 18 columns. Each deal is tagged to exactly one place and appears once in each file. A deal spanning several countries is reassigned to the smallest covering region (sub-region → XSS → XAF) with the countries named in its `## Description`; a single-country deal never carries its parent-region tag as well.
+   **One combined export.** `--all` also writes `outputs/non-state-finance/all-nonstate.csv` — every non-state deal, **one row per deal**, same 22 columns. Each deal is tagged to exactly one place and appears once in each file. A deal spanning several countries is reassigned to the smallest covering region (sub-region → XSS → XAF) with the countries named in its `## Description`; a single-country deal never carries its parent-region tag as well.
 
 5. **Touch nothing else** — no `Recent developments` bullets, no other sections.
 
 ## Close
 
-**Verify what was just published — `REPORT-LINT.md`, before the baseline moves.** `python scripts/report-lint.py` over **every place, not the compiled scope**: a place no compile touched is exactly where a stale aggregate goes unseen, and the whole run takes seconds. A place failing outside the night's scope is recompiled with the same two scripts (`build-finance-page.py`, `compile-hub-financing.py --write`) and re-checked. Checks A/B/C must read clean before the baseline advances. Check D's misses go to `reviews/post-run-notes.md`; check E is hand work on the hub.
+**Verify what was just published — `REPORT-LINT.md`, before the baseline moves.** `python scripts/report-lint.py` over **every place, not the compiled scope**: a place no compile touched is exactly where a stale aggregate goes unseen. A place failing outside the night's scope is recompiled with the same two scripts (`build-finance-page.py`, `compile-hub-financing.py --write`) and re-checked. Checks A/B/C must read clean before the baseline advances. Check D's misses go to `reviews/post-run-notes.md`; check E is hand work on the hub.
 
 **Advance the compile baseline.** Once the scoped hubs are written **and committed**, run `python scripts/finance-compile-scope.py --commit` to move the state ref (`reviews/finance-compile-state.json`) to `HEAD`, and commit that — otherwise the next run recomputes the same places. Skip only on a no-op run.
 
@@ -106,6 +104,6 @@ End with the status line:
 ## Notes
 
 - **Read `finance_origin`, don't guess it.** A `raw/` finance record missing the field is a build error — fix it upstream.
-- **Group financiers on `financier_slug`** (and recipients on `recipient_slug`) — the typed fields (`wiki/finance-record-spec.md` → *Entities*), never the free-text string. A blank `financier_slug` is a build error (empty `entities`) — fix it upstream.
+- **Group financiers on `financier_slug`** (and recipients on `recipient_slug`) — never the free-text string. A blank `financier_slug` is a build error (empty `entities`) — fix it upstream.
 - **Regional buckets** (`XAF`, `XSS`, …) get a Financing section like any place.
 - **Idempotent and incremental.** Each in-scope section is recomputed from **all** its current `raw/` records, not a delta; a scoped run and `--all` write byte-identical sections for the places they share.

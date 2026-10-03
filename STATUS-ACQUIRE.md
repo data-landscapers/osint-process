@@ -44,7 +44,7 @@ Per country it selects the rows (pre-marking `held` and `rejected` off `lookups/
 
 **A pre-mark from `--select` wins over the class CORPUS sent.** This side's normalisation is the authoritative one, and a URL the vault already holds is never written to the register. Disagreements print one line each; an unknown class refuses the country in one line.
 
-**`staged` records that the document reached the queue, not that it was admitted.** Delivery is not admission: ingest may still drop it on scope, duplication or dating, and the row stays closed either way — one automated attempt per row, then the row is resolved. A `dropped` row that bears on a specific page still earns one dated line on that page saying the document is not held (`CLAUDE.md` → *Working the base*); where only a hand-clip could get it, `X:\fetch-list.md` takes it.
+**`staged` records that the document reached the queue, not that it was admitted.** Delivery is not admission: ingest may still drop it on scope, duplication or dating, and the row stays closed either way — one automated attempt per row, then the row is resolved. A `dropped` row's reason goes in the manifest notes and nowhere else: this pass writes no `wiki/` page (*Containment*), and a status-acquire row is a catalogue row, not an acquisition line, so it owes no not-held line.
 
 ## Containment
 

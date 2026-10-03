@@ -75,7 +75,7 @@ lookups/                  # controlled vocabularies and source lists — the tab
   sweep-newspapers.csv    # content sweep: newspapers (URL, iso-3, Title)    [BILL]
   sweep-thinktanks.csv    # content sweep: organisations (URL, Title, Focus) [BILL]
   sweep-regional-orgs.csv # regional sweep: institutions                     [BILL]
-  financier-names.csv     # financier_slug -> canonical display name         [CC]
+  financier-names.csv     # the financier record: slug -> name, origin, type, url, african [CC]
   intersection-names.csv  # place -> the prefix its intersection pages use   [CC]
                           #   cols: place,name,kind,prefix — one row per
                           #   place in countries.csv, so a slice reads the
@@ -111,8 +111,7 @@ reviews/
                           #    X:\fetch-list.md, 2026-09-07)
 outputs/                  # DERIVED exports — OSINT's own compile, not a website feed
                           #   (CORPUS authors the published output layer from raw/ / wiki/)
-  budgets/                # {ISO3}-budget.csv — domestic budget line-years
-  non-state-finance/      # {ISO3}-nonstate.csv, {ISO3}-summary.csv, all-nonstate.csv
+  non-state-finance/      # {ISO3}-nonstate.csv, all-nonstate.csv
                           #   (build-finance-page.py; not sources, never hand-edited)
                           #   what REPORT-LINT checks A–E reconcile against and
                           #   compile-hub-financing.py reads

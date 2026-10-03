@@ -60,7 +60,7 @@ Every record carries:
 
 `partial` and `unclear` records are built and held; the finance compile pass reports them **separately from the headline total**, never folded in.
 
-**Extraction methods accumulate in `documentation/domestic-budget-extraction.md`**, per country and document type. Append on every run, failures included.
+**Extraction methods were kept in `documentation/domestic-budget-extraction.md`**, deleted 2026-10-03 with the retired layer (R57) and recoverable from git; extraction is CORPUS's.
 
 ## Fiscal years
 
@@ -242,7 +242,7 @@ The stage ladder, FX fields, classification chain and `econ_class` sit in frontm
 
 ## Loop
 
-For each budget line: **scope** test → **origin gate** → the spec's five-fact test → map fields → **match on the `deal_id` stem: an existing line-year record → fold this stage into its ladder and `## Stage history` (and, if this stage is `appropriated` and the held baseline was `proposed`, promote it to master per case 5); no match → create the record** → hand to `wiki/finance-record-spec.md` → write the file to `new/` → append one line to `documentation/domestic-finance-run-log.csv` (`deal_id, file, country, state_level, fy, stage, version, origin, funding_source, scope_confidence, is_transfer, amount_total, currency, doc_locator, matched_to, warnings`) → append any new extraction method to `documentation/domestic-budget-extraction.md`. Moving the file into `new/` is the last step.
+For each budget line: **scope** test → **origin gate** → the spec's five-fact test → map fields → **match on the `deal_id` stem: an existing line-year record → fold this stage into its ladder and `## Stage history` (and, if this stage is `appropriated` and the held baseline was `proposed`, promote it to master per case 5); no match → create the record** → hand to `wiki/finance-record-spec.md` → write the file to `new/` → append one line to `documentation/domestic-finance-run-log.csv` (`deal_id, file, country, state_level, fy, stage, version, origin, funding_source, scope_confidence, is_transfer, amount_total, currency, doc_locator, matched_to, warnings`). Moving the file into `new/` is the last step.
 
 Work a document at a time, over all its digital lines at once, never a selection.
 

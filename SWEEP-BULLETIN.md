@@ -35,7 +35,7 @@ No lint, no reconcile, no acquire, no Phase B. The bulletin needs today's source
 
 ## Step 0 — the Exa canary
 
-**`SWEEP-CYCLE.md` § Step 0, unchanged and not optional.** One `web_search_exa`, `"data protection Africa"`, `numResults: 1`, before anything is selected or written. On an error, an exception, an empty result set or an absent connector: write one line to `logs/log.md` — `bulletin sweep: Exa canary failed — <the error> — not run` — and **stop**. No fallback tool, no reduced run, no legs run anyway. On a today-only window a dead instrument and a quiet morning produce the same output, and the bulletin would publish the difference.
+**`SWEEP-CYCLE.md` § Step 0, unchanged and not optional.** One `web_search_exa`, `"data protection Africa"`, `numResults: 1`, before anything is selected or written. On an error, an exception, an empty result set or an absent connector: write one line to `logs/log.md` — `bulletin sweep: Exa canary failed — <the error> — not run` — and **stop**. No fallback tool, no reduced run, no legs run anyway: on a today-only window a dead instrument and a quiet morning look the same.
 
 ## The window — today, and only today
 
@@ -45,7 +45,7 @@ No lint, no reconcile, no acquire, no Phase B. The bulletin needs today's source
 
 ## No state is written — the one hard rule of this process
 
-**The bulletin advances neither sweep's high-water mark, and writes to neither `sweep/daily/state.json` nor `sweep/off-list/state.json`.** It holds no state of its own either; its window is the calendar, not a ledger. Those two files are the cycle's window ledger: advancing them in the morning sets tonight's `window_start` to this morning, and everything the today-only filter dropped is lost from both instruments, silently.
+**The bulletin advances neither sweep's high-water mark, and writes to neither `sweep/daily/state.json` nor `sweep/off-list/state.json`.** It holds no state of its own either; its window is the calendar, not a ledger. Those two files are the cycle's window ledger; advancing them in the morning silently loses everything the today-only filter dropped.
 
 It keeps its own folder, **`sweep/bulletin/`** — `manifest-YYYY-MM-DD.md` and `drop-log-YYYY-MM-DD.csv`, same shapes as the daily sweep's. Both `seen.csv` files are **read for dedup and never appended to**. What stops tonight re-fetching what the bulletin ingested is the **`raw/` URL index** (`python scripts/raw-url-index.py --check -`), written by ingest at admission.
 
@@ -57,7 +57,7 @@ Both are **stage-only** and both stage flat to `new/YYYY-MM-DD-slug.md` with `sw
 
 `SWEEP-DAILY-LIST.md` over the domains in `lookups/sweep-daily.csv`, read fresh, in **one sub-agent**.
 
-**Run the publisher's feed or listing only — no query cluster.** The newest ~48h is under-indexed by Exa and a today-only window sits wholly inside that lag, so the search leg's nils would be index lag rather than evidence. The listing is already that sweep's declared instrument (§2, *one instrument per domain*). **Rule 0 holds — feed first, parsed in the shell, bodies written straight to the staged file, never read whole.**
+**Run the publisher's feed or listing only — no query cluster.** Exa under-indexes the newest ~48h, so a today-only search nil is index lag, not evidence. The listing is already that sweep's declared instrument (§2, *one instrument per domain*). **Rule 0 holds — feed first, parsed in the shell, bodies written straight to the staged file, never read whole.**
 
 **The one carve-out survives.** Where a domain's `sweep/domains/{domain}.md` records that its listing omits the beat (Rule 4), search *is* that domain's instrument and runs, date-bounded to today.
 
@@ -85,11 +85,11 @@ This is an ordinary Phase A slice: `INGEST.md` slices by explicit file list, and
 
 `sweep_closed` is **leg 2's return** — the moment after which nothing more could have been caught, which is also what the sweep-stage commit records. `ingest_started` is the **first Phase A slice's spawn**.
 
-**The parent measures them and no slice does** — the parent is the only actor that measured both. Both come from measurement — the spawn you made, the commit you took — never from an estimate. `last_admission` stamps admission, not collection; CORPUS reads `cycle-manifest.json`'s `collection.sweep_closed` directly as the bulletin's *Last updated* byline, with no fall-back behind it (notes-for-osint 132) — with no rotation `End` row to read, these two fields are the only record that this morning's collection stopped, so a close that skips `--stamp` leaves the byline on a stale run.
+**The parent measures them and no slice does** — the parent is the only actor that measured both. Both come from measurement — the spawn you made, the commit you took — never from an estimate. `last_admission` stamps admission, not collection; CORPUS reads `cycle-manifest.json`'s `collection.sweep_closed` directly as the bulletin's *Last updated* byline, with no fall-back, so a close that skips `--stamp` leaves the byline on a stale run.
 
 ## Commits
 
-Two, at the same boundaries the cycle uses: without them a run that dies mid-ingest leaves a well-formed tree indistinguishable from a finished one. Each is preceded by its write-set assertion — `python scripts/assert-containment.py --stage sweep`, then `--stage ingest` — exit 1 meaning do not commit as it stands.
+Two, at the same boundaries the cycle uses, so a run that dies mid-ingest is distinguishable from a finished one. Each is preceded by its write-set assertion — `python scripts/assert-containment.py --stage sweep`, then `--stage ingest` — exit 1 meaning do not commit as it stands.
 
 ## Mirror
 
@@ -99,7 +99,7 @@ Two, at the same boundaries the cycle uses: without them a run that dies mid-ing
 
 **Verify that it landed, and never rely on stdout to tell you.** `O:\` is CORPUS's read-only copy of this vault and this step is the only thing that supplies it. Invoked from this run the mirror **detaches, returns no output and sets no exit code** while completing normally in the background. **Assert on `git -C O:\ rev-parse HEAD` matching local** — that tests the thing CORPUS reads — and read the **HTML run log** under `%APPDATA%\FreeFileSync\Logs\`, newest file, whose header carries `Completed successfully`, the element count and the elapsed time. **The mirror is asynchronous — wait for the `FreeFileSync` processes to exit before asserting anything**, or the HEAD check reads a half-copied tree.
 
-**It runs even on a nil morning.** The manifest, drop log and log line changed, and a mirror that always ran is one fewer thing to reason about when the bulletin looks wrong.
+**It runs even on a nil morning** — the manifest, drop log and log line changed.
 
 ## Delegation
 
