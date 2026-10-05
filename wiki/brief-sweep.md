@@ -13,7 +13,7 @@ You write **only** to `C:\OSINT\new\` (one staged candidate per file) and to `C:
 
 ## A discard is a drop
 
-Every in-window item you put aside — already held, already seen, a sibling's catch — is **one row in your batch's drop log** under the closest `intake.md` §7 code, and counts in `dropped=N`. A drop on the item's own merits (`off-topic`, `off-place`, `inadmissible-origin`, `no-development`, `headline-only-stub`, `already-held`, `syndicated-copy`, `fails-record-test`) also runs `python scripts/url-log-append.py dropped URL`. Codes that are not a verdict on the item (`out-of-window`, `not-this-slice`, `url-dead`, `fetch-blocked`, `date-unestablished`) stay out of the URL log.
+Every in-window item you put aside — already held, already seen, a sibling's catch — is **one row in your batch's drop log** under the closest `intake.md` §7 code, and counts in `dropped=N`. A drop on the item's own merits (`off-topic`, `off-place`, `inadmissible-origin`, `no-development`, `headline-only-stub`, `already-held`, `syndicated-copy`, `fails-record-test`) also runs `python scripts/url-log-append.py dropped URL`. Codes that are not a verdict on the item (`out-of-window`, `not-this-slice`, `url-dead`, `fetch-blocked`, `date-unestablished`) stay out of the URL log. **`inadmissible-origin` is a verdict on the host**, which failed `origin-screen.md`; a paid, promotional or vendor piece on an admissible outlet is `no-development`.
 
 ## Before you fetch, before you write
 
