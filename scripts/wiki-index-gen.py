@@ -127,7 +127,7 @@ def places_block(rows, names, tax_order, shape):
         (regions if REGION_RE.match(place) else countries).append(entry)
     body = ["## Every intersection, by place", "",
             "Generated from `wiki/intersections/` — **{:,} pages across {:,} places**. The "
-            "`Lead topics` cell above is the curated lead and carries the glosses; this is "
+            "`Lead topics` cell above is the curated lead; this is "
             "the enumeration, and it is complete by construction."
             .format(len(rows), len(by_place)),
             ""]
@@ -214,8 +214,8 @@ def already_named(root, rel):
     """Intersection slugs the file names *outside* the generated block.
 
     Both indexes already point at intersection pages — 608 from `places-index.md`'s
-    `Lead topics` cells and 633 from `topics-index.md`'s rows — and **every one of those
-    pointers carries an editorial gloss the generator cannot reproduce**. They are a
+    `Lead topics` cells and 633 from `topics-index.md`'s rows — and **those pointers are a
+    hand-curated selection the generator cannot reproduce**. They are a
     curated lead, not a partial enumeration, which is why nothing here removes them and
     why `inline` accepts naming a page twice. `gaps` is the other reasonable answer, and
     it is offered rather than argued for: it lists only what nothing else names, so there

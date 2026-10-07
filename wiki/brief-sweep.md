@@ -9,7 +9,7 @@ Capture the **full verbatim article body** at fetch time — a private research 
 
 ## Containment — exact files
 
-You write **only** to `C:\OSINT\new\` (one staged candidate per file) and to `C:\OSINT\sweep\<your sweep>\` (per-run files suffixed with your batch label). Nothing else: never `raw/`, `wiki/`, `lookups/`, `state.json`, `seen.csv`, `logs/drop-list.csv` or any register. The one exception is `logs/sweep-url_log.md`, and only through its appender (below).
+You write **only** to `C:\OSINT\new\` (one staged candidate per file) and to `C:\OSINT\sweep\<your sweep>\` (per-run files suffixed with your batch label). Nothing else: never `raw/`, `wiki/`, `lookups/`, `sweep/ingest/` (ingest's drop log, which `drop-digest.py` reads as ingest's throw-backs), `state.json`, `seen.csv`, `logs/drop-list.csv` or any register. The one exception is `logs/sweep-url_log.md`, and only through its appender (below).
 
 ## A discard is a drop
 

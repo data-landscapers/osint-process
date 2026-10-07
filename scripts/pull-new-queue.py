@@ -10,6 +10,8 @@ pull-new-queue.py — move CORPUS's finished batches from `X:\new-queue\` into `
 
 **The lane.** `scripts/ingest-lane.py` reads the lane off `sweep_batch:`. A `.md` candidate that carries no `sweep_batch:`, in a folder named with a backfill prefix (`status-acquire-`, `progress-filler-`, `dataset-`, `budget-poll-`), gets `sweep_batch: <folder>-<YYYY-MM-DD>` inserted as the first frontmatter key — the prefix from the folder name, exactly as the register line says. A candidate that already carries one keeps it, and a folder with any other name adds nothing, so its items take the news lane at full price: the whitelist's own default.
 
+**Maturity studies come from `X:\prepared\`** *(Bill, 2026-10-06, `notes-for-osint` 215)*: CORPUS hands each study's documents over as one group, `X:\prepared\maturity-study-{id}\`, flat, kept apart from `new-queue\` so the group stays visible. The same `READY` rule applies, and every file but `BRIEF.md` is pulled; the lane comes from the `sweep_batch: maturity-study-…` the documents already carry. Once the documents are in `new/`, `READY` is removed and **the folder is left with its `BRIEF.md`**, because CORPUS prunes `prepared\` (`BACKLOG.md`).
+
 **Copy, verify, then delete.** `X:\` is another drive, so each file is copied, its bytes compared, and only then removed from the queue; an interrupted pull leaves duplicates the next run recognises, never a loss. The queue's deletions are CORPUS's to commit on the share (`X:\README.md` → *Conventions*); this script commits nothing.
 
 Usage:
@@ -38,6 +40,9 @@ if hasattr(sys.stdout, "reconfigure"):
 REPO = pathlib.Path(__file__).resolve().parent.parent
 QUEUE = pathlib.Path("X:/new-queue")
 NEW = REPO / "new"
+PREPARED = pathlib.Path("X:/prepared")
+STUDY = "maturity-study-"
+BRIEF = "BRIEF.md"
 READY = "READY"
 MARKER = "delivered-"
 
@@ -112,12 +117,13 @@ def loose(queue, apply, new):
     return moved, waiting, blocked
 
 
-def pull(folder, today, apply, new):
+def pull(folder, today, apply, new, study=False):
     backfill = folder.name.startswith(_lane.BACKFILL_PREFIXES)
     batch = folder.name if folder.name[-10:].count("-") == 2 and folder.name[-10:-6].isdigit() else f"{folder.name}-{today}"
     moved = tagged = 0
     blocked = []
-    files = sorted(p for p in folder.rglob("*") if p.is_file() and p.name != READY and not p.name.startswith(MARKER))
+    files = sorted(p for p in folder.rglob("*") if p.is_file() and p.name != READY and not p.name.startswith(MARKER)
+                   and not (study and p.name == BRIEF))
     for src in files:
         dest = new / src.name
         data = src.read_bytes()
@@ -147,7 +153,9 @@ def pull(folder, today, apply, new):
             tmp.replace(dest)
             src.unlink()
         moved += 1
-    if apply and not blocked:
+    if apply and not blocked and study:
+        (folder / READY).unlink(missing_ok=True)
+    elif apply and not blocked:
         for sub in sorted((p for p in folder.rglob("*") if p.is_dir()), key=lambda p: len(p.parts), reverse=True):
             try:
                 sub.rmdir()
@@ -173,6 +181,7 @@ def main():
     ap.add_argument("--apply", action="store_true", help="move the files; without it, a dry run")
     ap.add_argument("--queue", default=str(QUEUE), help=argparse.SUPPRESS)
     ap.add_argument("--new", default=str(NEW), help=argparse.SUPPRESS)
+    ap.add_argument("--prepared", default=str(PREPARED), help=argparse.SUPPRESS)
     a = ap.parse_args()
     queue = pathlib.Path(a.queue)
     verb = "pulled" if a.apply else "would pull"
@@ -199,6 +208,17 @@ def main():
         print(f"  {folder.name}: {verb} {moved} files ({lane} lane{extra})")
         for b in blocked:
             print(f"    blocked: {b} — a different file of that name is already in new/; left in the queue, folder kept")
+    prepared = pathlib.Path(a.prepared)
+    studies = sorted(p for p in prepared.iterdir() if p.is_dir() and p.name.startswith(STUDY)) if prepared.is_dir() else []
+    for folder in studies:
+        if not (folder / READY).is_file():
+            continue  # still being written, or already pulled and waiting on CORPUS's prune
+        moved, tagged, blocked, backfill = pull(folder, today, a.apply, pathlib.Path(a.new), study=True)
+        folders += 1
+        files += moved
+        print(f"  prepared/{folder.name}: {verb} {moved} files ({'backfill' if backfill else 'news'} lane)")
+        for b in blocked:
+            print(f"    blocked: {b} — a different file of that name is already in new/; left in prepared/, READY kept")
     root_moved, root_waiting, root_blocked = loose(queue, a.apply, pathlib.Path(a.new))
     if root_moved or root_waiting or root_blocked:
         print(f"  (root): {verb} {root_moved} loose file(s) (news lane)")

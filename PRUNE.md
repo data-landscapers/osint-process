@@ -23,7 +23,9 @@ Everything in the vault that ages out, and who does it. **A rule lives in exactl
 | `reviews/contradictions/open/` | brief deleted **on closure** — never aged | `RECONCILE.md` |
 | `logs/sweep-url_log.md` | pruned to **one rotation** at the close of each night | `SWEEP-CYCLE.md` |
 | `sweep/daily/seen.csv` | rows older than **60 days**, at the end of each run | `SWEEP-DAILY-LIST.md` |
-| `sweep/*/manifest-YYYY-MM-DD*.md`, `drop-log-YYYY-MM-DD*.csv` | deleted **60 days** after the date in the name — never a folder's newest of either | **this pass** |
+| `sweep/**/` per-run records — manifest, drop-log, drops, tally, notes, row-health, batch, rows, monitor, qa, topic-decisions, region-unmapped, dated in the name | deleted **15 days** after the date in the name — never a folder's newest manifest or drop-log | **this pass**, nightly at the close |
+| `sweep/ingest-lists-*/`, `sweep/phaseb-lists-*/`, `sweep/_*-YYYY-MM-DD*` (briefs, lint scope) | deleted **3 days** after the date in the name | **this pass**, nightly at the close |
+| `sweep/donor/iati/work-order-*.json` | deleted when its records are built — a queue, never aged | `SWEEP-IATI.md` |
 | `logs/log.md` | the newest **~400 lines**, at every cycle close (`scripts/rotate-log.py`) | `SWEEP-CYCLE.md` |
 | `logs/machine-record-audit.csv` | **never pruned** — one row a night, and a row means nothing except against the row before it | `LINT.md` #21 |
 | `logs/machine-record-audit-defects.csv` | **not aged — rewritten whole** each run; it states the present, not a history | `LINT.md` #21 |
@@ -36,13 +38,17 @@ Everything in the vault that ages out, and who does it. **A rule lives in exactl
 
 **`SWEEP-CYCLE.md` owns it**, mechanically: `python scripts/rotate-log.py --apply` at every cycle close keeps the newest ~400 lines, whole entries only. There is no monthly date rotation here, and no duplicate-entry or descending-date assertion: a line budget applied every night makes a horizon rule, a shape rule and a `--log` mode all redundant.
 
-### `sweep/*/manifest-*.md` and `drop-log-*.csv` — 60 days
+### `sweep/` dated files — 15 days and 3 days
 
-`python scripts/prune-dated.py --sweep` (report) / `--apply` (act).
+`python scripts/prune-dated.py` (report) / `--apply` (act). **`SWEEP-CYCLE.md` runs `--apply` at every night's close**, so this needs no trigger.
 
-Delete every dated manifest and drop-log whose name is more than **60 days** old, across every sweep folder — not `daily/` alone; each sweep writes the same pair.
+Delete every per-run record under `sweep/`, at any depth, whose name is more than **15 days** old: manifest, drop-log, drops, tally, notes, row-health, batch, rows, monitor, qa, topic-decisions, region-unmapped.
 
-**60 days is `sweep/*/seen.csv`'s horizon**, deliberately: the drop-log is the evidence for one run's screening, and once a URL has aged out of the dedup memory the drop can no longer be re-tested against the record it explains. What is durable is extracted by the sweep itself — per-domain findings to `sweep/domains/{domain}.md`, run history to the sweep's own `history.md`.
+Delete the night's parent-to-slice handoffs — `sweep/ingest-lists-*/`, `sweep/phaseb-lists-*/` and `sweep/_*-YYYY-MM-DD*` — **3 days** after their date. No pass reads them after the night that wrote them; 3 days covers a resumed night.
+
+**Undated files outside the live set are reported as `unowned` and left alone.** An undated one is scratch that escaped a batch; the report names it for deletion by hand.
+
+**15 days is several times the longest read-back**: `drop-digest.py` reads one rotation of ingest drop-logs, `cycle-manifest.py --drops` one night, `STATUS.md` only the newest of each. Dedup lives in `seen.csv`, which no drop-log backs. What is durable is extracted by the sweep itself — per-domain findings to `sweep/domains/{domain}.md`, run history to the sweep's own `history.md`.
 
 **Never delete a folder's newest manifest or newest drop-log**, whatever its date. `STATUS.md` reads the newest of each against `state.json.last_run_completed_utc` to detect a sweep that died between staging and state; a folder pruned empty would silence that check instead of answering it.
 

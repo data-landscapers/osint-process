@@ -61,7 +61,7 @@ full lint's batched checks
 assert-containment.py --stage lint ; git commit ; usage-log.py --stage lint
 
 status-acquire.py --absorb                          # any pulled status-acquire batch
-prune sweep-url_log.md before D's (old) Start (skip if blank) [exa] ; rotate-log.py --apply
+prune sweep-url_log.md before D's (old) Start (skip if blank) [exa] ; rotate-log.py --apply ; prune-dated.py --apply
 close D: Prev Duration = Duration; Duration = now - New-Start (H:MM); Start = New-Start; End = now; clear New-Start   [exa]
 assert-containment.py --stage close --allow-extra lookups/rejected-urls.csv ; git commit ; usage-log.py --stage close
 
@@ -86,7 +86,7 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 **Notes first, unconditional**: act on and close every open note in `X:\notes-for-osint.md` under `X:\README.md` → *Conventions*; write to `X:\` and commit nothing there. A fix reaching this repo commits at the `notes` boundary (write-set `*`, the deny set still standing).
 
-**`python scripts/pull-new-queue.py --apply`, unconditional**: every `X:\new-queue\` folder carrying `READY` moves flat into `new/`; delivery is not admission — the night's one Phase A adjudicates it, backfill lane open for the whitelisted batches. It commits nothing of its own.
+**`python scripts/pull-new-queue.py --apply`, unconditional**: every `X:\new-queue\` folder carrying `READY` moves flat into `new/`, and so does every `X:\prepared\maturity-study-*\` folder carrying one, its `BRIEF.md` left for CORPUS; delivery is not admission — the night's one Phase A adjudicates it, backfill lane open for the whitelisted batches. It commits nothing of its own.
 
 **`python scripts/status-acquire.py --absorb` at the close, unconditional**: closes a pulled country's rows into `X:\acquire-done.csv` and writes permanent negatives to `lookups/rejected-urls.csv` (hence the close's `--allow-extra`). `STATUS-ACQUIRE.md` holds the rest.
 

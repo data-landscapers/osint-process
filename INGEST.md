@@ -23,7 +23,7 @@ Above ~15 items, **slice Phase A into sub-agents of ~10** on explicit file lists
 
 ## Two lanes
 
-**The backfill lane skips exactly the three rows below.** It opens on `update wiki backfill` and on the cycle's Phase A over `X:\new-queue\` batches; `python scripts/ingest-lane.py` assigns it off `sweep_batch:`, and **the parent names the lane in every spawn prompt** — a slice not told is news.
+**The backfill lane skips exactly the three rows below.** It opens on `update wiki backfill` and on the cycle's Phase A over `X:\new-queue\` batches and `X:\prepared\maturity-study-*\` studies; `python scripts/ingest-lane.py` assigns it off `sweep_batch:`, and **the parent names the lane in every spawn prompt** — a slice not told is news.
 
 | Step | News lane | Backfill lane |
 |---|---|---|
