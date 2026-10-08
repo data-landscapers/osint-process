@@ -1,0 +1,63 @@
+﻿place,name,kind,prefix
+AGO,Angola,country,angola
+BDI,Burundi,country,burundi
+BEN,Benin,country,benin
+BFA,Burkina Faso,country,burkina-faso
+BWA,Botswana,country,botswana
+CAF,Central African Republic,country,central-african-republic
+CIV,Cote d'Ivoire,country,cote-divoire
+CMR,Cameroon,country,cameroon
+COD,DR Congo,country,drc
+COG,Congo,country,congo
+COM,Comoros,country,comoros
+CPV,Cape Verde,country,cabo-verde
+DJI,Djibouti,country,djibouti
+DZA,Algeria,country,algeria
+EGY,Egypt,country,egypt
+ERI,Eritrea,country,eritrea
+ETH,Ethiopia,country,ethiopia
+GAB,Gabon,country,gabon
+GHA,Ghana,country,ghana
+GIN,Guinea,country,guinea
+GMB,Gambia,country,gambia
+GNB,Guinea-Bissau,country,guinea-bissau
+GNQ,Equatorial Guinea,country,equatorial-guinea
+KEN,Kenya,country,kenya
+LBR,Liberia,country,liberia
+LBY,Libya,country,libya
+LSO,Lesotho,country,lesotho
+MAR,Morocco,country,morocco
+MDG,Madagascar,country,madagascar
+MLI,Mali,country,mali
+MOZ,Mozambique,country,mozambique
+MRT,Mauritania,country,mauritania
+MUS,Mauritius,country,mauritius
+MWI,Malawi,country,malawi
+NAM,Namibia,country,namibia
+NER,Niger,country,niger
+NGA,Nigeria,country,nigeria
+RWA,Rwanda,country,rwanda
+SDN,Sudan,country,sudan
+SEN,Senegal,country,senegal
+SLE,Sierra Leone,country,sierra-leone
+SOM,Somalia,country,somalia
+SSD,South Sudan,country,south-sudan
+STP,Sao Tome and Principe,country,sao-tome
+SWZ,Eswatini,country,eswatini
+SYC,Seychelles,country,seychelles
+TCD,Chad,country,chad
+TGO,Togo,country,togo
+TUN,Tunisia,country,tunisia
+TZA,Tanzania,country,tanzania
+UGA,Uganda,country,uganda
+XAF,Africa,region,xaf
+XCA,Central Africa,region,xca
+XEA,East Africa,region,xea
+XGL,Global/Developing Countries,region,xgl
+XNA,North Africa,region,xna
+XSA,Southern Africa,region,xsa
+XSS,Sub-Saharan Africa,region,xss
+XWA,West Africa,region,xwa
+ZAF,South Africa,country,south-africa
+ZMB,Zambia,country,zambia
+ZWE,Zimbabwe,country,zimbabwe

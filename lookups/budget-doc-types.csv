@@ -1,0 +1,14 @@
+doc_type,what_it_is,stages
+appropriation-act,"The enacted budget law or appropriation act, with its schedules.",appropriated
+budget-estimates,"The line-item estimates volumes: as tabled, or as approved where the cover says so.",proposed|appropriated
+mtef,"The medium-term expenditure or fiscal framework, or a budget framework paper; forward ceilings, not a vote.",proposed
+implementation-report,"An in-year or year-end budget execution or outturn report from the finance ministry.",released|actual
+audited-accounts,"The audited public accounts, or the auditor-general's or audit court's report on them.",audited
+ifmis-extract,"An extract from the government's own IFMIS or open-budget portal.",released|actual
+treasury-release,"A treasury warrant, release or cash-allocation notice to a ministry or agency.",released
+board-budget,"The board-approved budget of a levy fund, regulator or state-owned enterprise.",appropriated
+procurement-plan,"A ministry's or agency's procurement plan; evidences intent to spend, not a budget stage.",none
+executive-instrument,"A decree, despacho, ordinance or supplementary-credit order; enacts a budget where no parliament sits.",revised|appropriated
+project-document,"A financier's appraisal or financing document stating the government's counterpart share.",none
+statement,"The government's own statement: a budget speech, press release or official portal page.",as-stated
+reporting,"On-the-record reporting of any of the above.",as-stated

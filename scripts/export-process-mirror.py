@@ -84,6 +84,7 @@ PUBLISH = [
     "lookups/deal-status-map.csv", "lookups/deal-vocabs.csv", "lookups/financier-names.csv",
     "lookups/fx-imf-annual.csv", "lookups/region-membership.csv",
     "lookups/report-region-sections.csv", "lookups/sweep-*.csv",
+    "lookups/budget-doc-types.csv", "lookups/intersection-names.csv",
     # Wiki specs — by name; the compiled pages beside them are the product, not the process.
     "wiki/index.md", "wiki/intake.md", "wiki/schemas.md", "wiki/facets.md", "wiki/layout.md",
     "wiki/reference.md", "wiki/capture-rule.md", "wiki/origin-screen.md", "wiki/operations.md",
@@ -102,6 +103,7 @@ WITHHELD = {
     "lookups/rejected-urls.csv": "corpus-derived; names third-party URLs with a reason",
     "lookups/xgl-ruled.csv": "rulings on held documents, by title",
     "lookups/entity-slugs-ruled.csv": "rulings citing compiled wiki pages",
+    "lookups/region-place-ruled.csv": "lint rulings on held documents, by raw/ path",
     "lookups/budget-init-backlog.csv": "operational state",
     "wiki/places-index.md": "compiled content",
     "wiki/topics-index.md": "compiled content",
