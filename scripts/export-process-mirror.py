@@ -91,7 +91,7 @@ PUBLISH = [
     "wiki/finance-news-driver.md", "wiki/finance-record-spec.md",
     # Strategic review 5 R90/R93: the slice briefs and the runbooks' reasoning specs.
     "wiki/brief-sweep.md", "wiki/brief-ingest.md", "wiki/ingest-judgment.md",
-    "wiki/lint-checks.md", "wiki/sweep-cycle-notes.md",
+    "wiki/lint-checks.md", "wiki/sweep-cycle-notes.md", "wiki/append-log-trim.md",
 ]
 
 # Ruled out, with the reason. Anything at these levels in neither list is reported.
