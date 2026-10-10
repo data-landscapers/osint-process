@@ -104,4 +104,4 @@ Move it to **`raw/YYYY/`**, prefixed `YYYY-MM-DD` from `published`; an artefact 
 
 **Run `FINANCE-COMPILE.md` if any finance record was admitted, then `HUB-COMPILE.md` scoped to the places touched** — whatever invoked ingest. Confirm every adjudicated item has its URL-log line.
 
-**Write the run's one `logs/log.md` line**, folding every slice's tally, **then stamp the collection window**: `python scripts/cycle-manifest.py --stamp --sweep-closed <> --ingest-started <> --last-admission <that line's stamp>` (`intake.md` §6a). **Report the one line of `STATUS.md` → *The close report*.** Pending writes left for `WIKI-SYNC.md` are the normal end.
+**Write the run's one `logs/log.md` line**, folding every slice's tally, **then stamp the collection window**: `python scripts/cycle-manifest.py --stamp --sweep-closed <> --ingest-started <> --last-admission <that line's stamp>` (`intake.md` §6a). **Report the one line of `STATUS.md` → *The close report*.** **Then Phase B, in the same sitting and without a stop** *(Bill, 2026-10-10)*: commit Phase A and run `WIKI-SYNC.md` Phase B. Only inside `SWEEP-CYCLE.md`, whose lint stage runs Phase B, does ingest end at Phase A.
