@@ -115,3 +115,6 @@ logs/collection-stamp.json
 # `usage` block at the close and emptied by --reset at the next night's first act. A
 # working buffer, not a record: logs/usage-log.csv is the record.
 logs/usage-stages.jsonl
+
+# FreeFileSync's lock file, present in the root only while the O:\ mirror runs; a commit taken mid-mirror would carry it.
+sync.ffs_lock
