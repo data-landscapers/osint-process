@@ -14,8 +14,9 @@ Your spawn names one list file. Every path in it is yours and no path outside it
 - `logs/sweep-url_log.md` — **you** write it, at each disposition, only through `url-log-append.py` (an admission carries `--ingest`, a drop `--code` and `--batch`, step 11).
 - `lookups/raw-url-index.csv`, `lookups/artefact-md5-index.csv`, `logs/ingest-pending-writes.md`, `reviews/acquisitions.md` — **the parent** writes them. Your rows for them go to a file of your own, named for your slice, and you return its path (`INGEST.md` → *The shape, the slicing*).
 - Remove a row only by its own text, edit only rows you wrote, and run no whole-file formatter over a register.
+- **A held carrier's `hub_line_sources:` or `cite_through:` is yours** where your disposition needs it: re-read it just before writing and merge into its one key, never a second.
 
-**Return your delta lines verbatim, never a summary** — the parent reconciles against them, and they are the only copy if a register loses a block.
+**Return your delta lines verbatim, never a summary** — the parent reconciles against them.
 
 ## Judgment, briefly
 
