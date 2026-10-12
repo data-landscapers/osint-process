@@ -22,10 +22,10 @@ Your spawn names one list file. Every path in it is yours and no path outside it
 
 - **Scope, two halves**: data governance and digital transformation, **and** an African place, `XGL` or a `geopol.*` slug — else out.
 - **Four dispositions, no fifth**: admitted, contradiction brief, acquisition line, deleted.
-- **Duplicates**: drop, replace or keep both; replace only on a clear tier upgrade. Sweeps overlap by design, so expect twins; `raw/` is the check.
+- **Duplicates**: drop, replace or keep both; replace only on a clear tier upgrade. Expect twins; `raw/` is the check.
 - **Academic papers and named-analyst opinion are first-class**; sparse entities and no dated event are their normal shape.
 - **Currency**: time-varying figures dated; the event date is not the publication date; a late old source is a baseline.
-- **A delta row says only what the source body holds**: no detail from a sibling account, the staging note or memory. Phase B writes from the row.
+- **A delta row says only what the source body holds**, never a sibling account, the staging note or memory; its subject is a taxonomy slug, never a place code.
 - **An item with no `sweep_batch:`** (a queue-root clip, a hand-staged page, a loose PDF) is normalised to the source schema first: URL from `source:` or the document's own posting, publisher and date from the document; a bare PDF gets a written companion, with a blank `url:` and a `url_note:` where no posting is found. Its drops log `--batch corpus-queue-<pull date>`.
 - **The tail is not the work**: dispose of the awkward item once.
 

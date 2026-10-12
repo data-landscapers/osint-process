@@ -48,6 +48,7 @@ which is never read as a pass — a broken guard that reads as clean is the fail
 gated rows in `sweep-cycle_log.md` already had to be taught.
 """
 import argparse
+import fnmatch
 import os
 import re
 import subprocess
@@ -66,7 +67,10 @@ STAGES = {
               "acting on a notes-for-osint entry reaches wherever its fix lives"),
     "sweep": (["new", "sweep", "logs"],
               "sweeps stage candidates and nothing else"),
-    "ingest": (["new", "raw", "wiki", "outputs", "reviews", "logs", "lookups", "index"],
+    # The sweep/ globs are the parent's own ingest wiring — its brief, slice lists, the
+    # slices' rows files and ingest's drop log — which every cycle commits with this stage.
+    "ingest": (["new", "raw", "wiki", "outputs", "reviews", "logs", "lookups", "index",
+                "sweep/_ingest-*", "sweep/ingest-lists-*", "sweep/ingest/*"],
                "ingest is the one door into raw/, plus the compiles it fires"),
     "lint":  (["*"],
               "lint fixes what it finds, anywhere but the process files"),
@@ -124,7 +128,8 @@ def changed_paths():
 def inside(path, prefixes):
     if "*" in prefixes:
         return True
-    return any(path == p or path.startswith(p + "/") for p in prefixes)
+    return any(fnmatch.fnmatchcase(path, p) if "*" in p else (path == p or path.startswith(p + "/"))
+               for p in prefixes)
 
 
 def eol_flips(allow, rng=()):
