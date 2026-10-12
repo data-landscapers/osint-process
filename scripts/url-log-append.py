@@ -156,6 +156,10 @@ def main():
         sys.exit("usage: url-log-append.py {%s} [--ingest] [--code CODE --batch SWEEP_BATCH] URL [URL ...]"
                  % "|".join(VALID))
     disp, urls = args[0], args[1:]
+    stray = [u for u in urls if u.startswith("-")]
+    if stray:
+        # A flag is never a URL: `dropped --help` once wrote a "--help" row into the live log.
+        sys.exit("url-log-append.py: not a URL: %s" % " ".join(stray))
     if disp == "admitted" and not by_ingest:
         # Admission is ingest's disposition. A sweep stages; it never admits (brief-sweep.md).
         sys.exit("url-log-append.py: `admitted` is ingest's alone and takes --ingest; "

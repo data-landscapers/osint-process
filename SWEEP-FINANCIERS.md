@@ -38,7 +38,7 @@ The **parent** loads both lookup files at run-time and hands each sub-agent its 
 
 **This sweep stages sources. It does not build deal records.** Every candidate, however clear the deal, is an **ordinary candidate source**; the finance record is built at ingest by `wiki/finance-news-driver.md` in capture mode (`INGEST.md` step 2a), against `wiki/finance-record-spec.md`. A sweep may write only `new/` and its own `sweep/` folder (`intake.md` §7).
 
-**The report fields are a head-start, not a record.** Carry what the Agent returned and the fetched page states into a `## Sweep note` section on the candidate — place, topic, recipient organisation, the pledge/commitment/disbursement figure in the announcing party's own currency, and the date of the deal. Ingest verifies it against the body; it is not evidence and nothing downstream may cite it.
+**The report fields are a head-start, not a record.** Carry what the Agent returned and the fetched page states into the candidate's frontmatter `note:`, never the body (`wiki/capture-rule.md`) — place, topic, recipient organisation, the pledge/commitment/disbursement figure in the announcing party's own currency, and the date of the deal. Ingest verifies it against the body; it is not evidence and nothing downstream may cite it.
 
 ### 3c. There is no amount gate at staging
 
@@ -79,7 +79,7 @@ The **parent** loads both lookup files at run-time and hands each sub-agent its 
 **The window applies to the publication date.** A report published inside the window about a commitment signed years earlier **is in scope** — this sweep watches **the financier disclosing something**.
 
 - **The publication date** screens; it comes **from the fetched page**, never the Agent's report, and is the candidate's **`published:`**. Never back-date a candidate to its deal year: the filename prefix orders `new/`.
-- **The date of the deal** is the event date, goes in the `## Sweep note` (§3b), and becomes the finance record's `published` at ingest if a record is built (`finance-record-spec.md` → *Dates*).
+- **The date of the deal** is the event date, goes in the frontmatter `note:` (§3b), and becomes the finance record's `published` at ingest if a record is built (`finance-record-spec.md` → *Dates*).
 
 **Not a licence to admit old news** — `CLAUDE.md` → *Currency*: an older source arriving late is a **baseline, not news**, and a re-report of a held deal is a duplicate settled at ingest.
 

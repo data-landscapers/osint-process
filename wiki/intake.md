@@ -54,7 +54,7 @@ Acquisition sweeps run *upstream* of the wiki and stage into `new/`.
   | `inadmissible-origin` | failed [`origin-screen.md`](origin-screen.md) |
   | `off-topic` | outside data governance and digital transformation — the subject half of the scope drop above |
   | `off-place` | on subject, but its place is neither African nor `XGL` and it files under no `geopol.*` slug — the place half of scope (`CLAUDE.md` → *The material*) |
-  | `no-development` | digest, paid placement, awards PR or vendor thought-leadership: reports no development |
+  | `no-development` | digest, paid placement, awards PR or vendor thought-leadership: reports no development; also a second-hand synthesis (AI output, SEO rewrite, aggregator summary, law-firm country tracker) once its primaries are staged or already held, whether or not its own facts are held |
   | `headline-only-stub` | free text adds nothing beyond the headline (`capture-rule.md`) |
   | `url-dead` | 404/410, or NXDOMAIN/NODATA **after** the DoH check — never on the system resolver alone |
   | `fetch-blocked` | reachable but refusing us — 403, paywall, JS wall; routed to manual clip |
