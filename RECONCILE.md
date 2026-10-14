@@ -19,7 +19,7 @@ For each file in `reviews/contradictions/open/`:
 
 4. **Apply the resolution** to every affected page. **The precedence call — which value wins, and whether what the research turned up settles it or is a third value needing its own line — is this pass's own judgment**, reasoned against the primaries just ingested, not from a title or a filename. Prefer the newest value. Write the resolved figure dated, and keep at most one dated prior where the trajectory means something. Clear `needs-review`. **Where the resolution changes what a held record's own frontmatter says** — its `hub_line`, its `catalogue_hero`, a padded `published` — correct that frontmatter and recompile the hub it feeds; never the body, which is the publisher's text as captured. The slug and path keep their date, and the commit body names the record.
 
-5. **Close it.** Record the resolution and its date **on the affected page and in `logs/log.md`**, then **delete the brief** from `reviews/contradictions/open/`. Deleting is the **last** step, so an interrupted pass resumes cleanly — whatever is still in `open/` is still open. There is no `done/` folder; git holds the deleted brief.
+5. **Close it.** Record the resolution and its date **on the affected page and in `logs/log.md`**, then **delete the brief** from `reviews/contradictions/open/`. **A resolution overtakes every pending row that named the brief**: list each in the return, and the caller rewrites it in `logs/ingest-pending-writes.md` before Phase B, so no row re-flags a settled passage. Deleting is the **last** step, so an interrupted pass resumes cleanly — whatever is still in `open/` is still open. There is no `done/` folder; git holds the deleted brief.
 
 ## When an item won't close
 

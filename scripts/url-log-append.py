@@ -186,6 +186,12 @@ def main():
                     kept.append(n)
             normed = kept
 
+        # Idempotent: a row already in the log (same day, disposition and URL) is not
+        # written again. Sibling slices and re-run steps called the appender twice for
+        # one disposition, and the doubled rows inflated the night's drop counts.
+        held = set(t.splitlines())
+        normed = [n for n in normed if f"{today} | {disp} | {n}" not in held]
+
         lines = [f"{today} | {disp} | {n}" for n in normed]
         new_content = (eol.join(lines) + eol) if lines else ""
 

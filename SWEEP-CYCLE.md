@@ -120,7 +120,7 @@ A change a site reader could notice — a new sweep list, source type or country
 
 ## The cycle log
 
-`logs/sweep-cycle_log.md` is boss: its header defines the columns, `Skip`, the `@` prefix and duration ageing. **Selection**: oldest `Start`, blank counting oldest and two blanks tie-breaking on the lower `Day`; a `Skip` row passes to the next-oldest, `Start` untouched, named on the closing line. **No row due**: run the common prefix and the close, and say `no day due`.
+`logs/sweep-cycle_log.md` is boss: its header defines the columns, `Skip`, the `@` prefix and duration ageing. **Its times, `New-Start` included, are local wall-clock (`date`), as are the collection stamp's; only `logs/log.md` is UTC.** **Selection**: oldest `Start`, blank counting oldest and two blanks tie-breaking on the lower `Day`; a `Skip` row passes to the next-oldest, `Start` untouched, named on the closing line. **No row due**: run the common prefix and the close, and say `no day due`.
 
 **Window**: `window_start = D's (old) Start − 1 day`, `window_end = today`; a blank old `Start` gives `today − one rotation`. The daily and off-list sweeps keep their own high-water state. `Start` advances only at the close, so a re-run sweeps the same window.
 
