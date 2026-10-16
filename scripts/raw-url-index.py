@@ -272,7 +272,15 @@ def cmd_check(urls):
             worst = max(worst, 2)
             continue
         k, h, hit = slug_key(n), host_of(n), None
+        # A slug the host already carries on two held paths is a template section name
+        # (crvslaws.org/<country>/birth-registration/id-related-services), not an item's
+        # identity: a FLAG-SLUG for tier 3, never a mechanical drop.
+        template = len({r["url_normalized"] for r in by_slug.get(k, [])
+                        if host_of(r["url_normalized"]) == h}) >= 2 if k else False
         for r in by_slug.get(k, []) if k else []:
+            if template:
+                hit = hit or ("FLAG-SLUG", r)
+                continue
             # Blogspot-style outlets reuse a slug across `/YYYY/MM/` folders for different
             # stories (lexpress.mg), so a differing year/month is a different item — a
             # FLAG-SLUG for tier 3, never a mechanical drop (R74).
