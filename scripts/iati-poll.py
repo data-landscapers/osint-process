@@ -78,7 +78,7 @@ ISO2_TO_ISO3 = {
 }
 
 PAGE = 1000     # ids per request on the full sweep
-CHUNK = 100     # ids per metadata request — a 1,000-id q= would exceed the URL limit
+CHUNK = 20      # ids per metadata request — 100 drew HTTP 431 (2026-10-17); a 1,000-id q= would exceed the URL limit
 
 
 def api_key(env_path=".env"):

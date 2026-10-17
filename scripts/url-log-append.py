@@ -139,12 +139,14 @@ def append_drop_codes(today, code, batch, normed):
     path = INGEST_DROP_LOG.format(today)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     new = not os.path.exists(path)
+    held = set() if new else {tuple(r) for r in csv.reader(open(path, encoding="utf-8"))}
     with open(path, "a", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh, lineterminator="\n")
         if new:
             w.writerow(["sweep_batch", "url", "reason"])
         for n in normed:
-            w.writerow([batch, n, code])
+            if (batch, n, code) not in held:
+                w.writerow([batch, n, code])
 
 
 def main():
@@ -189,6 +191,9 @@ def main():
         # Idempotent: a row already in the log (same day, disposition and URL) is not
         # written again. Sibling slices and re-run steps called the appender twice for
         # one disposition, and the doubled rows inflated the night's drop counts.
+        # The coded drop row is ingest's own record and is still owed when a sweep's
+        # uncoded `dropped` line for the URL came first, so it keeps the full list.
+        coded = normed
         held = set(t.splitlines())
         normed = [n for n in normed if f"{today} | {disp} | {n}" not in held]
 
@@ -248,8 +253,8 @@ def main():
                     if attempt == 49:
                         raise
                     time.sleep(0.1)
-        if code is not None and normed:
-            append_drop_codes(today, code, batch, normed)
+        if code is not None and coded:
+            append_drop_codes(today, code, batch, coded)
     finally:
         release_lock()
 

@@ -7,7 +7,7 @@
 
 ## Your list is your slice, and it is closed
 
-Your spawn names one list file. Every path in it is yours and no path outside it is. Do not enumerate `new/`, do not pick up a sibling's item, never reconcile `new/` against `raw/`. **Remove a candidate only by its exact path from your list, one file at a time** — never a glob, a `find`, or a match on frontmatter.
+Your spawn names one list file: every path in it is yours, none outside it. Never enumerate `new/` or reconcile it against `raw/`. **Remove a candidate only by its exact path from your list, one file at a time** — never a glob, a `find`, or a match on frontmatter.
 
 ## Shared registers
 
@@ -38,7 +38,7 @@ Your spawn names one list file. Every path in it is yours and no path outside it
 
 ## Files
 
-Line endings as at `git show HEAD:<path>`, tested with bytes (`python -c "b=open(PATH,'rb').read(); print('CRLF' if b.count(b'\r\n') else 'LF')"`); scratch only under your own slice-named subdirectory.
+Line endings as at `git show HEAD:<path>`, tested with bytes (`python -c "b=open(PATH,'rb').read(); print('CRLF' if b.count(b'\r\n') else 'LF')"`); scratch only under your own slice-named subdirectory. A `date_source` outside the schema's values (`source`, `proxy`, `inferred`, `derived`) is corrected at admission: a byline date is `source`.
 
 ## Your return
 
