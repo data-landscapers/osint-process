@@ -57,11 +57,11 @@ D's @-prefixed Jobs, in order                                                   
 quick lint ; RECONCILE if open/ has items [exa] ; ACQUIRE if acquisitions.md has open lines [exa]
 INGEST Phase A over any catch reconcile/acquire staged, before Phase B
 WIKI-SYNC Phase B if logs/ingest-pending-writes.md is non-empty
-full lint's batched checks
+full lint's batched checks ; prune-dated.py --apply
 assert-containment.py --stage lint ; git commit ; usage-log.py --stage lint
 
 status-acquire.py --absorb                          # any pulled status-acquire batch
-prune sweep-url_log.md before D's (old) Start (skip if blank) [exa] ; rotate-log.py --apply ; prune-dated.py --apply
+prune sweep-url_log.md before D's (old) Start (skip if blank) [exa] ; rotate-log.py --apply
 close D: Prev Duration = Duration; Duration = now - New-Start (H:MM); Start = New-Start; End = now; clear New-Start   [exa]
 assert-containment.py --stage close --allow-extra lookups/rejected-urls.csv ; git commit ; usage-log.py --stage close
 

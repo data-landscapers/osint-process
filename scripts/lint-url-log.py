@@ -88,6 +88,8 @@ STAGING = ["new", "new-budget", "budget-archive"]
 
 LINE = re.compile(r"^(\d{4}-\d{2}-\d{2}) \| (\w+) \| (\S+)(.*)$")
 HEAD = re.compile(r"^## (.*)$")
+TAIL_OPENERS = ("(", "—", "·", "←", "#", "raw/")
+FILE_END = re.compile(r"\.(pdf|docx?|xlsx?|pptx?|php|html?|aspx?|csv|zip)$", re.I)
 MIN_SLUG_LEN, MIN_SLUG_WORDS = 16, 3
 
 # A citation ends at a delimiter and names a file. Neither held before 2026-08-24, so a
@@ -243,7 +245,12 @@ def parse_log(path):
                 continue
             m = LINE.match(line)
             if m:
-                yield section, i, m.group(1), m.group(2), m.group(3), m.group(4).strip()
+                url, tail = m.group(3), m.group(4).strip()
+                # A file URL logged decoded keeps its spaces; the remainder is part of the
+                # URL unless it opens an annotation, or it ends in a file extension.
+                if tail and (not tail.startswith(TAIL_OPENERS) or FILE_END.search(tail)):
+                    url, tail = url + " " + tail, ""
+                yield section, i, m.group(1), m.group(2), url, tail
 
 
 def domain_hit(host, droplist):

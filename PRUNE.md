@@ -40,7 +40,7 @@ Everything in the vault that ages out, and who does it. **A rule lives in exactl
 
 ### `sweep/` dated files — 15 days and 3 days
 
-`python scripts/prune-dated.py` (report) / `--apply` (act). **`SWEEP-CYCLE.md` runs `--apply` at every night's close**, so this needs no trigger.
+`python scripts/prune-dated.py` (report) / `--apply` (act). **`SWEEP-CYCLE.md` runs `--apply` in every night's lint stage**, before the lint commit, so this needs no trigger.
 
 Delete every per-run record under `sweep/`, at any depth, whose name is more than **15 days** old: manifest, drop-log, drops, tally, notes, row-health, batch, rows, monitor, qa, topic-decisions, region-unmapped.
 

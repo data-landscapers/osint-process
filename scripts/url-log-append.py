@@ -158,6 +158,10 @@ def main():
         sys.exit("usage: url-log-append.py {%s} [--ingest] [--code CODE --batch SWEEP_BATCH] URL [URL ...]"
                  % "|".join(VALID))
     disp, urls = args[0], args[1:]
+    if any(not u.strip() for u in urls):
+        # A carriage return in a printed list once arrived as an empty argument and wrote
+        # an empty admitted row.
+        sys.exit("url-log-append.py: empty URL refused")
     stray = [u for u in urls if u.startswith("-")]
     if stray:
         # A flag is never a URL: `dropped --help` once wrote a "--help" row into the live log.
