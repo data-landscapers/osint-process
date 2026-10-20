@@ -1,7 +1,7 @@
 <!-- reader: cc; type: brief -->
 # Standing brief — ingest Phase A slice
 
-*(The parent pastes this file verbatim into every Phase A slice's brief, under the night's own facts: the lane, the iteration, the list directory, the sibling count and the origin-screen tally. Rules only; the incidents behind them are in git.)*
+*(The parent pastes this file verbatim into every Phase A slice's brief, under the night's own facts (lane, iteration, lists, origin tally). Rules only; the incidents are in git.)*
 
 **Read `C:\OSINT\INGEST.md` in full — it is the procedure; this is the wiring.** Lean form: you **file** a contradiction or an acquisition line and never research one; you open **no** Phase B page; your deltas go to the pending-writes shape `INGEST.md` step 11 quotes.
 

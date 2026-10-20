@@ -53,7 +53,6 @@ china-ministry-of-commerce,China Ministry of Commerce,CHN,bilateral-agency,http:
 commercial-bank-cameroun,Commercial Bank Cameroun,CMR,private,https://www.cbc-bank.com,true
 convalt-energy,Convalt Energy,USA,private,https://www.convaltenergy.com,false
 convergence-partners,Convergence Partners,ZAF,private,https://www.convergencepartners.com,true
-crdi,Crdi,CAN,bilateral-agency,https://idrc-crdi.ca,false
 cybastion,Cybastion,USA,private,https://www.cybastion.com,false
 cyber-security-authority-ghana,Cyber Security Authority (Ghana),GHA,domestic-state,https://www.csa.gov.gh,true
 data-protection-commission-ghana,Data Protection Commission (Ghana),GHA,domestic-state,https://dataprotection.org.gh,true
@@ -265,3 +264,4 @@ telecel-group,Telecel Group,,private,,
 oxfam-gb,Oxfam GB,GBR,nonprofit,,false
 saviu-partners,Saviu Ventures,FRA,private,https://www.saviu.vc,false
 world-health-organization,World Health Organization (WHO),MULTI,multilateral,https://www.who.int,false
+orange-botswana,Orange Botswana,FRA,private,https://www.orange.co.bw,false
