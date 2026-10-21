@@ -261,6 +261,9 @@ def sweep_of(batch):
     if not dates:
         return None, None
     key = batch[:batch.rfind(dates[-1])].rstrip("-")
+    if not key:                                               # date-first label: `2026-10-21-deep-3`
+        key = re.sub(r"-\d+$", "", batch[batch.rfind(dates[-1]) + len(dates[-1]):].strip("-"))
+        key = {"deep": "country-deep", "fin": "financiers"}.get(key, key)
     key = re.sub(r"-[A-Z]{3}(-\d{4})?$", "", key)            # per-country, per-FY batches
     if key.startswith("domestic-finance"):
         key = "domestic"

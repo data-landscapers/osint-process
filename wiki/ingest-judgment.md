@@ -38,3 +38,7 @@ The bullet is a claim that a dated development happened in a place. The event is
 Correctly none, and never a gap (`scripts/hub-line-partition.py`; RESIDUAL-UNCITED should read 0): finance and budget records and budget-document companions; `cite_through:` captures; no `places:` or no parseable `published:`; a standing page under a proxy date; an older source arriving late; reference studies and academic or named-analyst work; forward notices, convenings and profiles. Two backlog classes are backfilled on demand, never by sweep: PRE-CONTRACT (ingested before `hub_line` existed) and RESIDUAL-CITED (already on a concept or intersection page).
 
 The catalogue hero is not gated like this: it is the record's public subtitle, owed by every class above alike.
+
+## 5. Country trackers and law-firm guides
+
+**A country law tracker or a law-firm country guide reports no development of its own; it is a synthesis, and `CLAUDE.md` → *The material* makes it a lead.** Where the instruments it summarises are held, it is dropped `no-development`. A page that declares itself machine-written ("Drafted with AI from the cited sources") is `inadmissible-origin` — one code for the class, so the drop log counts it as one. A named lawyer's explainer is admitted as analysis only for a dated fact no held source carries, and cited for that fact alone. An instrument a tracker names that the wiki lacks becomes an acquisition line; the tracker does not.

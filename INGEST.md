@@ -94,11 +94,11 @@ A specific **document** the wiki wants and does not hold is a line in `reviews/a
 
 ## 11. Move the item out of `new/` — its last step
 
-Move it to **`raw/YYYY/`**, prefixed `YYYY-MM-DD` from `published`; an artefact shares its companion's prefix.
+Move it to **`raw/YYYY/`**, prefixed `YYYY-MM-DD` from `published`; an artefact shares its companion's prefix. **A staged name with an empty slug** (a non-Latin title) **gets a short English slug from the title before the move.**
 
 **Append its deltas to `logs/ingest-pending-writes.md`**, one line per affected **subject**, exactly `` - `subject` — [[slug]] — what to write `` (em dashes; `status.py` and `WIKI-SYNC.md` count only that shape). **A delta never asserts an absence the slice has not just checked**: re-grep `raw/` and the URL index by document identity first; say what was checked and when.
 
-**At disposition, per item, never batched**: `python scripts/url-log-append.py {admitted|dropped|contradiction|acquisition} URL`, an admission with `--ingest` (refused without it, so no sweep can write one); for an admission `python scripts/raw-url-index.py --append URL FILE PUBLISHED`, plus `python scripts/artefact-md5-index.py --append <artefact>` for a binary artefact. **A drop carries its code and batch** — `url-log-append.py dropped --code CODE --batch <sweep_batch:> URL`, the code from `intake.md` §7 (scope `off-topic`/`off-place`, origin `inadmissible-origin`, tier 1 `already-seen`, a twin `already-held`, a *Duplicates* drop `no-value`).
+**At disposition, per item, never batched**: `python scripts/url-log-append.py {admitted|dropped|contradiction|acquisition} URL`, an admission with `--ingest`; for an admission `python scripts/raw-url-index.py --append URL FILE PUBLISHED`, plus `python scripts/artefact-md5-index.py --append <artefact>` for a binary artefact. **A drop carries its code and batch** — `url-log-append.py dropped --code CODE --batch <sweep_batch:> URL`, the code from `intake.md` §7.
 
 # Ending the run
 

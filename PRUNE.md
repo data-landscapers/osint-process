@@ -24,7 +24,7 @@ Everything in the vault that ages out, and who does it. **A rule lives in exactl
 | `logs/sweep-url_log.md` | pruned to **one rotation** at the close of each night | `SWEEP-CYCLE.md` |
 | `sweep/daily/seen.csv` | rows older than **60 days**, at the end of each run | `SWEEP-DAILY-LIST.md` |
 | `sweep/**/` per-run records — manifest, drop-log, drops, tally, notes, row-health, batch, rows, monitor, qa, topic-decisions, region-unmapped, dated in the name | deleted **15 days** after the date in the name — never a folder's newest manifest or drop-log | **this pass**, nightly at the close |
-| `sweep/ingest-lists-*/`, `sweep/phaseb-lists-*/`, `sweep/_*-YYYY-MM-DD*` (briefs, lint scope) | deleted **3 days** after the date in the name | **this pass**, nightly at the close |
+| `sweep/ingest-lists-*/`, `sweep/ingest/lists-*/`, `sweep/acquire-lists-*/`, `sweep/phaseb-lists-*/`, `sweep/_*-YYYY-MM-DD*` (briefs, lint scope) | deleted **3 days** after the date in the name | **this pass**, nightly at the close |
 | `sweep/donor/iati/work-order-*.json` | deleted when its records are built — a queue, never aged | `SWEEP-IATI.md` |
 | `logs/log.md` | the newest **~400 lines**, at every cycle close (`scripts/rotate-log.py`) | `SWEEP-CYCLE.md` |
 | `logs/machine-record-audit.csv` | **never pruned** — one row a night, and a row means nothing except against the row before it | `LINT.md` #21 |
@@ -44,7 +44,7 @@ Everything in the vault that ages out, and who does it. **A rule lives in exactl
 
 Delete every per-run record under `sweep/`, at any depth, whose name is more than **15 days** old: manifest, drop-log, drops, tally, notes, row-health, batch, rows, monitor, qa, topic-decisions, region-unmapped.
 
-Delete the night's parent-to-slice handoffs — `sweep/ingest-lists-*/`, `sweep/phaseb-lists-*/` and `sweep/_*-YYYY-MM-DD*` — **3 days** after their date. No pass reads them after the night that wrote them; 3 days covers a resumed night.
+Delete the night's parent-to-slice handoffs — `sweep/ingest-lists-*/`, `sweep/ingest/lists-*/`, `sweep/acquire-lists-*/`, `sweep/phaseb-lists-*/` and `sweep/_*-YYYY-MM-DD*` — **3 days** after their date. No pass reads them after the night that wrote them; 3 days covers a resumed night.
 
 **Undated files outside the live set are reported as `unowned` and left alone.** An undated one is scratch that escaped a batch; the report names it for deletion by hand.
 

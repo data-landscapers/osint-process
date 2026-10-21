@@ -9,7 +9,7 @@ every night's close (`SWEEP-CYCLE.md`).
             several times the longest read-back (drop-digest.py: one rotation). **Never a folder's newest manifest or drop-log**:
             `STATUS.md` reads those against `state.json` to spot a sweep that died between
             staging and state.
-   3 days   the night's parent-to-slice handoffs: `sweep/ingest-lists-*/`,
+   3 days   the night's parent-to-slice handoffs: `sweep/ingest-lists-*/`, `sweep/ingest/lists-*/`, `sweep/acquire-lists-*/`,
             `sweep/phaseb-lists-*/`, and `sweep/_*-YYYY-MM-DD*` (briefs, lint scope). No
             pass reads them after the night that wrote them; 3 days covers a resumed night.
 
@@ -35,7 +35,8 @@ HANDOFF_DAYS = 3
 DATE = re.compile(r'(\d{4}-\d{2}-\d{2})')
 RUN_RECORD = re.compile(r'^(manifest|drop-log|drops|tally|notes|row-health|batch|rows|monitor|qa'
                         r'|topic-decisions|region-unmapped)-(\d{4}-\d{2}-\d{2})')
-HANDOFF_DIR = re.compile(r'^(ingest-lists|phaseb-lists)-(\d{4}-\d{2}-\d{2})')
+HANDOFF_DIR = re.compile(r'^(ingest-lists|phaseb-lists|acquire-lists|lists)-(\d{4}-\d{2}-\d{2})')
+HANDOFF_ROOTS = ("sweep", os.path.join("sweep", "ingest"))
 HANDOFF_FILE = re.compile(r'^_[a-z-]+-(\d{4}-\d{2}-\d{2})')
 LIVE_NAMES = {"seen.csv", "state.json", "history.md", "README.md", ".gitkeep", "row-health.csv",
               "build-last-poll-ids.py", "iati-guidance.md", "last-poll-ids.txt"}
@@ -56,13 +57,14 @@ def main():
     hand_cut = today - datetime.timedelta(days=HANDOFF_DAYS)
 
     doomed_files, doomed_dirs, unowned = [], [], []
-    for entry in sorted(os.listdir("sweep")):
-        m = HANDOFF_DIR.match(entry)
-        if m and os.path.isdir(os.path.join("sweep", entry)) and date_of(m.group(2)) < hand_cut:
-            doomed_dirs.append(os.path.join("sweep", entry))
+    for hroot in HANDOFF_ROOTS:
+        for entry in sorted(os.listdir(hroot)) if os.path.isdir(hroot) else []:
+            m = HANDOFF_DIR.match(entry)
+            if m and os.path.isdir(os.path.join(hroot, entry)) and date_of(m.group(2)) < hand_cut:
+                doomed_dirs.append(os.path.join(hroot, entry))
 
     for root, dirs, files in os.walk("sweep"):
-        dirs[:] = [d for d in dirs if not (root == "sweep" and HANDOFF_DIR.match(d))]
+        dirs[:] = [d for d in dirs if not (root in HANDOFF_ROOTS and HANDOFF_DIR.match(d))]
         newest = {}
         for name in files:
             m = RUN_RECORD.match(name)
