@@ -64,11 +64,22 @@ def record(rel, before, after):
                 sys.exit("page-length.py: could not take %s" % LOCK)
             time.sleep(0.1)
     try:
-        new = not os.path.exists(TRIMS)
-        with open(TRIMS, "a", encoding="utf-8", newline="") as fh:
-            if new:
-                fh.write("date,page,before,after\n")
-            fh.write("%s,%s,%d,%d\n" % (datetime.date.today().isoformat(), rel, before, after))
+        # One row per page per day: a retry after GREW, or a second rewrite the same night,
+        # replaces that day's row and keeps its first `before`, so the net change is recorded.
+        key = "%s,%s," % (datetime.date.today().isoformat(), rel)
+        lines = ["date,page,before,after\n"]
+        if os.path.exists(TRIMS):
+            with open(TRIMS, encoding="utf-8", newline="") as fh:
+                lines = fh.readlines()
+        kept = [l for l in lines if not l.startswith(key)]
+        prior = [l for l in lines if l.startswith(key)]
+        if prior:
+            before = int(prior[0].rstrip("\r\n").split(",")[2])
+        if kept and not kept[-1].endswith("\n"):
+            kept[-1] += "\n"
+        kept.append("%s%d,%d\n" % (key, before, after))
+        with open(TRIMS, "w", encoding="utf-8", newline="") as fh:
+            fh.writelines(kept)
     finally:
         try:
             os.remove(LOCK)
