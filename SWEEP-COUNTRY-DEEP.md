@@ -39,7 +39,7 @@ Each search runs on the **Exa Agent** (`agent_run`, `effort: "medium"`), so §4 
 
 ## 4. The four searches
 
-*One Agent brief each, scoped to the current country; where the Agent's run cap would leave a batch's countries unswept, one combined objective per country carrying all four intents, the tally still split by search. Topic head-starts guide the staged frontmatter, finalised at ingest — real Level-2 slugs (`taxonomy.md`), never a `*` wildcard, dominant subject first (`topics:` order is load-bearing; `primary_subject` follows it).*
+*In the cycle's parallel batches, one combined Agent objective per country carrying all four intents, the tally still split by search, never one objective spanning countries; one brief per search only when run standalone. Topic head-starts guide the staged frontmatter, finalised at ingest — real Level-2 slugs (`taxonomy.md`), never a `*` wildcard, dominant subject first (`topics:` order is load-bearing; `primary_subject` follows it).*
 
 ### Search 1 — Non-state finance
 - **Intent:** Every discussion, MoU, commitment or actual deal financing any aspect of the wiki's scope in `{country}`. Excludes the financiers' own portfolio lists and portals, and the daily-list sources.

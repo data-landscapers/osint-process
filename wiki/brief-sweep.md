@@ -19,7 +19,7 @@ Every in-window item you put aside — already held, already seen, a sibling's c
 
 - Check `logs/sweep-url_log.md` for each URL on its own before fetching, normalised by `vault_lib.normalise_url()` — never one combined pattern file. Any hit is already ruled on: do not stage it; log it `already-seen`.
 - Re-check `new/` for the same URL **immediately before writing** a staged file. On a collision the later writer withdraws its own copy and logs `already-seen`.
-- Delete only an exact path you wrote, one file at a time — never a glob, a `find`, or a match on frontmatter. `sweep_batch:` is the run's label, not yours.
+- Delete only an exact path you wrote, one file at a time — never a glob, a `find`, or a match on frontmatter.
 
 ## Never
 
@@ -31,7 +31,7 @@ Every in-window item you put aside — already held, already seen, a sibling's c
 
 ## Files
 
-- **Staged frontmatter**: every candidate carries `type`, `title`, `url`, `publisher`, `published`, `date_precision`, `date_source`, `retrieved`, `places` (a list, never `place:`), `topics` and `sweep_batch`. Run `python scripts/stage-check.py` over `new/` before you return and fix what it names in your own files.
+- **Staged frontmatter**: every candidate carries `type`, `title`, `url`, `publisher`, `published`, `date_precision`, `date_source`, `retrieved`, `places` (a list, never `place:`), `topics` and `sweep_batch` (exactly `<sweep>-YYYY-MM-DD`, never a slice label). Run `python scripts/stage-check.py` over `new/` before you return and fix what it names in your own files.
 - **Line endings**: write a file back with the endings it had at `git show HEAD:<path>`; add a missing final newline. Test with bytes, never a shell grep:
 
 ```
