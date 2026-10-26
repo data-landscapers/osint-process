@@ -12,8 +12,8 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 ## Shared registers
 
 - `logs/sweep-url_log.md` — **you** write it, at each disposition, only through `url-log-append.py` (an admission carries `--ingest`, a drop `--code` and `--batch`, step 11).
-- `lookups/raw-url-index.csv`, `lookups/artefact-md5-index.csv`, `logs/ingest-pending-writes.md`, `reviews/acquisitions.md`, `logs/drop-list.csv`, `new-budget/manifest.csv`, `lookups/financier-names.csv` — **the parent** writes them. Your rows go to a slice-named file of your own, one heading per register, and you return its path (`INGEST.md` → *The shape, the slicing*).
-- Remove a row only by its own text, edit only rows you wrote, and run no whole-file formatter over a register.
+- `lookups/raw-url-index.csv`, `lookups/artefact-md5-index.csv`, `logs/ingest-pending-writes.md`, `reviews/acquisitions.md`, `logs/drop-list.csv`, `new-budget/manifest.csv`, `lookups/financier-names.csv` — **the parent** writes them; no index `--append`: the parent rebuilds both. Your rows go to a slice-named file, one heading per register, and you return its path (`INGEST.md` → *The shape, the slicing*).
+- Remove a row only by its own text, edit only your rows, and run no whole-file formatter over a register.
 - **A held carrier's `hub_line_sources:` or `cite_through:` is yours** where your disposition needs it: re-read it just before writing and merge into its one key, never a second.
 
 **Return your delta lines verbatim, never a summary** — the parent reconciles against them.
