@@ -10,6 +10,9 @@ Usage:
   python scripts/usage-log.py                               a CSV row only (the original call)
   python scripts/usage-log.py --stage sweep                 a buffer reading only
   python scripts/usage-log.py --reset --stage start --csv   empty the buffer, then both, from one reading
+  python scripts/usage-log.py --opened-above 70             exit 1 if tonight's `start` reading is over 70 %
+
+**The stand-down test** *(Bill, R148, 2026-10-27, rescinding the 2026-09-08 ruling that no step checks a budget)*: `--opened-above PCT` reads the buffer's `start` line, not the endpoint, so every step that asks gets the same answer all night. Over `PCT`: exit 1, `stand down`. At or under, unreadable, or a `start` line more than 18 hours old: exit 0, `run` — a reading that cannot be had never stands work down. `pull-new-queue.py --hold-above` imports the same test.
 
 CSV columns: `Date`, `Time (UTC)`, `7d usage`, `Session usage`, whole percentages. `Session usage` is the row's `7d usage` less the row below's — D2 = C2 − C3 — recomputed for every row at each write, blank on the oldest row or beside an `n/a`; where the weekly limit reset between the two it is the row's own reading *(Bill, 2026-09-22, replacing the 5-hour column)*. Newest row first, directly under the header; creates the file if absent, and rewrites an older header to the current one.
 
@@ -72,12 +75,36 @@ def write_stage(stage, now, week, five, reset):
         f.write(line + "\n")
 
 
+STALE = dt.timedelta(hours=18)  # a `start` line older than this is a previous night's
+
+
+def opened_above(pct, now=None):
+    """(over, reading): whether tonight's `start` reading exceeds pct; reading is None where there is none to read."""
+    now = now or dt.datetime.now(dt.timezone.utc)
+    try:
+        lines = [json.loads(ln) for ln in STAGES.read_text(encoding="utf-8").splitlines() if ln.strip()]
+        start = next(r for r in lines if r.get("stage") == "start")
+        when = dt.datetime.strptime(start["time_utc"], "%Y-%m-%d %H:%M").replace(tzinfo=dt.timezone.utc)
+        week = start["seven_day"]
+    except (OSError, ValueError, KeyError, StopIteration):
+        return False, None
+    if week is None or now - when > STALE:
+        return False, None
+    return week > pct, week
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.strip().split("\n")[0])
     ap.add_argument("--stage", metavar="NAME", help="record this reading in the per-stage buffer under NAME")
     ap.add_argument("--csv", action="store_true", help="with --stage, also write the CSV row (without --stage the CSV row is the default)")
     ap.add_argument("--reset", action="store_true", help="with --stage, empty the buffer before recording")
+    ap.add_argument("--opened-above", type=float, metavar="PCT", help="exit 1 if tonight's start reading is over PCT; reads the buffer, records nothing")
     a = ap.parse_args()
+    if a.opened_above is not None:
+        over, week = opened_above(a.opened_above)
+        seen = "no reading tonight" if week is None else f"7d {week:.1f}% at open"
+        print(f"usage-log: {seen} · {'stand down' if over else 'run'} (line {a.opened_above:.0f}%)")
+        return 1 if over else 0
     if a.reset and not a.stage:
         ap.error("--reset needs --stage: an emptied buffer with no reading in it is a night with no start")
 
@@ -93,4 +120,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

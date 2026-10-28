@@ -118,14 +118,14 @@ with tempfile.TemporaryDirectory() as d:
 PL = load("page_length", "page-length.py")
 recorded = []
 PL.record = lambda rel, b, a: recorded.append((rel, b, a))
-for after, want in [(1000, 0), (1030, 0), (1100, 2)]:
+for after, want in [(990, 0), (1000, 0), (1001, 2), (1100, 2)]:
     PL.measure = lambda p, after=after: ("wiki/intersections/x.md", {"effective": after})
     sys.argv = ["page-length.py", "--trimmed", "x", "--before", "1000"]
     import contextlib, io
     with contextlib.redirect_stdout(io.StringIO()):
         got = PL.main()
     check(f"page-length: 1000 -> {after} exits {want}", got == want)
-check("page-length: every rewrite is recorded, grown or not", len(recorded) == 3)
+check("page-length: every rewrite is recorded, grown or not", len(recorded) == 4)
 
 # --- lint #15: an inspection stamp settles a false positive ------------------------ #
 LD = load("lint_det", "lint-deterministic.py")

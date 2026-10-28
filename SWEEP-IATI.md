@@ -85,6 +85,7 @@ python scripts/iati-poll.py --dry-run     # poll, report, write nothing
 python scripts/iati-poll.py               # select, build records, advance the master list
 python scripts/iati-poll.py --baseline    # rebuild the master list, select nothing
 python scripts/iati-poll.py --limit 40    # cap a night's record-building
+python scripts/iati-poll.py --ids-out PATH   # a cycle slice: the new id set goes to PATH; the parent moves it into place
 ```
 
 `IATI_API_KEY` comes from `.env`, sent as `Ocp-Apim-Subscription-Key`. The gateway **403s a default `python-urllib` User-Agent** and **429s** readily: back off on `Retry-After`, and give up loudly.

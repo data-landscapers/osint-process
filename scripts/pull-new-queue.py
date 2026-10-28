@@ -12,11 +12,14 @@ pull-new-queue.py — move CORPUS's finished batches from `X:\new-queue\` into `
 
 **Maturity studies come from `X:\prepared\`** *(Bill, 2026-10-06, `notes-for-osint` 215)*: CORPUS hands each study's documents over as one group, `X:\prepared\maturity-study-{id}\`, flat, kept apart from `new-queue\` so the group stays visible. The same `READY` rule applies, and every file but `BRIEF.md` is pulled; the lane comes from the `sweep_batch: maturity-study-…` the documents already carry. Once the documents are in `new/`, `READY` is removed and **the folder is left with its `BRIEF.md`**, because CORPUS prunes `prepared\` (`BACKLOG.md`).
 
+**Studies wait a night above the stand-down line** *(Bill, R148, register R140, 2026-10-27)*: with `--hold-above PCT`, where tonight's opening seven-day reading is over `PCT` (`usage-log.py --opened-above`, the same test), no `maturity-study-` folder is pulled; each keeps its `READY` and is named `held`, and the next night takes it with its own. Backfill, not news, so it stands down first. `X:\new-queue\` and the root are pulled regardless.
+
 **Copy, verify, then delete.** `X:\` is another drive, so each file is copied, its bytes compared, and only then removed from the queue; an interrupted pull leaves duplicates the next run recognises, never a loss. The queue's deletions are CORPUS's to commit on the share (`X:\README.md` → *Conventions*); this script commits nothing.
 
 Usage:
   python scripts/pull-new-queue.py            dry run: what would move
   python scripts/pull-new-queue.py --apply    move it
+  python scripts/pull-new-queue.py --apply --hold-above 70    the cycle's call: studies wait above 70 %
 
 Prints one line per folder and a summary line. Exit 0 always: a queue that cannot be pulled tonight is pulled tomorrow, and never stops the cycle.
 """
@@ -33,6 +36,9 @@ from importlib import util as _util                                   # noqa: E4
 _spec = _util.spec_from_file_location("ingest_lane", os.path.join(os.path.dirname(os.path.abspath(__file__)), "ingest-lane.py"))
 _lane = _util.module_from_spec(_spec)
 _spec.loader.exec_module(_lane)
+_uspec = _util.spec_from_file_location("usage_log", os.path.join(os.path.dirname(os.path.abspath(__file__)), "usage-log.py"))
+_usage = _util.module_from_spec(_uspec)
+_uspec.loader.exec_module(_usage)
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -179,6 +185,7 @@ def remove(folder):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.strip().split("\n")[0])
     ap.add_argument("--apply", action="store_true", help="move the files; without it, a dry run")
+    ap.add_argument("--hold-above", type=float, metavar="PCT", help="leave maturity studies queued if tonight opened over PCT seven-day usage")
     ap.add_argument("--queue", default=str(QUEUE), help=argparse.SUPPRESS)
     ap.add_argument("--new", default=str(NEW), help=argparse.SUPPRESS)
     ap.add_argument("--prepared", default=str(PREPARED), help=argparse.SUPPRESS)
@@ -210,9 +217,13 @@ def main():
             print(f"    blocked: {b} — a different file of that name is already in new/; left in the queue, folder kept")
     prepared = pathlib.Path(a.prepared)
     studies = sorted(p for p in prepared.iterdir() if p.is_dir() and p.name.startswith(STUDY)) if prepared.is_dir() else []
+    hold, week = (False, None) if a.hold_above is None else _usage.opened_above(a.hold_above)
     for folder in studies:
         if not (folder / READY).is_file():
             continue  # still being written, or already pulled and waiting on CORPUS's prune
+        if hold:
+            print(f"  prepared/{folder.name}: held — 7d {week:.1f}% at open, over {a.hold_above:.0f}%; READY kept for tomorrow")
+            continue
         moved, tagged, blocked, backfill = pull(folder, today, a.apply, pathlib.Path(a.new), study=True)
         folders += 1
         files += moved

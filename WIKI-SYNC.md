@@ -7,7 +7,7 @@ Trigger: **"run wiki sync"** / **"wiki sync"**. Called by the rotation at every 
 
 Phase B — writing the pages Phase A's deltas are waiting on — is the one thing that genuinely batches: draining the queue opens each concept page **once per run**, where writing per item opens the same page every time and produces accretion where a batch produces synthesis. It runs at the nightly close: one page, one open, for whatever a night's catch queued.
 
-Reconcile and acquire are not this pass's: neither batches — a contradiction gets harder to settle as the trail cools, and an acquisition's targets rot — so they run at the cycle close, the night their queue rows are raised (`SWEEP-CYCLE.md` → *Reconcile and acquire*).
+Reconcile and acquire are not this pass's: neither batches, so they run at the cycle close (`SWEEP-CYCLE.md` → *Reconcile and acquire*).
 
 ---
 
@@ -25,11 +25,13 @@ if logs/ingest-pending-writes.md
 
 ## Phase B — write (per page)
 
+**Every write is written to `X:\documentation\prose-style.md`** *(R147, R149)*: read it and `prose-exemplars.md` beside it last, just before the first write, in every slice. Its numbers, words, voice and no-history rule bind every page; its first-sentence test binds status reports only.
+
 Drain `logs/ingest-pending-writes.md` **grouped by target page**, opening each once; delete the file when empty. **Every write is idempotent**: `grep -F "[[<source-slug>]]"` **the row's own target page, in its body** — present there means a previous attempt wrote it, which is what makes this re-runnable. **Both halves are load-bearing**: a whole-wiki grep silently skips a row whose source is cited on another page, and a frontmatter `sources:` entry is not a citation (`CLAUDE.md` → *Output*). **The page's `sources:` line is extended only with `python scripts/sources-add.py <page> <slug>…`**, never by parsing and rewriting the frontmatter, which splits old comma-bearing entries. **A page keeps its HEAD line endings**, tested by counting `b'\r\n'` in its bytes: `sed -i` and the Edit tool flatten CRLF.
 
 **The test is run immediately before each write, against the page the row will actually land on, and a clean grep is where reading starts, not where it ends.** Before each write, because a sibling or concurrent pass can write or retire a source mid-slice. Against the landing page: where step 6 routes the depth to a `{place}--{topic}` intersection, that intersection is the target, and the concept page's pointer is not the write. Then read the landing page for the *story*, not the slug: the same development held under another source's slug is a merge into that entry, never a second bullet, and a row that completes a body the page calls "not held" corrects the absence rather than leaving it. Only a double-bracketed `[[slug]]` in prose counts as present. A single-bracketed one is repaired, and a bare mention in an absence note is not a citation.
 
-**A landing page over its line is rewritten, never appended to.** Before the write, `python scripts/page-length.py <landing page>` — lint #8's own measure. `under` or `ruled`: write as below, unless this write crosses the line: then `OVER`. `OVER` (exit 1): the write **rewrites the landing section as synthesis** — current state with the new source folded in, dated per-ingest bullets merged, every citation kept inline on its claim, events left to their source pages (`CLAUDE.md` → *Structure*). Nothing an ingest bullet said is lost from the record: what the page cannot hold stays in its cited source, and commentary and officeholder names give way before a fact, never a citation. Then `python scripts/page-length.py --trimmed <page> --before <N>`, which records both word counts in `logs/phaseb-trims.csv` and exits 2 (`GREW`) on a rewrite that grew the page by more than a clause (40 words), which the slice redoes. **The rewrite may not grow the page**: the new source takes the words of what it supersedes or merges with, and where nothing gives way it goes in as one clause. A page still over after its section is rewritten stays over; the next write to it rewrites the next landing section.
+**A landing page over its line is rewritten, never appended to.** Before the write, `python scripts/page-length.py <landing page>` — lint #8's own measure. `under` or `ruled`: write as below, unless this write crosses the line: then `OVER`. `OVER` (exit 1): the write **rewrites the landing section as synthesis** — current state with the new source folded in, dated per-ingest bullets merged, every citation kept inline on its claim, events left to their source pages (`CLAUDE.md` → *Structure*). Nothing an ingest bullet said is lost from the record: what the page cannot hold stays in its cited source, and commentary and officeholder names give way before a fact, never a citation. Then `python scripts/page-length.py --trimmed <page> --before <N>`, which records both word counts in `logs/phaseb-trims.csv` and exits 2 (`GREW`) on a rewrite that ends longer than it began, which the slice redoes. **The rewrite may not grow the page by a word** *(R141, 2026-10-27)*: the new source takes the words of what it supersedes or merges with, and where nothing is superseded, commentary gives way to it. A page still over after its section is rewritten stays over; the next write to it rewrites the next landing section.
 
 **A slice removes its drained rows by matching each row's own text, never by line number** — siblings are draining the same file, so every index shifts under it — and appends nothing to a row it did not write.
 
@@ -53,7 +55,7 @@ Drain `logs/ingest-pending-writes.md` **grouped by target page**, opening each o
 
 ## Termination
 
-**The pass ends when `logs/ingest-pending-writes.md` is empty, and the file is deleted.** Where the run is interrupted before the file is drained, **what remains is what the next sync inherits**: note the row count in `log.md`, end the pass, never chase it. The gate on the rotation row is what stops that remainder growing to a night-sized block unattended.
+**The pass ends when `logs/ingest-pending-writes.md` is empty, and the file is deleted.** Where the run is interrupted before the file is drained, **what remains is what the next sync inherits**: note the row count in `log.md`, end the pass, never chase it.
 
 ## Concurrency
 

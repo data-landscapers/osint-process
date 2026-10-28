@@ -35,7 +35,7 @@ L = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(L)
 
 TRIMS = os.path.join(V.ROOT, "logs", "phaseb-trims.csv")
-GROWTH_ALLOWANCE = 40         # words: "where nothing gives way it goes in as one clause"
+GROWTH_ALLOWANCE = 0          # words; was 40 (one clause) until R141, under which 1,220 of 1,511 rewrites grew
 LOCK = TRIMS + ".lock"
 
 
@@ -103,7 +103,7 @@ def main():
             sys.exit("page-length.py: %s is not a page lint #8 measures" % rel)
         record(rel, a.before, m["effective"])
         print("recorded  %s  %d -> %d words" % (rel, a.before, m["effective"]))
-        # The rewrite may not grow the page (WIKI-SYNC.md): one clause is the allowance.
+        # The rewrite may not grow the page by a word (WIKI-SYNC.md, R141).
         # R124 found 167 of the first 201 recorded rewrites had grown their page.
         if m["effective"] > a.before + GROWTH_ALLOWANCE:
             print("GREW  %s by %d words: the rewrite did not merge — redo it before returning"

@@ -317,9 +317,9 @@ def load_master():
     return {ln.strip() for ln in io.open(MASTER, encoding="utf-8") if ln.strip()}
 
 
-def save_master(ids):
+def save_master(ids, path=None):
     os.makedirs(STATE, exist_ok=True)
-    with io.open(MASTER, "w", encoding="utf-8", newline="\n") as fh:
+    with io.open(path or MASTER, "w", encoding="utf-8", newline="\n") as fh:
         fh.write("\n".join(ids) + "\n")
 
 
@@ -330,6 +330,9 @@ def main():
     ap.add_argument("--limit", type=int)
     ap.add_argument("--no-resume", action="store_true",
                     help="ignore any checkpoint and pull from the start")
+    ap.add_argument("--ids-out", metavar="PATH",
+                    help="write the new id set here instead of last-poll-ids.txt "
+                         "(a cycle slice; the parent moves it into place)")
     a = ap.parse_args()
 
     key = api_key()
@@ -357,7 +360,7 @@ def main():
 
     if a.baseline:
         if not a.dry_run:
-            save_master(ids)
+            save_master(ids, a.ids_out)
         print(f"step=SWEEP-IATI stopped=complete staged=0 dropped=0 remaining=0 "
               f"notes=baseline {len(ids)} ids")
         return 0
@@ -450,7 +453,7 @@ def main():
                          "Africa as `002`. Extend the vocabulary handling from this evidence rather "
                          "than from a code list. Vocabulary-1 codes marked *not African* are "
                          "correctly excluded and need nothing.\n")
-        save_master(ids)
+        save_master(ids, a.ids_out)
 
     print(f"\nregion codes: {len(region_census)} distinct, {len(other_region)} non-African, "
           f"{len(unreadable)} in an unreadable vocabulary")

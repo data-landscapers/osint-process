@@ -19,7 +19,7 @@ One CC run; the parent is a **thin loop** — it selects the day, runs its proce
 
 ### Budget and usage
 
-**No step checks a budget and the night's cost is neither measured nor reported** *(Bill, 2026-09-08)*. `python scripts/usage-log.py` writes the plan's usage percentages: `--reset --stage start --csv` first, `--stage <name>` after each stage boundary into a git-ignored buffer the manifest reads, `--stage end --csv` after the last commit. It never fails the night.
+**Above 70 % seven-day usage at open, the maturity-study pulls wait a night, then the housekeeping job stands down; sweeps, news ingest, lint and rules never do** *(Bill, R148, 2026-10-27)*. The test is `usage-log.py --opened-above 70` on the night's `start` reading; no reading, no stand-down. `python scripts/usage-log.py` writes the plan's usage percentages: `--reset --stage start --csv` first, `--stage <name>` after each stage boundary into a git-ignored buffer the manifest reads, `--stage end --csv` after the last commit. It never fails the night.
 
 ### What every sub-agent prompt carries
 
@@ -37,7 +37,7 @@ One CC run; the parent is a **thin loop** — it selects the day, runs its proce
 usage-log.py --reset --stage start --csv
 drain X:\notes-for-osint.md                         # § Draining notes-for-osint
 assert-containment.py --stage notes ; git commit ; usage-log.py --stage notes   # only if this repo changed
-pull-new-queue.py --apply                           # § Pulling X:\new-queue\
+pull-new-queue.py --apply --hold-above 70           # § Pulling X:\new-queue\; studies wait above 70 %
 
 Exa canary — on failure skip every line marked [exa]; the rest of the night runs
 arm stall-watch.py under Monitor, all night
@@ -57,7 +57,7 @@ D's @-prefixed Jobs, in order                                                   
 quick lint ; RECONCILE if open/ has items [exa] ; ACQUIRE if acquisitions.md has open lines [exa]
 INGEST Phase A over any catch reconcile/acquire staged, before Phase B
 WIKI-SYNC Phase B if logs/ingest-pending-writes.md is non-empty
-full lint's batched checks ; prune-dated.py --apply
+full lint's batched checks ; prune-dated.py --apply --today <New-Start's date>   # never the clock: a night runs past midnight
 assert-containment.py --stage lint ; git commit ; usage-log.py --stage lint
 
 status-acquire.py --absorb                          # any pulled status-acquire batch
@@ -66,7 +66,7 @@ close D: Prev Duration = Duration; Duration = now - New-Start (H:MM); Start = Ne
 assert-containment.py --stage close --allow-extra lookups/rejected-urls.csv ; git commit ; usage-log.py --stage close
 
 mirror to O:\
-BACKLOG.md — one housekeeping job, oldest first; X:\prepared\ work applied first
+usage-log.py --opened-above 70 && BACKLOG.md — one housekeeping job, oldest first; X:\prepared\ work applied first
 assert-containment.py --stage housekeeping ; git commit ; usage-log.py --stage backlog
 RULES.md over reviews/rule-candidates.md — the parent's own work, no sub-agent
 assert-containment.py --stage rules --allow-extra <each process file amended> ; git commit ; usage-log.py --stage rules
@@ -86,7 +86,7 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 **Notes first, unconditional**: act on and close every open note in `X:\notes-for-osint.md` under `X:\README.md` → *Conventions*; write to `X:\` and commit nothing there. A fix reaching this repo commits at the `notes` boundary (write-set `*`, the deny set still standing).
 
-**`python scripts/pull-new-queue.py --apply`, unconditional**: every `X:\new-queue\` folder carrying `READY` moves flat into `new/`, and so does every `X:\prepared\maturity-study-*\` folder carrying one, its `BRIEF.md` left for CORPUS; delivery is not admission — the night's one Phase A adjudicates it, backfill lane open for the whitelisted batches. It commits nothing of its own.
+**`python scripts/pull-new-queue.py --apply --hold-above 70`, unconditional**: every `X:\new-queue\` folder carrying `READY` moves flat into `new/`, and so does every `X:\prepared\maturity-study-*\` folder carrying one, its `BRIEF.md` left for CORPUS, held above 70 % (*Budget and usage*); delivery is not admission — the night's one Phase A adjudicates it, backfill lane open for the whitelisted batches. It commits nothing of its own.
 
 **`python scripts/status-acquire.py --absorb` at the close, unconditional**: closes a pulled country's rows into `X:\acquire-done.csv` and writes permanent negatives to `lookups/rejected-urls.csv` (hence the close's `--allow-extra`). `STATUS-ACQUIRE.md` holds the rest.
 
