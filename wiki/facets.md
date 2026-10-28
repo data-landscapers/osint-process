@@ -17,7 +17,7 @@ Every item is classified along facets held in **frontmatter**, never in a folder
 
 Reject values outside the vocabularies.
 
-**`topics:` is ordered, and the order is load-bearing.** The first non-`finance.*` slug is the item's **primary subject** — the one it is filed under wherever a compiled page needs a single subject per record (the finance pages' sector column and their aggregates-by-subject tables). Write the dominant subject first. **Never sort `topics:`** — alphabetising it silently re-files the record, and a wrong order is indistinguishable from a right one on the page. `scripts/archive/restore-topic-order.py` recovers an order from git.
+**`topics:` is ordered, and the order is load-bearing.** The first non-`finance.*` slug is the item's **primary subject** — the one it is filed under wherever a compiled page needs a single subject per record (the finance pages' sector column and their aggregates-by-subject tables). Write the dominant subject first. **Never sort `topics:`** — alphabetising it silently re-files the record, and a wrong order is indistinguishable from a right one on the page. git holds the prior order (`git log -p -- <record>`).
 
 **`primary_subject:` names that subject explicitly, and on a finance record it is required** — one of the record's own `topics:` slugs, validated by lint #16. On other page types it stays optional, and where absent the first non-`finance.*` slug is used. The ordering rule above is not withdrawn; the field exists because a sort cannot re-file an explicit value.
 

@@ -137,8 +137,6 @@ wiki/
   finance-load-domestic-state.md  # driver: domestic-state budgets/expenditure (invoked by ingest 2a)
   finance-news-driver.md  # driver: finance from prose sources (invoked by ingest 2a; back-swing)
 scripts/                  # the tooling — see scripts/README.md for the directory
-  archive/                #   SPENT: ran, cannot recur, kept for the audit trail
-  extractors/{ISO3}/      #   BESPOKE: one country's document layout, may re-run
   tests/                  #   the fixture tests, for the scripts that move files
 ```
 

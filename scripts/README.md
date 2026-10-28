@@ -20,17 +20,9 @@ A new script imports both rather than re-implementing either. The one duplicatio
 
 **A filter argument that selects nothing is refused, exit 2 — never reported as a clean run.** A mistyped check number, ISO-3 or unit is the most likely reason a selector matches nothing, and the two outcomes are indistinguishable from the outside: zero findings over everything, and zero findings over nothing. Three of OSINT's own scripts had the shape and were repaired the same day — `lint-deterministic.py --check N`, `report-lint.py --check ABCDEF`, `compile-hub-financing.py ISO3`. **Any new script taking a filter names its known values in the refusal**, so the typo is visible in the message rather than in a silence.
 
-## Three lifecycles
+## One lifecycle
 
-| Label | Where it lives | Test |
-|---|---|---|
-| **standing** | `scripts/` | A procedure calls it, or a standing script imports it. It runs again next week. |
-| **bespoke** | `scripts/extractors/{ISO3}/` | Written for one country's documents and **plausibly re-run for that country** — next year's volume has the same layout. |
-| **spent** | `scripts/archive/` | Its job is done and cannot recur: a completed migration, a housekeeping job that closed, a one-shot generator whose output is in the vault. |
-
-**Spent is archived, not deleted** — the same rule `archived-procs/` applies to procedures. A one-shot generator is how a record set is *reproducible and auditable*, which is worth keeping even though it will never run again. Git holds it either way; the folder is what tells a reader which of the three it is without opening it.
-
-**A new script declares its label in its docstring, on the first line, and lands in the right folder on the day it is written.** The cost of this file was one sweep of 53 scripts; keeping it true costs nothing.
+**A script in `scripts/` is standing: a procedure calls it, a standing script imports it, or this file lists it as a by-hand tool.** A script whose job is done — a completed migration, a closed housekeeping job, a one-shot generator whose output is in the vault — is **deleted, not archived** (`CLAUDE.md` → *Keeping this file short*): git holds it, and `git log --diff-filter=D --name-only -- scripts/` finds it. The `archive/` and `extractors/` folders were deleted on that rule on 2026-10-28, with the by-place, entity-pass and one-job lint scripts.
 
 ## Standing
 
@@ -88,15 +80,11 @@ A new script imports both rather than re-implementing either. The one duplicatio
 
 **Entities**
 
-**`ENTITY-PASS.md` retired 2026-08-16 (R11)** — the pass that minted and refreshed entity *pages* is gone; the `entities:` *tag* stays and is `INGEST.md`'s. The five scripts below were only ever called by that pass and are now orphaned — left standing, not deleted, in case a slug-drift or sovereign-naming fix is ever needed by hand again.
+**`ENTITY-PASS.md` retired 2026-08-16 (R11)**; the `entities:` *tag* stays and is `INGEST.md`'s. Its census, mint and slug-pair scripts were deleted 2026-10-28; one survives, because its map is live.
 
-| Script | Was called by | What |
+| Script | Called by | What |
 |---|---|---|
-| `entity-census.py` | `ENTITY-PASS.md` | The census: who is tagged, how often, who is over the (now-retired) §5 paging bar. |
-| `entity-mint-apply.py` | `ENTITY-PASS.md` | Applies `reviews/entity-mint-decisions.csv`. |
-| `entity-slug-pairs-decide.py` | the entity pass | Adjudicates census drift pairs into `reviews/entity-slug-pairs.csv`. **Writes that register on a bare run** — pass it a flag knowingly. |
-| `entity-slug-merge.py` | the entity pass | Applies the merges that register decided. Dry-run by default. |
-| `sovereign-slug-apply.py` | `ENTITY-PASS.md` | One slug form per sovereign borrower. Dry-run by default. **`reviews/sovereign-slug-map.csv` itself stays live** — `lint-finance-slugs.py` (LINT #16) reads it directly; only this apply script is orphaned. |
+| `sovereign-slug-apply.py` | by hand; LINT #16 names it | One slug form per sovereign borrower. Dry-run by default. **`reviews/sovereign-slug-map.csv`** is read directly by `lint-finance-slugs.py` (LINT #16). |
 
 **Budget and intake**
 
@@ -126,30 +114,11 @@ A new script imports both rather than re-implementing either. The one duplicatio
 | `trim-verify.py` | sub-agents under `wiki/append-log-trim.md` | Checks rewritten intersection pages against HEAD: line endings, every old `sources:` slug and body `[[link]]` kept, identity frontmatter unchanged, body-cited raw slugs listed in `sources:`; prints words before/after and dated headings. Exit 1 on a problem, 2 on an unknown slug. |
 | `trim-job.py` | a page-trim housekeeping session | A job's finish-line check from its register entry: verifier, lint #8/#4/#12, reflow, sources added. `--commit LABEL CALLS-FILE` then logs, commits, pushes and strikes it — only on a clean check. Jobs 190–202. |
 | `housekeeping-strike.py` | `trim-job.py --commit`, or by hand | `BACKLOG.md` §5's strike in one move: entry and *Rough sizing* row out of `X:\osint-housekeeping.md`, struck entry plus closing text into `-resolved.md`. Share only; commits nothing. |
-| `pdf-geom-rows.py` | by hand, writing an extractor | Dumps a PDF's pages as geometry-bound rows (characters by baseline, columns by x-gap) — the generic form of the binding the `extractors/{ISO3}/` scripts each hard-code. Needs `pdfplumber`. |
-
-## Bespoke — `extractors/{ISO3}/`
-
-A country's documents have a layout, and the layout recurs annually. These are the extractors that earned a home rather than an archive.
-
-| Script | Country | What |
-|---|---|---|
-| `extractors/BFA/bfa-volume-scan.py` | Burkina Faso | Cross-vote scan of a *loi de finances* volume (`pdftotext -table`). |
-| `extractors/CAF/caf-cdmt-extract.py` | Central African Republic | The CDMT sectoriels — budget détaillé par activité. |
-| `extractors/CAF/caf-simba-extract.py` | Central African Republic | SIM_ba volume, PLF charges. |
-| `extractors/CMR/cmr-plf-extract.py` | Cameroon | PLF programme tables, by page geometry. |
-
-All four need `pdfplumber`, which is not a dependency of anything standing.
-
-## Spent — `archive/`
-
-Kept for the audit trail, not for running. Twenty-six scripts, the newest two archived 2026-09-24 when R57 retired domestic extraction — `gha-appropriation-extract.py` and `rwa-annex-ii3-extract.py`, one-country extractors that never earned an `extractors/` home; the two before them archived 2026-09-08 with housekeeping job 30 long closed — `byplace-extract.py` (its step b) and `lint-index-dates.py` (step d, which called itself a standing check that no `LINT.md` number ever named, so nothing ran it): the four per-country `archive-*-budget-docs.py` (replaced by `archive-budget-docs.py`), the five `gen-*-records.py` one-shot generators whose records are in `raw/` and whose figures were hand-read from the printed volumes, the BEN/BWA/CIV staging and companion writers, and the closed migrations — `consolidate-budget-lines.py` and `backfill-baseline-capital.py` (with `archived-procs/BUDGET-CONSOLIDATE.md`, which instructed its own archiving), `shard-raw.py` (housekeeping 18), `fix-body-completeness-generated.py` (22), `restore-topic-order.py`, and `deal-vocab-backswing.py` (`DEAL-VOCAB.md` section 3, run 2026-08-20 over 1,260 deal records).
-
-**The `gen-*-records.py` family was not merged into one generator, deliberately.** Their bulk is not logic — it is figures read off a printed volume by hand and cross-footed to a printed total, plus that country's own findings written as record notes. A shared template would have forced the next country's genuine findings into somebody else's sentences. What *was* shared out of them is in `finance_lib`.
+| `length-review.py` | by hand, LINT #8 | Replaces a concept page's `## Length — reviewed …` section with a dated ruling, headed `(at N words)` by lint #8's measure. |
+| `test-taxonomy-labels.py` | by hand, after a `taxonomy.md` edit | Asserts `build-finance-page.py`'s and `vault_lib`'s taxonomy parsers return the same label for every slug. |
 
 ## Where a new script goes
 
 1. Does a standing script already do it? Extend that one.
 2. Is the logic country-independent and the country-specific part **data**? Then it is standing, and the data is a CSV the pass writes — that is what `archive-budget-docs.py` is.
-3. Is it one country's document layout? `extractors/{ISO3}/`.
-4. Will it run exactly once? Write it, run it, and move it to `archive/` in the same session — not "later".
+3. Will it run exactly once? Write it, run it, commit it, and delete it in the same session — not "later". The commit is its audit trail.

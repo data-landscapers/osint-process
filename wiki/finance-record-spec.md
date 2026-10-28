@@ -1,7 +1,7 @@
 <!-- reader: cc; type: spec -->
 # Finance record — builder spec (source-agnostic)
 
-Given a **single finance item** — a commitment, investment, guarantee, MoU or agreement, from any source — produce **one structured markdown record in `new/`**, ready for the normal ingest pass. This spec defines the record's shape and how to derive every field. **It never reads a particular file.** A **driver** pulls the fields out of a given source and hands them here: `wiki/finance-news-driver.md` (prose; back-swing and capture modes), `wiki/finance-load-domestic-state.md` (domestic-state budgets), `wiki/finance-iati-driver.md` (IATI activities), and the finished `archived-procs/finance-load-nonstate-csv.md`.
+Given a **single finance item** — a commitment, investment, guarantee, MoU or agreement, from any source — produce **one structured markdown record in `new/`**, ready for the normal ingest pass. This spec defines the record's shape and how to derive every field. **It never reads a particular file.** A **driver** pulls the fields out of a given source and hands them here: `wiki/finance-news-driver.md` (prose; back-swing and capture modes), `wiki/finance-load-domestic-state.md` (domestic-state budgets), `wiki/finance-iati-driver.md` (IATI activities).
 
 Values must be traceable to the source (or the primary at its URL); when a value can't be derived safely, **leave it blank and say why** — never guess, never write `0` for an unknown.
 
@@ -31,7 +31,7 @@ Admissible only if the item's source is **primary** (`CLAUDE.md` → *The materi
 
 ## Subject tag
 
-1. **Primary slug.** From a WB-DT label, take the crosswalk's `mapped_slug` (`archived-procs/non-state-finance-crosswalk.csv` — load-only); where it gives no slug, infer from `title` + `description`; a `review` row that carries a slug uses it. From an unclassified item, classify from content directly. Log the justifying phrase whenever the slug is inferred. **Where the purpose is stated but the slug is uncertain, build the record and flag it for classification. Where no purpose is stated at all, the item fails fact 5 and no record is built. Never substitute a default slug in either case.**
+1. **Primary slug.** From a WB-DT label, take the crosswalk's `mapped_slug` (the finished load's `non-state-finance-crosswalk.csv`, deleted 2026-10-28; git holds it); where it gives no slug, infer from `title` + `description`; a `review` row that carries a slug uses it. From an unclassified item, classify from content directly. Log the justifying phrase whenever the slug is inferred. **Where the purpose is stated but the slug is uncertain, build the record and flag it for classification. Where no purpose is stated at all, the item fails fact 5 and no record is built. Never substitute a default slug in either case.**
 2. **Always add a finance tag:** `finance.new` for an investment/commitment, `finance.mou` for an MoU, framework agreement or letter of intent, `finance.budget` for a domestic budget appropriation or expenditure line.
 3. **Flag-derived:** `dpi.id` if the digital-ID flag is set, `dpi.pay` if the digital-payments flag is set.
 4. Valid `taxonomy.md` slugs only; dedupe; usually 2–3 slugs.

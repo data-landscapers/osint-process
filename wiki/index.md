@@ -113,7 +113,7 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 | *(lint #21)* | [scripts/audit-machine-records.py](../scripts/audit-machine-records.py) | Audits the machine-loaded `raw/` records for three defect classes; `--persist` appends a dated row to `logs/machine-record-audit.csv` and exits non-zero if class 1 (`date_source: proxy` on a finance record) or class 3 (`full` on a truncated body) rose. |
 | *(lint #20)* | [scripts/lint-unsourced-figures.py](../scripts/lint-unsourced-figures.py) | Lists hubs whose lede carries an unsourced ranking, market-size or penetration figure. Read-only. |
 | *(ingest; lint #6)* | [scripts/origin-screen.py](../scripts/origin-screen.py) | The mechanical half of [origin-screen.md](origin-screen.md): screens `new/` (or bare `--domain`s) against `logs/drop-list.csv`, exits non-zero on `DROP` / `WATCH`, computes `NOVEL`; `--held` lists the hold queue lint #6 drains. Read-only. |
-| *(the directory of every script)* | [scripts/README.md](../scripts/README.md) | What each script is, what calls it, and its lifecycle — standing (`scripts/`), bespoke (`scripts/extractors/{ISO3}/`), spent (`scripts/archive/`). `vault_lib` reads the vault; `finance_lib` knows what a deal record is. |
+| *(the directory of every script)* | [scripts/README.md](../scripts/README.md) | What each script is, what calls it, and its lifecycle — standing, or deleted once spent. `vault_lib` reads the vault; `finance_lib` knows what a deal record is. |
 | *(no caller since `BUDGET-EXTRACT.md` retired)* | [scripts/archive-budget-docs.py](../scripts/archive-budget-docs.py) | Archives extracted budget documents to `budget-archive/{ISO3}/{FY}/`; dry-run by default; `--verify`. Kept for re-archiving. |
 | *(`BUDGET-COLLECT.md`, between groups)* | [scripts/promote-budget-companions.py](../scripts/promote-budget-companions.py) | Catalogues held `budget-archive/` companions into `raw/`, skipping anything already held. Dry-run by default; `--write` applies. |
 | *(step zero of `full lint`)* | [scripts/lint-deterministic.py](../scripts/lint-deterministic.py) | The mechanical checks in one command: #1 schema, #2 vocabulary, #3 `last_reviewed`, #4 wikilinks, #10 stranded `new/`, #11 filenames and shards, #12 link-list convention, #15 `body_completeness`, #24 register caps, #25 `CLAUDE.md` line cap, #28 deal-record fields, #34 catalogue hero, #38 de-accented Romance titles. Reports, never edits; `--check N`, `--all`, `--json`; exit 1 on any hard finding. |
@@ -126,17 +126,7 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 | *(helper, by hand)* | [scripts/uncited-sources.py](../scripts/uncited-sources.py) | Lists admitted sources no `wiki/` page cites. `--recent 1` after a run should read 0. Read-only. |
 | *(`WIKI-SYNC.md` step 9)* | [scripts/wiki-index-gen.py](../scripts/wiki-index-gen.py) | Regenerates the *Every intersection* block in `places-index.md` and `topics-index.md` from `wiki/intersections/`; owns its markers, asserts nothing outside them moved, refuses a page carrying no `place:` or `topic:`. `--check` exits 1 when a block is stale, `--diff` shows the change, `--shape` picks the row form, `--gaps` writes the per-page measurement. |
 
-**Archived** ([archived-procs/](../archived-procs/) — kept for reference, not run)
-
-| Was | File | Why archived |
-|---|---|---|
-| `run non-state finance load` | [finance-load-nonstate-csv.md](../archived-procs/finance-load-nonstate-csv.md) | One-off initial load of the non-state deal CSV; finished. |
-| `run budget consolidation` | [BUDGET-CONSOLIDATE.md](../archived-procs/BUDGET-CONSOLIDATE.md) | One-off migration to the accreting per-line/year shape; finished. |
-| Country ingest workflow | [country-ingest-workflow.md](../archived-procs/country-ingest-workflow.md) | Country-by-country procedure over the `external-datasets/` corpus. Superseded. |
-| `backfill <ISO3>` | [BACKFILL.md](../archived-procs/BACKFILL.md) | Drained a country's pre-staged content from `X:\new-queue\<ISO3>\`. Archived 2026-09-08 (Bill). |
-| `backfill batch` | [BACKFILL-BATCH.md](../archived-procs/BACKFILL-BATCH.md) | The loop around `backfill <ISO3>`. Archived 2026-09-08 (Bill). |
-
-The folder also holds those runs' data artefacts — inputs and records, not processes.
+**Retired processes are deleted, not archived; git holds them.** `archived-procs/` (the non-state load, budget consolidation, country ingest workflow, backfill and backfill batch) was deleted 2026-10-28; `git log --diff-filter=D -- archived-procs/` finds each.
 
 ## Page types & folders
 
