@@ -1,7 +1,7 @@
 <!-- reader: cc; type: runbook -->
 # SWEEP-CYCLE.md — the nightly sweep orchestrator
 
-Trigger: **"run the sweep cycle"**, typed by hand; **no scheduled trigger exists or is planned.** Each run works **one numbered day** from the rotation in `logs/sweep-cycle_log.md`; **no step checks a clock.** This file is **only the wiring**; the rules live in the processes it calls (every sweep screens origins against [`wiki/origin-screen.md`](wiki/origin-screen.md) itself, lint #17), and the reasoning in `wiki/sweep-cycle-notes.md`.
+Trigger: **"run the sweep cycle"**, opened 21:00–01:00 by `scripts/poll-loop.py` (`OSINT-POLL` tab), or by hand. Each run works **one numbered day** from the rotation in `logs/sweep-cycle_log.md`; **no step checks a clock.** This file is **only the wiring**; the rules live in the processes it calls (every sweep screens origins against [`wiki/origin-screen.md`](wiki/origin-screen.md) itself, lint #17), and the reasoning in `wiki/sweep-cycle-notes.md`.
 
 ## Execution model
 
