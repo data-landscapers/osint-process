@@ -704,9 +704,9 @@ def read_xchg_notes(path):
 def check_xchg_note_caps(d):
     """#24's second half — the 60-word cap over `notes-for-osint.md` and `notes-for-corpus.md`.
 
-    **Soft, and never listed in full.** Both files are written from both sides, so an
-    over-length note is as often CORPUS's message as OSINT's, and OSINT trimming the other
-    side's words is not a fix available to it. What the finding is for is the writer's next
+    **Soft, and never listed in full.** Both files are written by CORPUS, RESEARCH and OSINT,
+    so an over-length note is as often another writer's message as OSINT's, and OSINT trimming
+    another writer's words is not a fix available to it. What the finding is for is the writer's next
     note: the decision and the work, not the argument behind it, which belongs in the repo
     that owns it."""
     for name in XCHG_NOTES:
@@ -740,8 +740,8 @@ def check_xchg_affects(d):
 
     **Hard on `notes-for-corpus.md`, which is OSINT's outbox, and soft on the inbox.** The
     rule does its work before a note is written, and the writer is the only one who can
-    apply it; failing on the other side's note would be failing on work this run may not
-    edit. CORPUS asserts the mirror of this from `scripts/lint-notes.py`."""
+    apply it; failing on CORPUS's or RESEARCH's note would be failing on work this run may
+    not edit. CORPUS asserts the mirror of this from `scripts/lint-notes.py`."""
     for name, soft in ((XCHG_OUTBOX, False), (XCHG_INBOX, True)):
         path = os.path.join(XCHG, name)
         if not os.path.exists(path):

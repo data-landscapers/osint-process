@@ -72,17 +72,17 @@ Frontmatter per `schemas.md` §4, **`catalogue_hero:` included** (3a), facets pe
 
 ## 3a. Write the catalogue hero
 
-**Every source gets a `catalogue_hero:`, gated by nothing, never refused** — contract `schemas.md` §4 (≤120 characters, one line, complementing the title). A slice writes its batch with `python scripts/catalogue-hero-set.py`.
+**Every source gets a `catalogue_hero:`, gated by nothing, never refused** — contract `schemas.md` §4. A slice writes its batch with `python scripts/catalogue-hero-set.py`.
 
 ## 4a. Author the hub line
 
-**`hub_line:` is one plain sentence** on the source page — a bolded claim, then dated specifics and topic wikilinks, date and place from the frontmatter. **No `hub_line`, no bullet**; a refusal is recorded, never blank: `hub_line_none: <date>  # <reason>`.
+**`hub_line:` is one plain sentence** — a bolded claim, then dated specifics and topic wikilinks. **No `hub_line`, no bullet**; a refusal is recorded, never blank: `hub_line_none: <date>  # <reason>`.
 
 **One event, several accounts**: before `HUB-COMPILE.md`, group by **place + event against the held corpus** (`lint-duplicate-sources.py --max-gap`); one carrier keeps `hub_line:`, the rest go in its `hub_line_sources:` **and each gets `hub_line_none:`**. Grouping, and who gets none: `ingest-judgment.md` §4.
 
 ## 4. Entities — tag, never page
 
-Tag the actors (`CLAUDE.md` → *Entities*); bold the name in prose, never a `[[wikilink]]`.
+Tag the actors (`CLAUDE.md` → *Entities*); bold the name in prose, never a `[[wikilink]]`. Where two slugs name one body, use `raw/`'s commoner one and name the split in the return.
 
 ## 7. Flag contradictions
 

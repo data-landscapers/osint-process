@@ -6,9 +6,6 @@ Trigger: **"run wiki sync"** / **"wiki sync"**. Called by the rotation at every 
 ## Phase B's cadence
 
 Phase B — writing the pages Phase A's deltas are waiting on — is the one thing that genuinely batches: draining the queue opens each concept page **once per run**, where writing per item opens the same page every time and produces accretion where a batch produces synthesis. It runs at the nightly close: one page, one open, for whatever a night's catch queued.
-
-Reconcile and acquire are not this pass's: neither batches, so they run at the cycle close (`SWEEP-CYCLE.md` → *Reconcile and acquire*).
-
 ---
 
 ## The pass
@@ -33,7 +30,7 @@ Drain `logs/ingest-pending-writes.md` **grouped by target page**, opening each o
 
 **A landing page over its line is rewritten, never appended to.** Before the write, `python scripts/page-length.py <landing page>` — lint #8's own measure. `under` or `ruled`: write as below, unless this write crosses the line: then `OVER`. `OVER` (exit 1): the write **rewrites the landing section as synthesis** — current state with the new source folded in, dated per-ingest bullets merged, every citation kept inline on its claim, events left to their source pages (`CLAUDE.md` → *Structure*). Nothing an ingest bullet said is lost from the record: what the page cannot hold stays in its cited source, and commentary and officeholder names give way before a fact, never a citation. Then `python scripts/page-length.py --trimmed <page> --before <N>`, which records both word counts in `logs/phaseb-trims.csv` and exits 2 (`GREW`) on a rewrite that ends longer than it began, which the slice redoes. **The rewrite may not grow the page by a word** *(R141, 2026-10-27)*: the new source takes the words of what it supersedes or merges with, and where nothing is superseded, commentary gives way to it. A page still over after its section is rewritten stays over; the next write to it rewrites the next landing section.
 
-**A slice removes its drained rows by matching each row's own text, never by line number** — siblings are draining the same file, so every index shifts under it — and appends nothing to a row it did not write.
+**A slice never edits the queue**: it lists each row it wrote, by the row's own text, in a slice-named done file, and the parent drains the queue once against every done file after all slices return — siblings rewriting one shared file lose each other's removals.
 
 **5. For each place — *nothing to write*.** Hubs are compiled, not written; only tag regions where the item is genuinely region-level, so the compile puts it on the right hubs.
 
@@ -47,7 +44,7 @@ Drain `logs/ingest-pending-writes.md` **grouped by target page**, opening each o
 
 **The partition is by target page, computed from the deltas — never by subject.** A subject's own routing rules send its writes onto pages another subject holds, so two subject-sliced agents edit one file concurrently, and the pages no subject owns — place hubs, indexes, `{place}--{topic}` intersections — are left with no slice to write them. **Before dispatch, the parent writes the page map**: every landing page (after step-6 routing) is assigned to exactly one slice, and every row goes to exactly one slice, the one that owns its page. A row that names several pages is split into one row per page, never copied into each slice that touches one. This covers the pages every slicing touches too: concept `## By place` cells, a page two topics route to, a multi-place row. A partition by subject or by place cannot produce this map, so it is not a Phase B partition.
 
-**Where a page-based partition is genuinely impractical, the residue is named and owned, not dropped.** Each slice writes the instructions it cannot own to a file the parent collects, and **the parent works them as a closing step before the stage commit** — they are part of the queue, not leftovers from it. A slice that has deferred work says so in its return; a slice that reports `remaining=0` has written everything its rows instructed, including the cross-page ones, or it has told the parent who will.
+**Where a page-based partition is genuinely impractical, the residue is named and owned, not dropped.** Each slice writes the instructions it cannot own to a file the parent collects, and **the parent works them as a closing step before the stage commit** — they are part of the queue, not leftovers from it. A slice that has deferred work says so in its return, as does one that met a conflict, written on the page both ways, attributed and dated, for the parent to brief; a slice that reports `remaining=0` has written everything its rows instructed, including the cross-page ones, or it has told the parent who will.
 
 **A slice may mint a page its rows require.** A missing intersection or concept page is no reason to leave material on the wrong page: the containment line bars writing outside the slice's own pages, never bringing one into existence. Index the page in the same edit, so it is never an orphan.
 
@@ -59,8 +56,7 @@ Drain `logs/ingest-pending-writes.md` **grouped by target page**, opening each o
 
 ## Concurrency
 
-One `WIKI-SYNC` run at a time, and no other CC session writing to the vault while it runs — it needs exclusive access to `new/` and `logs/ingest-pending-writes.md`, the same worklists `SWEEP-CYCLE.md`'s nightly ingest needs. The two do not overlap, since the nightly close runs `WIKI-SYNC` after the night's ingest has finished.
-
+One `WIKI-SYNC` run at a time, and no other CC session writing to the vault while it runs — it needs exclusive access to `new/` and `logs/ingest-pending-writes.md`, the same worklists `SWEEP-CYCLE.md`'s nightly ingest needs.
 ## Logging
 
 Each pass writes its own terse `log.md` entry and status line; `WIKI-SYNC` neither suppresses nor duplicates that. **When Phase B is split into sub-agents**, no slice writes `log.md` — each returns what it changed to the parent, which folds every slice into this pass's single closing entry (`STATUS.md` → *The `log.md` entry*). At the end it appends **one** terse closing entry: which passes fired, rows drained, what (if anything) is still open, then the standing status line:

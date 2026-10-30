@@ -25,7 +25,7 @@ The canary proves the instrument, so it gates every pass that reaches outside th
 
 ## Draining notes, pulling the queue, absorbing
 
-Notes go first because a note's fix can bear on anything the night does. A note that only raises a question its writer could have answered stays open for CORPUS. A fix landing on `CLAUDE.md`, a `wiki/` spec or a root procedure takes `--allow-extra` per file.
+Notes go first because a note's fix can bear on anything the night does. A note that only raises a question its writer could have answered stays open for its writer. A note carrying `From: RESEARCH` drains like CORPUS's; its residue goes to Bill in the note's own resolution, never as a note in either file. A fix landing on `CLAUDE.md`, a `wiki/` spec or a root procedure takes `--allow-extra` per file.
 
 `pull-new-queue.py` gives a backfill-prefixed folder's candidates their `sweep_batch:` where they carry none, and deletes a folder once all its files are in `new/`. A folder without `READY` is still being written and is left alone; a name already in `new/` stays queued and is retried the next night. The queue's deletions on `X:\` are CORPUS's to commit. The backfill lane takes `status-acquire-`, `progress-filler-`, `dataset-`, `budget-poll-` and `maturity-study-` batches; every other folder stays news. A maturity study arrives as `X:\prepared\maturity-study-{id}\`, one indicator across the continent kept as one group; the pull takes every file but `BRIEF.md`, removes `READY`, and leaves the folder for CORPUS to prune. A `budget-poll-{ISO3}` folder is CORPUS's `budget-watch.py poll` output: companion and artefact, already screened against the URL and md5 indexes, admitted as `source_tier: budget-document` records.
 

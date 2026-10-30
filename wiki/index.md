@@ -27,6 +27,7 @@ Values outside the vocabularies are rejected.
 - `reviews/acquisitions.md` — the fetch list.
 - `X:\osint-housekeeping.md` — the housekeeping register: lint-type jobs too big for a batch, worked one session at a time. Open jobs only; `X:\osint-housekeeping-resolved.md` beside it. Not in this repository — OSINT writes it, CORPUS commits it.
 - `X:\strategic-reviews\` — the review series and numbered task lists, both systems', oldest 2026-07-24. On the share, not in this repository. A dated record: read for the commissioning of a task, never edited after its own date.
+- `Y:\` and `R:\` — CORPUS (`C:\CORPUS`) and RESEARCH (`C:\research`), read-only for OSINT since 2026-10-29. Read only the file a note or Bill points to — never CORPUS's `logs/` or runbooks, never RESEARCH's projects unless named. Never search either drive whole: `Y:\scripts\.workroot\` holds junctions into `O:\` that loop on themselves, and `R:\index\` is a 2.3 GB search index. Write nothing there; everything sent still goes through `X:\`.
 
 ## Processes
 

@@ -83,7 +83,7 @@ Every check has one correct action; lint takes it in git and counts it. It surfa
 
 **33. Per-item effort cap** — surface, scripted, nightly. `python scripts/effort-cap.py`. An item named in three of the run's `log.md` entries: drop it, or write the dated absence.
 
-**24. Register caps** — auto-fix, scripted, nightly. `post-run-notes.md` against `CLAUDE.md` → *Reporting*; over the open cap, take the conservative option. On the share, an over-cap preamble or a convention restated outside `X:\README.md` → *Conventions* fails, and every open note needs a reachable `Affects:` line — hard on OSINT's files, soft on CORPUS's.
+**24. Register caps** — auto-fix, scripted, nightly. `post-run-notes.md` against `CLAUDE.md` → *Reporting*; over the open cap, take the conservative option. On the share, an over-cap preamble or a convention restated outside `X:\README.md` → *Conventions* fails, and every open note needs a reachable `Affects:` line — hard on OSINT's files, soft on CORPUS's and RESEARCH's.
 
 **41. Documentation caps** — surface, scripted, nightly. `python scripts/lint-docs.py --report`: every root, `documentation/` and `wiki/*.md` file names its reader on line one and stays under `CLAUDE.md` → *Documentation caps*. A missing reader is stamped on sight; **a length breach is listed, never trimmed by lint**.
 
