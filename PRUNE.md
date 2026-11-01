@@ -69,7 +69,7 @@ Undated per-country logs (`sweep/archive/drop-log-{ISO3}.csv`) are not in scope 
 | `reviews/acquisitions.md` | no `[untried]`/`[blocked]` line left in the section | the section heading / drained note |
 | `X:\fetch-list.md` | `x`-prefixed | *(YYYY-MM-DD)* on the struck line |
 
-**A struck fetch line is actioned before it is deleted.** It carries Bill's outcome and nothing else does: struck bare, the document is in `new/` and ingest has it; struck with a reason (`login only`, `gone`), the route is dead — **write the absence dated on the page it bears on** and record the domain so no sweep re-lists it. Delete only after that. This is the one register where pruning a line can lose a fact.
+**A struck fetch line is the striker's outcome, already actioned.** Struck bare, the document is in `new/` and ingest has it; struck with a reason (`login only`, `gone`), the route is dead, and the absence it implies was the striker's to state on the page it bears on. The prune deletes the line after 3 days and writes nothing.
 
 ### Section discipline
 

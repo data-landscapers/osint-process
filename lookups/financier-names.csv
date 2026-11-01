@@ -267,3 +267,5 @@ world-health-organization,World Health Organization (WHO),MULTI,multilateral,htt
 orange-botswana,Orange Botswana,FRA,private,https://www.orange.co.bw,false
 raxio-group,Raxio Group,,private,https://www.raxiogroup.com,
 fondation-bantuhub,Fondation BantuHub,COG,foundation,,true
+iom,International Organization for Migration (IOM),MULTI,multilateral,https://www.iom.int,false
+aics,Italian Agency for Development Cooperation (AICS),ITA,bilateral-agency,https://www.aics.gov.it,false

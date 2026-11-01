@@ -178,6 +178,13 @@ def raw_sources():
             p = os.path.join(dirpath, name)
             with open(p, encoding="utf-8", errors="replace") as f:
                 head = f.read(4096)
+                # A long frontmatter (catalogue hero, notes, entity lists) can run past
+                # 4 KB; read on until it closes, or the record is never indexed.
+                while head.startswith("---") and "\n---" not in head[3:]:
+                    more = f.read(8192)
+                    if not more:
+                        break
+                    head += more
             if "url:" not in head:
                 continue
             fm, _w, _b = V.parse_frontmatter(head)
