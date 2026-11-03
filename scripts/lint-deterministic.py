@@ -109,7 +109,7 @@ XCHG_PREAMBLE_CAP = 250
 XCHG_PREAMBLES = {
     "osint-housekeeping.md": ("## Rough sizing", False),
     "osint-housekeeping-resolved.md": ("## Done", False),
-    "notes-for-corpus.md": ("## Unresolved", False),
+    "notes-for-corpus.md": ("### ", False),
     "notes-for-corpus-resolved.md": ("## ", False),
     "notes-for-osint.md": ("## Standing constraints", True),
 }

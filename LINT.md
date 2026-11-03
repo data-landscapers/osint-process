@@ -75,7 +75,7 @@ Every check has one correct action; lint takes it in git and counts it. It surfa
 
 **30. Every adjudication in `sweep-url_log.md` has a record** — surface, scripted, nightly. `python scripts/lint-url-log.py`. Never auto-fix.
 
-**18. Register pruning** — auto-fix, nightly. Run `PRUNE.md`; report what it deleted; surface a stale next-number counter.
+**18. Register pruning** — auto-fix, nightly. Run `PRUNE.md` in full: `prune-dated.py` covers only the dated sweep files, and the register rows of its table (acquisitions notes, fetch-list strikes, post-run notes) are pruned by hand in the same pass; report what it deleted; surface a stale next-number counter.
 
 **29. The hand-stamped log** — surface, scripted, nightly. `python scripts/log-append.py --check`. Never auto-fix; `log-append.py` is the writer.
 

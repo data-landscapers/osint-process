@@ -104,7 +104,7 @@ earn, so its domestic story is simply out.
 ### Data
 - `data.statistics` — National statistics
 - `data.open` — Open data
-- `data.satellite` — Use of satellite data
+- `data.geospatial` — Geospatial data
 
 ### Finance
 - `finance.new` — New investments

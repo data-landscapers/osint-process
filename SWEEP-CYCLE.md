@@ -80,7 +80,7 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 ## Step 0 — the Exa canary
 
-**First act after the notes and the queue pull**: one `web_search_exa`, `"data protection Africa"`, `numResults: 1`. **On failure the collecting half does not run and the processing half does** *(Bill, 2026-09-08)*: no sweep, no day's job, no `RECONCILE`, no `ACQUIRE`; ingest over what `new/` holds, Phase B, the compiles, both lints, `BACKLOG`, rules, the commits and the mirror all run. **No fallback tool and no reduced sweep. The rotation does not move and there is no `--stamp`.** The fatal line: `**SWEEP-CYCLE** · FATAL: Exa canary <the error> — sweeps skipped, processing ran`.
+**First act after the notes and the queue pull**: `ToolSearch("select:mcp__claude_ai_Exa__web_search_exa")` (or `mcp__exa__…`, whichever the session lists), then one search: `"data protection Africa"`, `numResults: 1`, `objective: "confirm the search tool returns a result"`. **On failure the collecting half does not run and the processing half does** *(Bill, 2026-09-08)*: no sweep, day's job, `RECONCILE` or `ACQUIRE`; everything else runs. **No fallback tool, no reduced sweep, no rotation move, no `--stamp`.** The fatal line, the error exactly as returned: `**SWEEP-CYCLE** · FATAL: Exa canary <the error> — sweeps skipped, processing ran`.
 
 ## Draining notes-for-osint, pulling the queue, absorbing
 

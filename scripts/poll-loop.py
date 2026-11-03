@@ -17,6 +17,12 @@ own claim file says it opened one tonight. A `New-Start` from an earlier night i
 run, and the cycle resumes it, so that one fires. A launch that fails writes no claim and is
 tried again at the next check.
 
+**A night's hours can be moved** *(Bill, 2026-11-03)*: a row in `lookups/poll-window.csv`
+(`night`, the date the evening falls on; `start`; `stop`; `reason`) replaces `START`-`STOP` for
+that night only, and a night with no row keeps the default. The file is read at every check and
+every pause, so an edit needs no restart of a loop running this version. CORPUS's poll has the
+same file in its own `lookups/`.
+
 Only the trigger checks a clock; the cycle still never does (`SWEEP-CYCLE.md`).
 
 Usage:  python scripts/poll-loop.py               # in the OSINT-POLL tab
@@ -26,6 +32,7 @@ Usage:  python scripts/poll-loop.py               # in the OSINT-POLL tab
 from __future__ import annotations
 
 import argparse
+import csv
 import datetime as dt
 import os
 import re
@@ -36,6 +43,7 @@ import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CYCLE_LOG = os.path.join(ROOT, "logs", "sweep-cycle_log.md")
+WINDOWS = os.path.join(ROOT, "lookups", "poll-window.csv")
 CLAIM = os.path.join(tempfile.gettempdir(), "osint-poll-claim.txt")
 PROMPT = "run the sweep cycle"
 
@@ -51,8 +59,41 @@ def night_of(t: dt.datetime) -> dt.date:
     return (t - dt.timedelta(hours=12)).date()
 
 
-def in_window(t: dt.time) -> bool:
-    return t >= START or t < STOP
+def as_date(v: str) -> dt.date | None:
+    """`2026-11-03`, or `03/11/2026` as Excel saves it on a UK machine (day first)."""
+    v = v.strip()
+    for f in ("%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y"):
+        try:
+            return dt.datetime.strptime(v, f).date()
+        except ValueError:
+            pass
+    return None
+
+
+def as_time(v: str) -> dt.time:
+    """`01:00`, `1:00` or `1:00:00`."""
+    h, m, *_ = (v.strip() + ":0").split(":")
+    return dt.time(int(h), int(m))
+
+
+def window(day: dt.date) -> tuple[dt.datetime, dt.datetime]:
+    """The hours of the night whose evening falls on `day`: its row in WINDOWS, else the
+    default. A stop at or before the start is the next morning's."""
+    start, stop = START, STOP
+    try:
+        with open(WINDOWS, encoding="utf-8-sig", newline="") as fh:
+            for r in csv.DictReader(fh):
+                if as_date(r.get("night") or "") == day:
+                    start, stop = as_time(r["start"]), as_time(r["stop"])
+    except (OSError, ValueError, KeyError) as e:
+        print(f"poll: {WINDOWS} unreadable ({e}); default hours", flush=True)
+    a = dt.datetime.combine(day, start)
+    b = dt.datetime.combine(day if stop > start else day + dt.timedelta(days=1), stop)
+    return a, b
+
+
+def in_window(now: dt.datetime) -> bool:
+    return any(a <= now < b for a, b in (window(now.date() - dt.timedelta(days=1)), window(now.date())))
 
 
 def run_tonight(night: dt.date) -> list[str]:
@@ -103,11 +144,11 @@ def check() -> str:
 
 
 def next_slot(now: dt.datetime, minutes: int) -> dt.datetime:
-    """The next check on the interval's grid, moved to START if it falls outside the window."""
+    """The next check on the interval's grid, moved to the next night's start if it falls outside."""
     t = now.replace(second=0, microsecond=0)
     t += dt.timedelta(minutes=minutes - t.minute % minutes)
-    if not in_window(t.time()):
-        t = t.replace(hour=START.hour, minute=START.minute)
+    if not in_window(t):
+        t = min(a for a, _ in (window(now.date()), window(now.date() + dt.timedelta(days=1))) if a > now)
     return t
 
 
@@ -119,18 +160,23 @@ def main() -> int:
     if args.now:
         print(f"{dt.datetime.now():%H:%M}  {check()}", flush=True)
         return 0
-    print(f"poll: sweep cycle opens {START:%H:%M}-{STOP:%H:%M}, checked every {args.interval} min. "
-          "Ctrl+C stops it.", flush=True)
+    a, b = window(night_of(dt.datetime.now()))
+    print(f"poll: sweep cycle opens tonight {a:%H:%M}-{b:%H:%M} (default {START:%H:%M}-{STOP:%H:%M}), "
+          f"checked every {args.interval} min. Ctrl+C stops it.", flush=True)
     now = dt.datetime.now()
-    when = now if in_window(now.time()) else next_slot(now, args.interval)
+    when = now if in_window(now) else next_slot(now, args.interval)
     last = ""
     while True:
         if when > dt.datetime.now() + dt.timedelta(minutes=args.interval + 1):
             print(f"{dt.datetime.now():%H:%M}  waiting until {when:%a %H:%M}", flush=True)
-        # Sleep in short steps, so a machine that sleeps through a slot checks on waking.
+        # Sleep in short steps, so a machine that sleeps through a slot checks on waking, and
+        # re-read the night's hours at each step, so an edit to poll-window.csv moves a pause.
         while dt.datetime.now() < when:
             time.sleep(min(60, max(1, (when - dt.datetime.now()).total_seconds())))
-        if in_window(dt.datetime.now().time()):
+            now = dt.datetime.now()
+            if when - now > dt.timedelta(minutes=args.interval):
+                when = now if in_window(now) else next_slot(now, args.interval)
+        if in_window(dt.datetime.now()):
             line = check()
             if line != last:  # a stand-down repeats every check; print it once
                 print(f"{dt.datetime.now():%H:%M}  {line}", flush=True)
