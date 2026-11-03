@@ -106,7 +106,7 @@ Iterate `transaction[]`. Each has `transaction-type/@code`, `value/text()`, `val
 |---|---|
 | co-financing names | the other `participating-org[@role="1"]` — **names only**, since IATI rarely apportions |
 | lead-financier flag | true where the financier is also the `reporting-org` |
-| instrument | `default-finance-type`, else `transaction/finance-type/@code` — 110 grant, 410 loan |
+| instrument | `default-finance-type`, else `transaction/finance-type/@code` — 110 → `Grant`, 410 → the loan term `DEAL-VOCAB.md` settles. The cell takes the bare vocabulary term; the code goes in `## Notes` |
 | status | `activity-status/@code` — 1 pipeline, 2 implementation, 3 finalisation, 4 closed, 5 cancelled, 6 suspended |
 | start / end year | from *Dates* above |
 | amount quality | `stated` — these are the publisher's own figures, not the wiki's arithmetic |
