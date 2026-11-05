@@ -84,11 +84,12 @@ PUBLISH = [
     "lookups/deal-status-map.csv", "lookups/deal-vocabs.csv", "lookups/financier-names.csv",
     "lookups/fx-imf-annual.csv", "lookups/region-membership.csv",
     "lookups/report-region-sections.csv", "lookups/sweep-*.csv",
-    "lookups/budget-doc-types.csv", "lookups/intersection-names.csv",
+    "lookups/budget-doc-types.csv", "lookups/intersection-names.csv", "lookups/donor-keywords.csv",
     # Wiki specs — by name; the compiled pages beside them are the product, not the process.
     "wiki/index.md", "wiki/intake.md", "wiki/schemas.md", "wiki/facets.md", "wiki/layout.md",
     "wiki/reference.md", "wiki/capture-rule.md", "wiki/origin-screen.md", "wiki/operations.md",
     "wiki/finance-iati-driver.md", "wiki/finance-load-domestic-state.md",
+    "wiki/finance-donor-reporting.md", "wiki/finance-crs-driver.md",
     "wiki/finance-news-driver.md", "wiki/finance-record-spec.md",
     # Strategic review 5 R90/R93: the slice briefs and the runbooks' reasoning specs.
     "wiki/brief-sweep.md", "wiki/brief-ingest.md", "wiki/ingest-judgment.md",

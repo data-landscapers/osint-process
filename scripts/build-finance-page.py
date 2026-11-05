@@ -153,7 +153,7 @@ def _ns_row(r, country, lab):
     start = T.get("Start year", "") or T.get("Commitment year", "") or (r["published"] or "")[:4]
     return [country, start, T.get("End year", ""),
             fin_name(fm_get(fm, "financier_slug")), lab.get(sec, sec),
-            T.get("Instrument", ""), (f"{usd:.0f}" if usd else ""), basis,
+            T.get("Instrument", ""), (f"{usd:.6f}".rstrip("0").rstrip(".") if usd else ""), basis,
             amount_quality(r), T.get("Status", ""),
             r["title"], section(r["body"], "Description"),
             T.get("Beneficiary type", ""), recip_org(T), T.get("Original amount", ""),

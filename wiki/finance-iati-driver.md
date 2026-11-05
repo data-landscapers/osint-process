@@ -1,7 +1,7 @@
 <!-- reader: cc; type: spec -->
 # finance-iati-driver.md — IATI activity → finance record
 
-The driver `wiki/finance-record-spec.md` calls for an IATI activity. `SWEEP-IATI.md` selects which activities reach it; this file says how one becomes a record.
+The driver `wiki/finance-record-spec.md` calls for an IATI activity. `SWEEP-IATI.md` selects which activities reach it; this file says how one becomes a record. **The method it shares with the OECD CRS — region, subject, cross-reference, the QA line and the drop rules — is `wiki/finance-donor-reporting.md`**; this file holds IATI's field mapping.
 
 **It runs over selected activities only** — the poll's step 6, never over the datastore. Input is one activity's structured JSON; output is one record in `new/`, for ordinary ingest.
 
@@ -29,7 +29,7 @@ Parse `response.docs[0].iati_json`; the activity is `iati-activity[0]`. Attribut
 
 **Whether the amount is a commitment *in the spec's sense*, whether the financier resolves to a canonical slug, and admission itself are ingest's.** This driver supplies the mechanical half and says so on the record's face.
 
-**Two exceptions, where the caller drops rather than builds** (`SWEEP-IATI.md` → *Two drop rules*). An activity with **no transaction carrying a value** fails fact 3 and is **not built and not staged** — it does *not* take `finance-record-spec.md`'s ordinary "routing, not rejection" path to `raw/` as a source. An activity whose **start date is before 2015** is dropped before this driver is reached at all. Both are the sweep's rules and neither generalises: a prose source reporting a financing development without a figure is still a source everywhere else in the wiki.
+**Two exceptions, where the caller drops rather than builds**: an activity with **no transaction carrying a value**, and one **committed before 2015** (commitment year, else start year) (`finance-donor-reporting.md` → *Two drop rules*). Neither takes `finance-record-spec.md`'s ordinary "routing, not rejection" path.
 
 ## Inherited fields — read the parent before the five facts
 
@@ -42,25 +42,9 @@ Parse `response.docs[0].iati_json`; the activity is `iati-activity[0]`. Attribut
 
 ## Recipient and region
 
-- **One recipient country** → its ISO-3 from `countries.csv`.
-- **More than one** → **aggregate to the region**: the narrowest `countries.csv` region containing every country named, walking the parent column. The amount is **recorded whole on that one record** — never split by `recipient-country/@percentage`, which would publish a figure no source states.
-- **No country, a region instead** → `recipient-region/@code` mapped below.
+**The shared rule** (`finance-donor-reporting.md` → *Recipient and region*): one country → its ISO-3; several → the narrowest region, amount whole, never split by `recipient-country/@percentage`; a region instead → `recipient-region/@code` through the shared DAC table.
 
-| Region code | Place |
-|---|---|
-| 189 North of Sahara, regional | `XNA` |
-| 289 South of Sahara, regional | `XSS` |
-| 298 Africa, regional | `XAF` |
-| 1027 Eastern Africa, regional | `XEA` |
-| 1028 Middle Africa, regional | `XCA` |
-| 1029 Southern Africa, regional | `XSA` |
-| 1030 Western Africa, regional | `XWA` |
-
-**All seven African entries of the [IATI region codelist](https://iatistandard.org/en/iati-standard/203/codelists/region/), mapping one-to-one onto the seven African rows of `countries.csv`.** 1028 *Middle Africa* is the UN M49 name for what the wiki calls Central Africa. `998 Developing countries, unspecified` is not African and is not admitted on geography.
-
-**Check the vocabulary before trusting the code.** `recipient-region/@vocabulary` defaults to `1` (OECD DAC); a publisher using `2` (UN M49) writes Africa as `002` and Sub-Saharan as `202`. A region code in an unmapped vocabulary is **not** guessed at — the activity is logged as `region-unmapped` with the pair, and the poll's manifest carries the counts so the mapping can be extended from evidence.
-
-**`XSS` is a sibling of `XEA`, `XWA`, `XCA`, `XSA` in `countries.csv`, not their parent.** So a multi-country activity spanning two sub-regions aggregates to `XAF`, and `XSS` arrives only from code 289 directly.
+**Check the vocabulary before trusting the code.** `recipient-region/@vocabulary` defaults to `1` (OECD DAC), the vocabulary the shared table is in; a publisher using `2` (UN M49) writes Africa as `002` and Sub-Saharan as `202`. A region code in an unmapped vocabulary is **not** guessed at — the activity is logged as `region-unmapped` with the pair, and the poll's manifest carries the counts so the mapping can be extended from evidence.
 
 ## Narratives — title, description, financier name, sector labels
 
@@ -89,16 +73,9 @@ Iterate `transaction[]`. Each has `transaction-type/@code`, `value/text()`, `val
 
 **Original amount and currency** carry the announcing party's own figures (`CLAUDE.md` → *Currency*). Mixed currencies: list each distinct code, so the mixing is visible.
 
-## Subject — classified from content, one slug
+## Subject
 
-**Never from the DAC purpose code.** DAC 5-digit codes are too coarse and too scattered to identify digital-transformation content. **DAC is provenance, not the classifier** — `SWEEP-IATI.md` does not scope its query by it either.
-
-1. Read title, description **and every `sector/narrative` across all vocabularies**. Publisher-supplied vocabularies are often more specific than the DAC label, so weight the specific ones and never rely on the DAC code's generic label.
-2. Assign the single closest Level-2 `taxonomy.md` slug: national ID / CRVS → `dpi.id`; instant and retail payments → `dpi.pay`; population, land and address registries → `dpi.registry`; interoperability → `dpi.exchange`; broadband and fibre → `infra.connect`; data centres and cloud → `infra.store`; data-protection law → `gov.protect`; strategy and policy → `gov.policy`.
-3. Record the **slug**, then any DAC code in brackets as provenance: `dpi.pay (DAC 24040)`, or `(no DAC code)`.
-4. Genuinely not a digital subject, or nothing fits: `unmapped` plus a reason, flagged for a ruling. Never force a slug.
-
-**Record the phrase that justified the slug** in the QA line.
+**The shared rule** (`finance-donor-reporting.md` → *Subject*), reading title, description **and every `sector/narrative` across all vocabularies**, with the DAC `sector/@code` as bracketed provenance.
 
 ## Fields beyond the five facts
 
@@ -120,14 +97,6 @@ Iterate `transaction[]`. Each has `transaction-type/@code`, `value/text()`, `val
 
 Everything the activity does not state is **left blank with a reason**, never guessed and never `0`.
 
-## Cross-reference, not enrichment
+## Cross-reference, QA line, manifest
 
-Where the wiki already holds the activity — same `iati_project_id`, or unambiguously the same deal — **say so on the record and let ingest settle it** (`CLAUDE.md` → *Duplicates*).
-
-**Do not fill a missing fact from the wiki.** `finance-record-spec.md`'s test requires each of the five to be present *in the source itself*, "not inferred, not carried in from the wiki". An activity that needs the wiki to complete it has failed the test and takes the ordinary `raw/` route instead.
-
-## QA line — one per activity
-
-Identifier, the record written or `SKIPPED`, and every blank with its reason: missing field, missing FX rate, no English narrative, unmapped region vocabulary, unmapped subject. That log is what makes a batch auditable, and it is where a pattern shows up.
-
-**Watch the commitment/disbursement split by financier.** Large donors report commitments; a big financier arriving disbursed-only, repeatedly, is more likely a defect in this extraction than in their reporting. The poll's manifest carries the split for that reason.
+**All shared** (`finance-donor-reporting.md`): cross-reference by `iati_project_id`, or a CRS sighting whose `ProjectNumber` matches `other-identifier` or `iati-identifier`, and never fill a missing fact from the wiki. The QA line also names each inherited field and its parent id.

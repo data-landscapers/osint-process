@@ -1,0 +1,58 @@
+topic,lang,pattern
+infra.connect,en,\bbroadband\b|\bconnectivity\b|\btelecom|\bsubmarine cable|\bsubsea cable|\bfibre[- ]optic|\bfiber[- ]optic|\bbackbone network|\binternet (access|exchange)|\bIXP\b|\bmobile network|\b[345]G\b|\bsatellite internet|\blast[- ]mile
+infra.connect,fr,\bhaut d[ée]bit|\bconnectivit[ée]|\bt[ée]l[ée]com|\bc[âa]ble sous-marin|\bfibre optique|\bdorsale|\bacc[eè]s [àa] internet
+infra.store,en,\bdata cent(re|er)s?\b|\bcloud\b|\bhosting\b|\bserver(s)?\b
+infra.store,fr,\bcentres? de donn[ée]es|\bh[ée]bergement (des|de) donn[ée]es|\bnuage\b
+infra.capacity,en,\bICT\b|\binformation (and communication )?technolog|\bIT (system|infrastructure|equipment|capacity)|\bdigital (infrastructure|capacity|skills)
+infra.capacity,fr,\bTIC\b|\btechnologies? de l.information
+infra.cybersec,en,\bcyber|\bCERT\b|\bCSIRT\b
+infra.cybersec,fr,\bcyber|\bcybers[ée]curit[ée]
+dpi.exchange,en,\binteroperab|\bdata exchange|\bX-Road\b|\binformation exchange platform
+dpi.exchange,fr,\binterop[ée]rab|\b[ée]change de donn[ée]es
+dpi.id,en,\bdigital ident|\bdigital ID\b|\bfoundational ID|\bidentity (system|management|card)|\bbiometric|\bcivil registration|\bCRVS\b|\bvital statistics|\bbirth registration
+dpi.id,fr,\bidentit[ée] num[ée]rique|\bbiom[ée]tri|\b[ée]tat civil|\benregistrement des naissances
+dpi.pay,en,\bdigital pay|\bmobile money|\bfintech|\bdigital financ|\be-?payment|\bmobile banking|\bpayment system|\bpay-?as-?you-?go|\bPAYG\b
+dpi.pay,fr,\bpaiement (num[ée]rique|mobile|[ée]lectronique)|\bmonnaie [ée]lectronique|\bmobile money|\bsyst[eè]me de paiement|\bfinance num[ée]rique
+dpi.registry,en,\bsocial registr|\bland (information|registr|administration system)|\bcadast|\bpopulation regist|\baddress(ing)? system|\bbusiness registr
+dpi.registry,fr,\bregistre (social|foncier|national)|\bcadastr|\bfichier (social|unique)
+dpi.mis,en,\bDHIS2?\b|\bHMIS\b|\bEMIS\b|\bLMIS\b|\bmanagement information system|\bhealth information system|\belectronic (medical|health) record|\bdigital health|\be-?health\b|\bm-?health\b|\btelemedicine|\bIFMIS\b
+dpi.mis,fr,\bsyst[eè]me d.information (sanitaire|de gestion)|\bsant[ée] num[ée]rique|\bt[ée]l[ée]m[ée]decine|\bdossier (m[ée]dical|patient) [ée]lectronique
+dpi.govtech,en,\be-?government|\bdigital government|\be-?services?\b|\bgovtech|\bdigital public (infrastructure|service|good)|\bDPI\b|\be-?procurement|\be-?tax|\be-?filing|\bdigiti[sz]ation|\bdigitali[sz]ation|\bdigital transformation|\bonline (service|platform|portal)|\bsafe city|\bCCTV\b
+dpi.govtech,fr,\badministration [ée]lectronique|\be-?administration|\bgouvernement num[ée]rique|\bservices? en ligne|\bnum[ée]risation|\bd[ée]mat[ée]rialisation|\btransformation num[ée]rique|\bservices publics num[ée]riques
+gov.legislate,en,\bdigital (law|legislation|regulat)|\btelecom(munications)? regulat|\bICT regulat|\bcyber ?law|\belectronic transactions act
+gov.legislate,fr,\br[ée]gulation des t[ée]l[ée]com|\bcode (du )?num[ée]rique|\bloi sur (le num[ée]rique|les transactions [ée]lectroniques)
+gov.policy,en,\bdigital (strategy|policy|agenda|economy)|\bICT (strategy|policy)|\bnational broadband (plan|strategy)
+gov.policy,fr,\bstrat[ée]gie (nationale )?(du |de d[ée]veloppement du )?num[ée]rique|\bpolitique num[ée]rique|\b[ée]conomie num[ée]rique
+gov.protect,en,\bdata protection|\bprivacy\b|\bpersonal data
+gov.protect,fr,\bprotection des donn[ée]es|\bdonn[ée]es personnelles|\bvie priv[ée]e
+gov.standards,en,\bdigital standards?\b|\binteroperability standard
+gov.regional,en,\bsmart africa|\bAfrican digital|\bdigital single market|\bPIDA\b|\bAU digital transformation
+gov.discourse,en,\bdigital rights|\binternet (freedom|shutdown)|\bonline (freedom|expression)|\bdigital civic|\bdisinformation|\bmisinformation
+gov.discourse,fr,\bdroits num[ée]riques|\bd[ée]sinformation|\blibert[ée] (d.expression )?en ligne
+include.divides,en,\bdigital (divide|inclusion|gap|literacy)|\bgender digital
+include.divides,fr,\bfracture num[ée]rique|\binclusion num[ée]rique
+include.access,en,\b(access to|universal) (ICT|internet|digital)|\buniversal service fund|\bcommunity (network|telecentre)|\btelecent(re|er)
+include.access,fr,\bservice universel|\bt[ée]l[ée]centre
+tech.ai,en,\bartificial intelligence|\bmachine learning|\bA\.I\.|\bAI\b|\blarge language model|\bLLM\b
+tech.ai,fr,\bintelligence artificielle|\bIA\b|\bapprentissage automatique
+tech.industry,en,\bICT (sector|industry|compan)|\btech(nology)? (sector|industry|compan)|\bdigital (sector|industry|economy)|\bBPO\b|\boutsourcing\b|\bsoftware\b
+tech.industry,fr,\bsecteur (du )?num[ée]rique|\blogiciel
+tech.innovate,en,\bstart-?ups?\b|\bincubat|\baccelerator|\binnovation hub|\btech hub|\bdigital (entrepreneur|innovation)|\bventure (capital|fund)
+tech.innovate,fr,\bstart-?up|\bincubat|\bacc[ée]l[ée]rateur|\binnovation num[ée]rique|\bentrepreneuriat num[ée]rique
+capacity.literacy,en,\bdigital literacy|\bcomputer literacy|\bdigital skills
+capacity.literacy,fr,\bcomp[ée]tences num[ée]riques|\balphab[ée]tisation num[ée]rique
+capacity.training,en,\bcoding\b|\bprogramming\b|\bICT (training|skills|education)|\bdigital (training|learning|education|school)|\be-?learning|\bcomputer (lab|science|training)
+capacity.training,fr,\bformation (au |aux )?(num[ée]rique|TIC|informatique)|\b[ée]ducation num[ée]rique|\bapprentissage en ligne|\binformatique
+capacity.research,en,\bresearch (and education )?network|\bNREN\b|\bdigital research
+data.statistics,en,\bstatistic|\bcensus\b|\bhousehold survey|\bNSO\b|\bnational statistical|\bdata (collection|systems?) (for|capacity)
+data.statistics,fr,\bstatistique|\brecensement|\benqu[eê]te (aupr[eè]s des )?m[ée]nages
+data.open,en,\bopen data|\bopen government|\bdata portal|\bopen source
+data.open,fr,\bdonn[ée]es ouvertes|\bopen data|\bgouvernement ouvert
+data.geospatial,en,\bgeospatial|\bGIS\b|\bearth observation|\bremote sensing|\bsatellite (data|imagery)|\bmapping\b|\bspatial data
+data.geospatial,fr,\bg[ée]ospatial|\bSIG\b|\bt[ée]l[ée]d[ée]tection|\bobservation de la terre|\bcartographi
+digital.localgov,en,\bsmart cit|\bmunicipal (digital|e-)|\blocal government (digital|ICT|information)
+digital.localgov,fr,\bville intelligente|\bcollectivit[ée]s? (territoriales? )?num[ée]rique
+digital.rural,en,\bdigital agricultur|\be-?agricultur|\bagritech|\bprecision agricultur|\bdigital extension|\bfarmer (registry|database)
+digital.rural,fr,\bagriculture num[ée]rique|\be-?agriculture|\bconseil agricole num[ée]rique
+general,en,\bdigital\b|\bdata\b
+general,fr,\bnum[ée]rique|\bdonn[ée]es\b|\bdigital

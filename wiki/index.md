@@ -72,7 +72,9 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 | `run finance compile` | [FINANCE-COMPILE.md](../FINANCE-COMPILE.md) | Recomputes each place hub's `## Financing` section and the per-country CSV exports under `outputs/` from the finance records in `raw/`. |
 | `rebuild finance pages` | [FINANCE-PAGES.md](../FINANCE-PAGES.md) | Full rebuild of the per-country CSV exports (`scripts/build-finance-page.py --all`, or one country). |
 | `run domestic finance capture` / `load` / `back-swing` | [wiki/finance-load-domestic-state.md](finance-load-domestic-state.md) | Builds domestic-state budget records, stages folded into a `## Stage history`. Suspended with the layer. |
+| *(called by the IATI poll and the CRS driver)* | [wiki/finance-donor-reporting.md](finance-donor-reporting.md) | The method IATI and the OECD CRS share: selection, drop rules, subject by reading, region, cross-reference, manifest. |
 | *(called by the IATI poll)* | [wiki/finance-iati-driver.md](finance-iati-driver.md) | Turns one selected IATI activity into a finance record. Requests `iati_json`; financier is the `reporting-org` unless `@secondary-reporter` is set. |
+| *(applied to `dataset-crs-*` batches)* | [wiki/finance-crs-driver.md](finance-crs-driver.md) | Turns one OECD CRS deal into a finance record. Harvested yearly in RESEARCH. |
 | `run finance back-swing` | [wiki/finance-news-driver.md](finance-news-driver.md) | Extracts finance records from prose sources — news, releases, filings. |
 
 **Sweeps** (acquire and stage candidates into `new/`; the containment boundary is [intake.md](intake.md) §7; every row's admissibility screen is [origin-screen.md](origin-screen.md), called by each sweep listed below)

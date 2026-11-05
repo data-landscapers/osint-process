@@ -5,13 +5,9 @@ Trigger: **"run the IATI poll"**, or its day of the rotation (`logs/sweep-cycle_
 
 Every other sweep watches *publications*, so it sees a donor commitment only if somebody wrote about it. The IATI Datastore is the donors' own reporting, in a structured schema with amounts and dates attached — the one instrument the wiki has for **the commitment nobody reported**.
 
-**Method: `sweep/donor/iati/iati-guidance.md`** (from IATI's own side); the record shape is **`wiki/finance-record-spec.md`** through the driver **`wiki/finance-iati-driver.md`**.
+**Method: `wiki/finance-donor-reporting.md`**, shared with the OECD CRS — selection, the two drop rules, subject, region, cross-reference and the manifest. IATI's API is `sweep/donor/iati/iati-guidance.md`; the record shape is **`wiki/finance-record-spec.md`** through the driver **`wiki/finance-iati-driver.md`**. This file holds what is IATI's alone: the id diff, hierarchy inheritance and the region vocabulary.
 
----
-
-## Scope is never in the query
-
-**Never scope the query by DAC sector code.** DAC is provenance, not the classifier (`wiki/finance-iati-driver.md`): digital work lands in unrelated DAC codes and hides under generic public-sector, ICT and statistics codes. **Scope is decided on content, over the diff — never in the query.**
+**Scope is never in the query** (`finance-donor-reporting.md` → *Scope is never in the query*): it is decided on content, over the diff.
 
 ## What the run does
 
@@ -21,13 +17,12 @@ Every other sweep watches *publications*, so it sees a donor commitment only if 
 2. **Pull today's full id list.** `q=*:*`, `fl=iati_identifier,iati_activities_document_id`, `rows=1000`, paged. `iati_activities_document_id`, taken in the same call, traces each activity to its source dataset and URL.
 3. **Diff.** Today's list minus the master list. Everything downstream runs on this set alone.
 4. **Fetch the diff's metadata**: `recipient_country_code`, `recipient_region_code`, `recipient_region_vocabulary`, `title_narrative`, `description_narrative`, plus `activity_date_iso_date` and `activity_date_type`. Batched by id, ~1 request per 1,000 new ids; the flat Solr fields are safe for selection.
-5. **Select, in stages, cheapest first.**
-   - **Geography, mechanically — after parent inheritance** (§ *Hierarchy*). Keep an activity whose `recipient_country_code` resolves to a `countries.csv` ISO-3, **or** whose `recipient_region_code` is one of the [codelist's](https://iatistandard.org/en/iati-standard/203/codelists/region/) seven African regions — **189** North of Sahara, **289** South of Sahara, **298** Africa, **1027** Eastern, **1028** Middle, **1029** Southern, **1030** Western — which map one-to-one onto the seven African rows of `countries.csv`. `998` Developing countries, unspecified is **not** African and is not kept.
-   - **Report every region code seen, not only the ones kept.** `recipient-region/@vocabulary` defaults to `1` (OECD DAC); a publisher using `2` (UN M49) writes Africa as `002`. The manifest carries **the distinct (vocabulary, code) pairs with counts across the whole diff**; an unmapped pair is a line to extend the mapping from, not an activity that vanished.
-   - **Vintage, mechanically — drop anything that started before 2015** (§ *Two drop rules*), on the fields pulled in step 4, before the per-record pull.
-   - **Topic, by reading.** Over the survivors only, read title and description against `taxonomy.md` and keep what is a digital-transformation subject. This is judgement over prose and is not mechanised. Record the phrase that justified each keep.
-6. **Pull the full record for the selected ids only** — `fl=iati_json&wt=json`, one request each — and build a finance record per `wiki/finance-iati-driver.md`, into `new/`. Structured JSON, never the flattened default: parse 2 must pair transaction values with their types and sectors with their percentages. **An activity whose transactions carry no value is dropped here and never staged** (§ *Two drop rules*).
-7. **Cross-reference what the wiki already holds.** Where the activity is already on file — by `iati_project_id`, or unambiguously the same deal — the record says so and ingest's ordinary duplicate handling settles it (`CLAUDE.md` → *Duplicates*).
+5. **Select, in the shared stages** (`finance-donor-reporting.md` → *Selection*), with IATI's two differences:
+   - **Geography runs after parent inheritance** (§ *Hierarchy*), on `recipient_country_code` and `recipient_region_code`.
+   - **Report every (vocabulary, code) pair seen, not only the ones kept.** `recipient-region/@vocabulary` defaults to `1` (OECD DAC); a publisher using `2` (UN M49) writes Africa as `002`. The manifest carries **the distinct pairs with counts across the whole diff**.
+   - Vintage runs on the fields pulled in step 4, before the per-record pull. No keyword pre-screen: the diff is small enough to read.
+6. **Pull the full record for the selected ids only** — `fl=iati_json&wt=json`, one request each — and build a finance record per `wiki/finance-iati-driver.md`, into `new/`. Structured JSON, never the flattened default: parse 2 must pair transaction values with their types and sectors with their percentages. **An activity whose transactions carry no value is dropped here and never staged** (shared drop rule 1).
+7. **Cross-reference what the wiki already holds**, by `iati_project_id`, or a CRS sighting of the same deal (`finance-donor-reporting.md` → *Cross-reference, not enrichment*).
 
 Then **advance the master list to today's full id list** — last, and over everything pulled, not only what was staged. An activity skipped for want of an amount has still been seen.
 
@@ -62,17 +57,9 @@ A child that publishes no recipient country fails the geography screen while its
 
 **Do not generalise the field list to other donors without looking**: inheriting a field a donor deliberately left blank manufactures a fact.
 
-## Two drop rules — no money, and no recent vintage
+## Two drop rules
 
-**Both are drops, not routings, and both are this sweep's alone.**
-
-**1. No monetary value, no record — and nothing staged.** An activity whose transactions carry no value is dropped at step 6 and never reaches `new/`. **This is a deliberate, scoped departure from `finance-record-spec.md` → *Failing the test is a routing decision, not a rejection*.** An amount-less IATI activity is a database row, not a piece of reporting. **The general rule stands everywhere else; this sweep overrides it for itself and says so.**
-
-**2. Started before 2015, dropped.** The test is the activity's **start date** — planned or actual, whichever it publishes — and where it publishes none, its commitment date.
-
-**The floor is 2015 and it is a constant, not a rolling window** — it matches the range `lookups/fx-imf-annual.csv` carries rates for, so a kept activity is a convertible one. Moving the floor means extending that table first.
-
-**Both rules are drops, so both are logged, never silent.** The closing tally carries `dropped-no-amount=N` and `dropped-pre-2015=N` as their own counts, not folded into a general dropped figure.
+**No money and pre-2015 vintage are the shared drop rules** (`finance-donor-reporting.md` → *Two drop rules*), logged as their own counts. Here, rule 1 is applied at step 6 and rule 2 at step 5; the test is the commitment year, the earliest type-2 transaction, else the start year, `activity-date` type 2 else type 1.
 
 ## Updated activities are out of scope
 
@@ -98,6 +85,6 @@ python scripts/iati-poll.py --ids-out PATH   # a cycle slice: the new id set goe
 
 ## Close
 
-Write `sweep/donor/iati/manifest-YYYY-MM-DD.md` — ids pulled, diff size, kept on geography, kept on topic, **dropped pre-2015 and dropped for no amount as their own counts** (§ *Two drop rules*), records built, one line per skipped class, **the distinct region (vocabulary, code) pairs seen**, and **the commitment/disbursement split by financier** — then report the standing sweep line:
+Write `sweep/donor/iati/manifest-YYYY-MM-DD.md` — the shared manifest (`finance-donor-reporting.md` → *The run's manifest*), with ids pulled and diff size as the rows handed in, and the region codes as **(vocabulary, code) pairs** — then report the standing sweep line:
 
 `step=SWEEP-IATI stopped=complete staged=N dropped=N needs-clip=0 remaining=0 notes=<≤10 words>`

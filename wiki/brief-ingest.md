@@ -22,11 +22,11 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 
 - **Scope, two halves**: data governance and digital transformation, **and** an African place, `XGL` or a `geopol.*` slug — else out.
 - **Four dispositions, no fifth**: admitted, contradiction brief, acquisition line, deleted.
-- **Duplicates**: drop, replace or keep both; replace only on a clear tier upgrade. Expect twins; `raw/` is the check.
+- **Duplicates**: drop, replace or keep both; replace only on a clear tier upgrade; `raw/` is the check.
 - **Academic papers and named-analyst opinion are first-class**; sparse entities and no dated event are their normal shape.
 - **Currency**: time-varying figures dated; the event date is not the publication date; a late old source is a baseline.
 - **A delta row says only what the source body holds**, never a sibling account, the staging note or memory; its subject is a taxonomy slug, never a place code.
-- **An item with no `sweep_batch:`** (a queue-root clip, a hand-staged page, a loose PDF) is normalised to the source schema first: URL from `source:` or the document's own posting, publisher and date from the document; a bare PDF gets a written companion, with a blank `url:` and a `url_note:` where no posting is found. Its drops log `--batch corpus-queue-<pull date>`.
+- **An item with no `sweep_batch:`** (a queue-root clip, a hand-staged page, a loose PDF) is normalised to the source schema first: URL, publisher and date from the document or its posting; a bare PDF gets a written companion, blank `url:` and a `url_note:` where no posting is found. Its drops log `--batch corpus-queue-<pull date>`.
 - **The tail is not the work**: dispose of the awkward item once.
 
 ## Never
@@ -38,14 +38,14 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 
 ## Files
 
-Line endings as at `git show HEAD:<path>`, tested with bytes (`python -c "b=open(PATH,'rb').read(); print('CRLF' if b.count(b'\r\n') else 'LF')"`); scratch only under your own slice-named subdirectory of the scratchpad, never inside `C:\OSINT`. A `date_source` outside the schema's values (`source`, `proxy`, `inferred`, `derived`) is corrected at admission: a byline date is `source`.
+Line endings as at `git show HEAD:<path>`, tested with bytes (`python -c "b=open(PATH,'rb').read(); print('CRLF' if b.count(b'\r\n') else 'LF')"`); scratch only in your own slice-named scratchpad subdirectory. A `date_source` outside the schema's values (`source`, `proxy`, `inferred`, `derived`) is corrected at admission: a byline date is `source`.
 
 ## Your return
 
 The tally line, then your delta lines verbatim:
 
 ```
-step=INGEST-A-<slice> stopped=<complete|context|error> items=N admitted=N contradiction=N acquisition=N deleted=N remaining=N notes=<≤10 words>
+step=INGEST-A-<slice> stopped=<complete|context|error> items=N admitted=N contradiction=N acquisition=N acq_lines=N deleted=N remaining=N notes=<≤10 words>
 ```
 
-`context` with `remaining=N` means the parent re-spawns you; an errored instrument is `stopped=error`, never a clean nil.
+`acq_lines=` counts every line in your rows file's `## acquisitions`; `acquisition=` only items so disposed. `context` with `remaining=N` means a re-spawn; an errored instrument is `stopped=error`, never a clean nil.
