@@ -61,6 +61,7 @@ full lint's batched checks ; prune-dated.py --apply --today <New-Start's date>  
 assert-containment.py --stage lint ; git commit ; usage-log.py --stage lint
 
 status-acquire.py --absorb                          # any pulled status-acquire batch
+sweep-stats.py --night <New-Start's date> --day D   # -> logs/sweep-stats.csv   [exa]
 prune sweep-url_log.md before D's (old) Start (skip if blank) [exa] ; rotate-log.py --apply
 close D: Prev Duration = Duration; Duration = now - New-Start (H:MM); Start = New-Start; End = now; clear New-Start   [exa]
 assert-containment.py --stage close --allow-extra lookups/rejected-urls.csv ; git commit ; usage-log.py --stage close
@@ -122,7 +123,7 @@ A change a site reader could notice — a new sweep list, source type or country
 
 `logs/sweep-cycle_log.md` is boss: its header defines the columns, `Skip`, the `@` prefix and duration ageing. **Its times, `New-Start` included, are local wall-clock (`date`), as are the collection stamp's; only `logs/log.md` is UTC.** **Selection**: oldest `Start`, blank counting oldest and two blanks tie-breaking on the lower `Day`; a `Skip` row passes to the next-oldest, `Start` untouched, named on the closing line. **No row due**: run the common prefix and the close, and say `no day due`.
 
-**Window**: `window_start = D's (old) Start − 1 day`, `window_end = today`; a blank old `Start` gives `today − one rotation`. The daily and off-list sweeps keep their own high-water state. `Start` advances only at the close, so a re-run sweeps the same window.
+**Window**: rotation sweeps look back **60h**, daily and off-list **36h**. `window_start` = the date of `New-Start − 60h`, or of old `Start − 12h` if earlier; `window_end = today`. Daily and off-list keep their own high-water (`SWEEP-DAILY-LIST.md`). `Start` advances only at the close, so a re-run sweeps the same window.
 
 **A day whose jobs are all unbuilt, or all `error` after their one re-spawn, does not close**: leave `Start`, `Duration` and `Prev Duration` unadvanced and say why on the closing line. **A populated `New-Start` is the interrupted-run signal**: the day re-runs from scratch.
 

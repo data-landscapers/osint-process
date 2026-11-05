@@ -30,7 +30,7 @@ This search should make the assumption that the technical trade journals will co
 
 This sweep holds **no state of its own**. Its window is **passed in**:
 
-- **In the cycle** (`SWEEP-CYCLE.md`) the cycle computes the window from the rotating day's `Start` in `logs/sweep-cycle_log.md` — `window_start = Start's date − 1 day` (the one-day overlap stops boundary items slipping through), `window_end = today` — and hands it to this sweep. `Start` is not advanced until the day *closes*, so a failed run re-runs the **same** window, not a short one.
+- **In the cycle** (`SWEEP-CYCLE.md`) the cycle computes the window from the rotating day's `Start` in `logs/sweep-cycle_log.md` — `window_start` per `SWEEP-CYCLE.md` → *Window* (60 hours back; a missed night widens it), `window_end = today` — and hands it to this sweep. `Start` is not advanced until the day *closes*, so a failed run re-runs the **same** window, not a short one.
 - **Standalone**, supply the window yourself (`since <date>`, defaulting to **one rotation** — the interval this sweep runs at in the cycle, not a fixed number of days).
 
 Note the wall-clock start time (for the duration line below), then sweep the window under *The loop*. There is nothing to write back — advancing the rotation is the cycle's job at close.

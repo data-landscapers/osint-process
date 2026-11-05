@@ -76,7 +76,7 @@ Each search runs on the **Exa Agent** (`agent_run`, `effort: "medium"`), so §4 
 
 This sweep holds **no state of its own**:
 
-- **In the cycle**, `SWEEP-CYCLE.md` computes it from the rotating day's `Start` in `logs/sweep-cycle_log.md`: `window_start = Start's date − 1 day`, `window_end = today`. `Start` advances only when the day closes, so a failed run re-runs the **same** window.
+- **In the cycle**, `SWEEP-CYCLE.md` computes it from the rotating day's `Start` in `logs/sweep-cycle_log.md`: `window_start` per `SWEEP-CYCLE.md` → *Window* (60 hours back; a missed night widens it), `window_end = today`. `Start` advances only when the day closes, so a failed run re-runs the **same** window.
 - **Standalone**, supply it yourself (`since <date>`, defaulting to **one rotation**, not a fixed number of days).
 
 Note the wall-clock start (for §8's duration) and pass the window into every brief. Nothing is written back; the cycle advances the rotation at close.

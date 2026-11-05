@@ -26,14 +26,14 @@ Runs standalone, or first in `SWEEP-CYCLE.md`. Per-domain findings: `sweep/domai
 
 ```
 window_end   = now (UTC)
-window_start = min( last_run_completed_utc , now − 24h )      # 24h overlap floor
+window_start = min( last_run_completed_utc − 12h , now − 36h )   # 36h look-back (Bill, 2026-11-04); a missed night widens it
 if (window_end − window_start) > 10 days:  window_start = now − 10 days
-first run (no state.json): window_start = now − 24h
+first run (no state.json): window_start = now − 36h
 ```
 
-**Apply the drop test by date, not by hour.** An item is dropped only if its publication *date* precedes `window_start`'s date. A story published on the morning of the start day is IN.
+**The high-water mark is not the window's start; the formula above is.** **Apply the drop test by date, not by hour.** An item is dropped only if its publication *date* precedes `window_start`'s date. A story published on the morning of the start day is IN.
 
-**Two things make a window look empty, and neither is chased:** **index lag** (the newest ~48h is under-indexed by Exa; the 24h overlap absorbs it) and **the weekend** (weekday publishers). Record the nil; never ask a nil domain to prove which kind of nil it is.
+**Two things make a window look empty, and neither is chased:** **index lag** (the newest ~48h is under-indexed by Exa; the 12h overlap and the date-level drop test absorb part of it) and **the weekend** (weekday publishers). Record the nil; never ask a nil domain to prove which kind of nil it is.
 
 ## Delegation
 

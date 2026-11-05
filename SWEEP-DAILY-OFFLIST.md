@@ -12,11 +12,11 @@ Run in the sweep cycle (`SWEEP-CYCLE.md`) after the daily sweep. Like it, it **s
 - **Deep discovery, not standard search.** The discovery instrument is the Exa **deep Agent** (`agent_run`), not the daily sweep's domain-scoped `web_search_advanced_exa`. Load `agent_run` via ToolSearch if deferred (match the tool-name suffix; the server prefix is session-specific). The Agent *finds* candidates; the daily sweep's shared **fetch → verify → classify → stage** machinery and the admissibility firewall below still vet every one. If `agent_run` is unavailable, fall back to open-web `web_search_exa` and note it. The domain-scoped sweeps stay on standard search — their hard domain-scoping is a firewall the Agent cannot enforce.
 - **Mixed remit.** Track A is **Africa-focused**; Track B is **worldwide**.
 
-Everything else is `SWEEP-DAILY-LIST.md`'s and is not restated here: the **24h high-water window**, conservative **dedup**, **fetch → verify → classify → stage** to `new/YYYY-MM-DD-slug.md`, the **full-verbatim-body standing capture rule**, the candidate **frontmatter schema**, and the **status line**.
+Everything else is `SWEEP-DAILY-LIST.md`'s and is not restated here: the **36h high-water window**, conservative **dedup**, **fetch → verify → classify → stage** to `new/YYYY-MM-DD-slug.md`, the **full-verbatim-body standing capture rule**, the candidate **frontmatter schema**, and the **status line**.
 
 ## The two tracks
 
-Run each track as a **deep Agent objective** (`agent_run`, `effort: "medium"` by default, `high` for a wide run): give it the track's beat and vocabulary below, the 24h window, the remit constraint (Track A Africa-scoped; Track B worldwide but Africa-bearing), and an instruction to return primaries with title, date, source and link. The clusters below are the *content* of those objectives, not literal query strings. Then take the surfaced primaries through the shared firewall and staging pipeline.
+Run each track as a **deep Agent objective** (`agent_run`, `effort: "medium"` by default, `high` for a wide run): give it the track's beat and vocabulary below, the 36h window, the remit constraint (Track A Africa-scoped; Track B worldwide but Africa-bearing), and an instruction to return primaries with title, date, source and link. The clusters below are the *content* of those objectives, not literal query strings. Then take the surfaced primaries through the shared firewall and staging pipeline.
 
 **The Agent's reported dates are not evidence.** `SWEEP-DAILY-LIST.md` step 4 — never trust a search result's date — applies to `agent_run` output too: establish every date from the fetched page. An unscreened origin is likewise not a bad origin — screen it in the run rather than dropping it as a precaution.
 
@@ -54,7 +54,7 @@ Domain-scoping did this for the daily sweep; here the **admissibility screen is 
 
 As `SWEEP-DAILY-LIST.md`, with these deltas:
 
-- **State** lives in `sweep/off-list/` (`state.json`, `seen.csv`) — its own high-water mark, **24h** overlap floor, 10-day cap.
+- **State** lives in `sweep/off-list/` (`state.json`, `seen.csv`) — its own high-water mark, **36h** look-back, 10-day cap.
 - **Dedup** also against the **daily sweep's fresh `new/` output** in the same batch: the two overlap at the edges (an infra story can sit on a listed journal *and* the open web), so cross-check `new/` before staging, not just `seen.csv` and `raw/`.
 - **Stage** flat to `new/` with best-effort frontmatter and the full verbatim body; `sweep_batch: off-list-YYYY-MM-DD`.
 - **Hand-off:** in the cycle this sweep is **stage-only** — it does *not* run ingest itself; `SWEEP-CYCLE.md` runs `INGEST`'s Phase A once after the daily sweeps. Run standalone (outside the cycle), finish by running `update wiki` yourself.
