@@ -11,7 +11,7 @@ One CC run; the parent is a **thin loop** — it selects the day, runs its proce
 
 **One level of sub-agent; the parent owns every spawn**, synchronously, never a background agent or `SendMessage`. A non-batching step (`INGEST` Phase A, `LINT`) is one sub-agent; a batching step is N, **~8–10 rows or countries each**, at most **20 running at once**. Each batch suffixes every per-run file it writes; **a sweep's persistent state (`state.json`, `seen.csv`) is the parent's to write** once all batches return.
 
-**The parent never ends a turn on a waiting line**: it holds the turn while a spawn is outstanding (`Monitor` on the agent's output), or ends on `outstanding: <step> · resumes on its own · no input needed`. `.claude/settings.json` sets `bypassPermissions` and denies `AskUserQuestion`, so no spawn stalls on a prompt.
+**The parent never ends a turn while work is outstanding**: it holds it with a bounded foreground wait on the work's own files, re-run until the step returns; a turn ended on a waiting line reads as the run stopping to ask. `.claude/settings.json` sets `bypassPermissions` and denies `AskUserQuestion`.
 
 ### Model
 

@@ -51,11 +51,11 @@ Above ~15 items, **slice Phase A into sub-agents of ~10** on explicit file lists
 
 **A clean tier 1 settles nothing** (`ingest-judgment.md` §2): where step 3's read makes a twin or completion visible, `CLAUDE.md` → *Duplicates* governs, including retiring the held record; grep `raw/` by title and identity, never opening a body.
 
-**Tier 2, narrow**: `raw/` filenames within a few days of `published` sharing a place or an entity. **Tier 3, one judgment on titles and ledes, drop-by-default**: match event + entities + date, never open a held body, **drop unless clearly a new event** — except an institution's primary of a held secondary (*Replace*) and an arrival with a dated figure, named party or primary link the held record lacks (*keep both*). Sources that **disagree** are a contradiction (step 7), never a duplicate.
+**Tier 2, narrow**: `raw/` filenames near `published` sharing a place or entity. **Tier 3, one judgment on titles and ledes, drop-by-default**: match event + entities + date, **drop unless clearly a new event** — except an institution's primary of a held secondary (*Replace*) and an arrival with a dated figure, named party or primary link the held record lacks (*keep both*). Sources that **disagree** are a contradiction (step 7), never a duplicate.
 
 ## 2a. Finance branch
 
-`finance.new` or `finance.mou` runs `wiki/finance-news-driver.md` first — its five-fact test decides merge, a new deal record into `new/`, or an ordinary source stating the failed fact unestablished. `finance.budget` runs no driver. Finance items get no hub bullet and no place delta.
+`finance.new` or `finance.mou` runs `wiki/finance-news-driver.md` first: its five-fact test decides merge, a new deal record into `new/`, or an ordinary source stating the failed fact unestablished. `finance.budget` runs no driver. A deal record gets no hub bullet or place delta; FINANCE-COMPILE carries it. Any other item is an ordinary source.
 
 ## 2b. Amendment branch
 

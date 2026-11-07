@@ -47,5 +47,7 @@ def add(path, slugs):
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         sys.exit(__doc__.split("\n\n")[2])
+    if sys.argv[1].replace(chr(92), "/").lstrip("./").startswith("raw/"):
+        sys.exit("sources-add: refusing a raw/ record; `sources:` belongs on wiki pages only")
     n = add(sys.argv[1], [s.strip().strip("[]") for s in sys.argv[2:] if s.strip()])
     print(f"sources-add: {n} added to {sys.argv[1]}")

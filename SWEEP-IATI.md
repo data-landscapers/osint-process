@@ -24,7 +24,7 @@ Every other sweep watches *publications*, so it sees a donor commitment only if 
 6. **Pull the full record for the selected ids only** — `fl=iati_json&wt=json`, one request each — and build a finance record per `wiki/finance-iati-driver.md`, into `new/`. Structured JSON, never the flattened default: parse 2 must pair transaction values with their types and sectors with their percentages. **An activity whose transactions carry no value is dropped here and never staged** (shared drop rule 1).
 7. **Cross-reference what the wiki already holds**, by `iati_project_id`, or a CRS sighting of the same deal (`finance-donor-reporting.md` → *Cross-reference, not enrichment*).
 
-Then **advance the master list to today's full id list** — last, and over everything pulled, not only what was staged. An activity skipped for want of an amount has still been seen.
+Then **advance the master list to the union of itself and today's full id list** — last, and over everything pulled, not only what was staged. An activity skipped for want of an amount has still been seen, and one the Datastore stops serving stays seen.
 
 **`work-order-YYYY-MM-DD.json` is therefore a queue, in exactly the way `new/` is.** An activity kept on geography but never turned into a record will not reappear in any future diff, and the work order is the only thing holding that set: it is not deleted until its records are built, and a run that ends with one outstanding says so on its closing line. The file's presence is its state.
 
@@ -72,7 +72,7 @@ python scripts/iati-poll.py --dry-run     # poll, report, write nothing
 python scripts/iati-poll.py               # select, build records, advance the master list
 python scripts/iati-poll.py --baseline    # rebuild the master list, select nothing
 python scripts/iati-poll.py --limit 40    # cap a night's record-building
-python scripts/iati-poll.py --ids-out PATH   # a cycle slice: the new id set goes to PATH; the parent moves it into place
+python scripts/iati-poll.py --ids-out PATH   # a cycle slice: the id set goes to PATH; the parent writes the union into the master list and deletes PATH
 ```
 
 `IATI_API_KEY` comes from `.env`, sent as `Ocp-Apim-Subscription-Key`. The gateway **403s a default `python-urllib` User-Agent** and **429s** readily: back off on `Retry-After`, and give up loudly.

@@ -48,7 +48,7 @@ Then the shared pre-screen runs, over title and both descriptions, because of vo
 | description | `LongDescription`, else `ShortDescription` |
 | instrument | `Finance_T` (110 grant, 4xx loan), else `FlowName`, through `DEAL-VOCAB.md`; the code goes in `## Notes` |
 | status | blank: the CRS carries none |
-| start / end year | `ExpectedStartDate` / `CompletionDate` |
+| start / end year | `ExpectedStartDate` / `CompletionDate` — a bare four-digit year or blank; 1900 is a CRS placeholder and blanks the cell |
 | original amount + currency | the USD figure: `Commitment_National` is not used, since `CurrencyCode` is a DAC numeric code and the field reads equal to USD in a 2023 sample |
 | co-financing | blank: one donor per deal |
 | lead-financier flag | true |
