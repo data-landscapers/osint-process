@@ -129,6 +129,10 @@ TRACKING_PARAMS = ("utm_", "fbclid", "gclid", "msclkid", "mc_cid", "mc_eid",
 # host after `www.` is dropped and the host is lower-cased.
 FRAGMENT_IS_IDENTITY = ("d-portal.org", "d-portal.iatistandard.org")
 
+# Mirror hosts serving the same documents under one path scheme: folded to the canonical host,
+# so the same World Bank document fetched from either collides at tier 1.
+HOST_ALIASES = {"documents1.worldbank.org": "documents.worldbank.org"}
+
 # Second-level labels that are registry suffixes, not the registrable name.
 # `co.ke`, `org.ng`, `ac.za`, `gov.gh` — taking the last two labels there would
 # collapse every Kenyan site to `co.ke` and screen the whole country as one origin.
@@ -217,6 +221,7 @@ def normalise_url(url):
     s = re.sub(r"^www\.", "", s, flags=re.I)
     host, sep, rest = s.partition("/")
     host = host.lower()
+    host = HOST_ALIASES.get(host, host)
     path, qsep, query = rest.partition("?")
     if query:
         kept = [p for p in query.split("&")
