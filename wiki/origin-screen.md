@@ -16,7 +16,7 @@ It screens **where an item came from**, not what it says. Content screening — 
 | `status` | Meaning | Action |
 |---|---|---|
 | `drop` | Adjudicated inadmissible. | **Never stage, never ingest.** Log the drop as **`inadmissible-origin`**. |
-| `watch` | One sighting of a hostile shape; not yet adjudicated. | Screen out this item as `inadmissible-origin` **and** promote the row to `drop` — a second sighting is the adjudication. |
+| `watch` | One sighting of a hostile shape; not yet adjudicated. | Screen out this item as `inadmissible-origin` **and** promote the row to `drop` — a second sighting is the adjudication. **The promotion edits the domain's own row in place** (`status`, `rule`, the sighting added to `note`): a domain carries one row, so a second appended row is a duplicate to fold, not a record. |
 
 **A row's own `rule` column overrides the generic action, and where it rules the origin admissible the item is admitted and no promotion follows.** The rows this reaches are the ones written as *how to handle this domain* rather than *this domain misreports* — a mirror of official text, a national regulator, a repository of deposited datasets, a CDN alias to be resolved to the canonical publisher host, an outlet admissible for ministry-event reports and nothing else. Reading `watch` as blacklist-on-sight against such a row would screen out primaries, which is the opposite of what the row was written to do. **Where the rule column rules a class in, the generic action does not apply to it**; where the row genuinely records a hostile shape, `watch` promotes to `drop` as above.
 

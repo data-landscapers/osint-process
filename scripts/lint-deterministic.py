@@ -1076,6 +1076,8 @@ DEACCENT_EXEMPT = {
     # faithful to the source (checked against budget-archive/SEN/2024/, 2026-09-24).
     "2023-10-13-sen-plf-2024-companion",
     "2023-12-15-sen-lfi-2024-loi-2023-18-companion",
+    # oneci.ci prints the heading in unaccented caps; the title is faithful (2026-11-08).
+    "2025-11-12-civ-l-oneci-et-la-sgci-scellent-un-partenariat-strategique-pour-une-authen",
 }
 
 

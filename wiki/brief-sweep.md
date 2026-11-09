@@ -1,7 +1,7 @@
 <!-- reader: cc; type: brief -->
 # Standing brief — sweep slice
 
-*(The parent pastes this file verbatim into every sweep slice's brief, under the night's own facts: the window, the high-water mark, and `scripts/drop-digest.py`'s output. Rules only; the incidents behind them are in git. `SWEEP-CYCLE.md` → *What every sub-agent prompt carries*.)*
+*(The parent pastes this file verbatim into every sweep slice's brief, under the night's own facts: the window, the high-water mark, and `scripts/drop-digest.py`'s output. Rules only. `SWEEP-CYCLE.md` → *What every sub-agent prompt carries*.)*
 
 ## Capture
 
@@ -9,7 +9,7 @@ Capture the **full verbatim article body** at fetch time — a private research 
 
 ## Containment — exact files
 
-You write **only** to `C:\OSINT\new\` (one staged candidate per file) and to `C:\OSINT\sweep\<your sweep>\` (per-run files suffixed with your batch label). Nothing else: never `raw/`, `wiki/`, `lookups/`, `sweep/ingest/` (ingest's drop log, which `drop-digest.py` reads as ingest's throw-backs), `state.json`, `seen.csv`, `logs/drop-list.csv` or any register. The one exception is `logs/sweep-url_log.md`, and only through its appender (below).
+You write **only** to `C:\OSINT\new\` (one staged candidate per file) and to `C:\OSINT\sweep\<your sweep>\` (per-run files suffixed with your batch label). Nothing else: never `raw/`, `wiki/`, `lookups/`, `sweep/ingest/` (ingest's drop log), `state.json`, `seen.csv`, `logs/drop-list.csv` or any register. The one exception is `logs/sweep-url_log.md`, and only through its appender (below).
 
 ## A discard is a drop
 
@@ -25,8 +25,8 @@ Every in-window item you put aside — already held, already seen, a sibling's c
 
 - Write `logs/log.md` or `reviews/rule-candidates.md` — flag it in `notes=`; the parent writes them.
 - Edit a root process file, `CLAUDE.md` or any `wiki/` spec; a rule change is a recommendation in your return.
-- Run a git command that writes, or any tree-wide one (`stash`, `reset`, `checkout`, `clean`).
-- Spawn a sub-agent.
+- Spawn a sub-agent, or run a git command that writes or any tree-wide one (`stash`, `reset`, `checkout`, `clean`).
+- Return with a background command still running: stop it first.
 - Ask a question or wait on a prompt: take the conservative option and say so in your return.
 
 ## Files
