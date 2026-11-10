@@ -45,6 +45,7 @@ select day D; New-Start = now                                                   
 window from D's (old) Start                                                        [exa]
 
 SWEEP-DAILY-LIST, SWEEP-DAILY-OFFLIST              stage-only, batched, sonnet     [exa]
+SWEEP-CITATIONS                                    one sub-agent, sonnet; writes X:\citations.csv, not new/   [exa]
 D's unprefixed Jobs, in order                      stage-only, batched, sonnet; unbuilt -> "Day D: <NAME> not built" in logs/log.md   [exa]
 stage-check.py --apply
 assert-containment.py --stage sweep ; git commit ; usage-log.py --stage sweep
@@ -97,7 +98,7 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 ## Reconcile and acquire
 
-**Lint runs only here.** **Quick lint every night** — `LINT.md`'s nightly bands plus the incremental checks over the records this run admitted; **full lint's batched checks every night** at the close. `RECONCILE`, `ACQUIRE` and `WIKI-SYNC` Phase B each run **only if their queue has items**, inside the lint stage's write-set. `REPORT-LINT` does not run here.
+**Lint runs only here.** **Quick lint every night** — `LINT.md`'s nightly bands plus the incremental checks over the records this run admitted; **full lint's batched checks every night** at the close. `RECONCILE`, `ACQUIRE` and `WIKI-SYNC` Phase B each run **only if their queue has items**, inside the lint stage's write-set. `REPORT-LINT` runs elsewhere. **The catch ingest starts after quick lint returns**: its index checks (#27, #39) need `raw/` and the indexes still; reconcile and acquire, writing only `new/` and pages, may run beside it.
 
 ## The nightly close
 
@@ -105,7 +106,7 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 ## The cycle manifest
 
-**`cycle-manifest.py --pass "sweep cycle" …` after the night's last commit and before the last mirror** writes `cycle-manifest.json`, the whole of what CORPUS reads about a run: the commit on `O:\`, the collection window, the rotation's newest close and the night's counts. **Counts are passed in, never inferred**: `items_in`/`admitted`/`dropped` from ingest; `screened` (staged + dropped + needs-clip) and `screen_dropped` summed from every sweep step's return; `pages_over_line` from full lint #8. `--drops` adds drops per sweep per code and the ingest drop rate; `--hygiene` jobs registered and words trimmed since the last manifest (`wiki/sweep-cycle-notes.md` → *The manifest*).
+**`cycle-manifest.py --pass "sweep cycle" …` after the night's last commit and before the last mirror** writes `cycle-manifest.json`, the whole of what CORPUS reads about a run: the commit on `O:\`, the collection window, the rotation's newest close and the night's counts. **Counts are passed in, never inferred**: `items_in`/`admitted`/`dropped` from ingest; `screened` (staged + dropped + needs-clip) and `screen_dropped` summed from every sweep step's return; `pages_over_line` from full lint #8. `--drops` and `--hygiene` are defined in `wiki/sweep-cycle-notes.md` → *The manifest*.
 
 ## Mirror
 
@@ -117,7 +118,7 @@ A change a site reader could notice — a new sweep list, source type or country
 
 ## The process mirror
 
-`python scripts/export-process-mirror.py` after the final push copies the process layer to `data-landscapers/osint-process`. **A refusal goes on the closing line and never fails the night**; its ruling is a housekeeping or rules act. LINT #37 catches an export that did not land.
+`python scripts/export-process-mirror.py` after the final push copies the process layer to `data-landscapers/osint-process`. **A refusal goes on the closing line and never fails the night**; its ruling is a housekeeping or rules act.
 
 ## The cycle log
 

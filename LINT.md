@@ -65,7 +65,7 @@ Every check has one correct action; lint takes it in git and counts it. It surfa
 
 **6. Inadmissible sources** — auto-resolve, nightly (new records). An origin failing `CLAUDE.md` → *The material*: demote to a lead, or strike and mark for re-sourcing. Screen a domain against `wiki/origin-screen.md` and write its `drop-list.csv` row **in the same edit**.
 
-**17. Sweeps call the origin screen** — auto-fix, batched. Every root `*SWEEP*.md` cites `wiki/origin-screen.md`; every `drop-list.csv` row is `drop`/`watch`; every #6 domain has its row.
+**17. Sweeps call the origin screen** — auto-fix, batched. Every root `*SWEEP*.md` that stages into `new/` cites `wiki/origin-screen.md` (a register-only sweep, writing nothing to `new/` or `raw/`, is exempt); every `logs/drop-list.csv` row is `drop`/`watch`; every #6 domain has its row. By hand: grep the root files, read the list's status column.
 
 **40. A record no parser can read** — auto-fix, nightly. `raw/*.md` read **as bytes** against the frontmatter regex; a doubled CR or lost newline at the fence is a **hard finding**. Repair the terminators only, never a re-capture.
 

@@ -22,7 +22,7 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 
 - **Scope, two halves**: data governance and digital transformation, **and** an African place, `XGL` or a `geopol.*` slug — else out.
 - **Four dispositions, no fifth**: admitted, contradiction brief, acquisition line, deleted.
-- **Duplicates**: drop, replace or keep both; replace only on a clear tier upgrade; `raw/` is the check.
+- **Duplicates**: drop, replace or keep both; replace only on a clear tier upgrade.
 - **Academic papers and named-analyst opinion are first-class**; sparse entities and no dated event are their normal shape.
 - **Currency**: time-varying figures dated; the event date is not the publication date; a late old source is a baseline.
 - **A delta row says only what the source body holds**, never a sibling account, the staging note or memory; its subject is a taxonomy slug, never a place code.
@@ -33,8 +33,8 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 
 - Write `logs/log.md` or `reviews/rule-candidates.md` — put it in your return.
 - Edit a root process file, `CLAUDE.md` or any `wiki/` spec.
-- Run a git command that writes, or any tree-wide one.
-- Spawn a sub-agent, or wait on a prompt: take the conservative option and say so.
+- Run a git command that writes (plain `mv`/`rm`, never `git mv`/`git rm`), or any tree-wide one.
+- Spawn a sub-agent, or wait on a prompt: take the conservative option.
 
 ## Files
 
