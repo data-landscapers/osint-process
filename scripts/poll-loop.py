@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-r"""poll-loop.py — the nightly trigger: open a Claude session on the sweep cycle from 21:00.
+r"""poll-loop.py — the nightly trigger: open a Claude session on the sweep cycle from 20:00.
 
 *(Bill, 2026-10-30.)* Replaces typing "run the sweep cycle" by hand, on the pattern of CORPUS's
 own poll loop. It runs in the `OSINT-POLL` terminal tab, which starts it, and checks every five
@@ -7,7 +7,7 @@ minutes. **A check costs no model turn**: it reads `logs/sweep-cycle_log.md`, an
 itself runs in a new tab as an interactive session, so Bill can watch or step in.
 
 **The cycle may open any time from `START` to `STOP`**, across midnight, so a machine asleep at
-21:00 or a tab opened at 21:40 still runs the night. After `STOP` the night is skipped: a cycle
+20:00 or a tab opened at 20:40 still runs the night. After `STOP` the night is skipped: a cycle
 takes three to four hours, and one opened later would close after CORPUS's poll stops at 06:00.
 
 A night runs from noon to noon, so a cycle opened at 00:30 belongs to the evening before. The
@@ -47,8 +47,8 @@ WINDOWS = os.path.join(ROOT, "lookups", "poll-window.csv")
 CLAIM = os.path.join(tempfile.gettempdir(), "osint-poll-claim.txt")
 PROMPT = "run the sweep cycle"
 
-# The window: the cycle opens from START to STOP, across midnight (Bill, 2026-10-30).
-START, STOP = dt.time(21, 0), dt.time(1, 0)
+# The window: the cycle opens from START to STOP, across midnight (Bill, 2026-10-30; start 20:00, 2026-11-10).
+START, STOP = dt.time(20, 0), dt.time(1, 0)
 
 ROW = re.compile(r"^\|\s*\d+\s*\|")
 STAMP = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}")
