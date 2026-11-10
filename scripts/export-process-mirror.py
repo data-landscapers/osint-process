@@ -70,7 +70,7 @@ PUBLISH = [
     "DOMESTIC-FINANCE-SWEEP.md", "FINANCE-COMPILE.md", "FINANCE-PAGES.md", "HUB-COMPILE.md",
     "INGEST.md", "LINT.md", "PRUNE.md", "RECONCILE.md", "REPO-STATUS.md", "REPORT-LINT.md",
     "RULES.md", "STATUS-ACQUIRE.md", "STATUS.md", "SWEEP-BULLETIN.md",
-    "SWEEP-COUNTRY-DEEP.md", "SWEEP-CYCLE.md", "SWEEP-DAILY-LIST.md", "SWEEP-DAILY-OFFLIST.md",
+    "SWEEP-CITATIONS.md", "SWEEP-COUNTRY-DEEP.md", "SWEEP-CYCLE.md", "SWEEP-DAILY-LIST.md", "SWEEP-DAILY-OFFLIST.md",
     "SWEEP-FINANCIERS.md", "SWEEP-IATI.md", "SWEEP-JOURNALS.md", "SWEEP-NEWSPAPERS.md",
     "SWEEP-REGIONAL.md", "SWEEP-THINKTANKS.md", "UPDATE-WIKI.md", "WIKI-SYNC.md",
     ".gitignore", ".gitattributes",
@@ -110,6 +110,7 @@ WITHHELD = {
     "lookups/budget-archive-holdings.csv": "corpus-derived: holdings per country-year",
     "lookups/budget-archive-hole-dispositions.csv": "rulings on the budget archive's holdings",
     "lookups/budget-init-backlog.csv": "operational state",
+    "lookups/poll-window.csv": "operational state: one night's poll hours",
     "wiki/places-index.md": "compiled content",
     "wiki/topics-index.md": "compiled content",
 }
