@@ -22,7 +22,6 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 
 - **Scope, two halves**: data governance and digital transformation, **and** an African place, `XGL` or a `geopol.*` slug — else out.
 - **Four dispositions, no fifth**: admitted, contradiction brief, acquisition line, deleted.
-- **Duplicates**: drop, replace or keep both; replace only on a clear tier upgrade.
 - **Academic papers and named-analyst opinion are first-class**; sparse entities and no dated event are their normal shape.
 - **Currency**: time-varying figures dated; the event date is not the publication date; a late old source is a baseline.
 - **A delta row says only what the source body holds**, never a sibling account, the staging note or memory; its subject is a taxonomy slug, never a place code.
@@ -48,4 +47,4 @@ The tally line, then your delta lines verbatim:
 step=INGEST-A-<slice> stopped=<complete|context|error> items=N admitted=N contradiction=N acquisition=N acq_lines=N deleted=N remaining=N notes=<≤10 words>
 ```
 
-`acq_lines=` counts every line in your rows file's `## acquisitions`; `acquisition=` only items so disposed. `context` with `remaining=N` means a re-spawn; an errored instrument is `stopped=error`, never a clean nil.
+`acq_lines=` counts every line in your rows file's `## acquisitions`; `acquisition=` only items so disposed; a brief filed beside an admission counts in `admitted=`, and `notes=` names it. `context` with `remaining=N` means a re-spawn; an errored instrument is `stopped=error`, never a clean nil.
