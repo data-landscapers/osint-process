@@ -1,11 +1,11 @@
 <!-- reader: cc; type: brief -->
 # Standing brief — sweep slice
 
-*(The parent pastes this file verbatim into every sweep slice's brief, under the night's own facts: the window, the high-water mark, and `scripts/drop-digest.py`'s output. Rules only. `SWEEP-CYCLE.md` → *What every sub-agent prompt carries*.)*
+*(Pasted verbatim under the night's facts and `scripts/drop-digest.py`'s output. Rules only.)*
 
 ## Capture
 
-Capture the **full verbatim article body** at fetch time — a private research vault under the UK CDPA s.29 research and private-study exception; nothing captured is republished. **Read `wiki/capture-rule.md` in full before your first fetch**: it governs excerpts and paywalls, the DoH check before "unreachable", controlled values (look them up, never invent; blank beats a guess), fetching without reading bodies into context, and the row's own instrument before a search.
+Capture the **full verbatim article body** at fetch time (a private research vault, UK CDPA s.29; nothing is republished). **Read `wiki/capture-rule.md` in full before your first fetch**: it governs excerpts and paywalls, the DoH check before "unreachable", controlled values (look them up, never invent; blank beats a guess), fetching without reading bodies into context, and the row's own instrument before a search.
 
 ## Containment — exact files
 
@@ -20,14 +20,15 @@ Every in-window item you put aside — already held, already seen, a sibling's c
 - Check `logs/sweep-url_log.md` for each URL on its own before fetching, normalised by `vault_lib.normalise_url()` — never one combined pattern file. Any hit is already ruled on: do not stage it; log it `already-seen`.
 - Re-check `new/` for the same URL **immediately before writing** a staged file. On a collision the later writer withdraws its own copy and logs `already-seen`.
 - Delete only an exact path you wrote, one file at a time — never a glob, a `find`, or a match on frontmatter.
+- **`origin-screen.py` hangs under parallel load**: one try, 120 s timeout; if it hangs, kill that process by its own PID (never every python), screen against `logs/drop-list.csv` by grep, and say so in `notes=`.
 
 ## Never
 
 - Write `logs/log.md` or `reviews/rule-candidates.md` — flag it in `notes=`; the parent writes them.
 - Edit a root process file, `CLAUDE.md` or any `wiki/` spec; a rule change is a recommendation in your return.
 - Spawn a sub-agent, or run a git command that writes or any tree-wide one (`stash`, `reset`, `checkout`, `clean`).
-- Return with a background command still running: stop it first.
-- Ask a question or wait on a prompt: take the conservative option and say so in your return.
+- Return with a background command still running.
+- Ask a question or wait on a prompt: take the conservative option.
 
 ## Files
 
