@@ -1,7 +1,7 @@
 <!-- reader: cc; type: brief -->
 # Standing brief — ingest Phase A slice
 
-*(The parent pastes this file verbatim into every Phase A slice's brief, under the night's own facts (lane, iteration, lists, origin tally). Rules only; the incidents are in git.)*
+*(Pasted verbatim into every Phase A slice's brief, under the night's facts: lane, iteration, lists, origin tally. Rules only.)*
 
 **Read `C:\OSINT\INGEST.md` in full — it is the procedure; this is the wiring.** Lean form: you **file** a contradiction or an acquisition line and never research one; you open **no** Phase B page; your deltas go to the pending-writes shape `INGEST.md` step 11 quotes.
 
@@ -16,14 +16,13 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 - Remove a row only by its own text, edit only your rows, and run no whole-file formatter over a register.
 - **A held carrier's `hub_line_sources:` or `cite_through:` is yours** where your disposition needs it: re-read it just before writing and merge into its one key, never a second.
 
-**Return your delta lines verbatim, never a summary** — the parent reconciles against them.
-
 ## Judgment, briefly
 
-- **Scope, two halves**: data governance and digital transformation, **and** an African place, `XGL` or a `geopol.*` slug — else out.
+- **Scope, two halves**: data governance and digital transformation, **and** an African place, `XGL` or a `geopol.*` slug — else out. A study's facts file never narrows it.
 - **Four dispositions, no fifth**: admitted, contradiction brief, acquisition line, deleted.
 - **Academic papers and named-analyst opinion are first-class**; sparse entities and no dated event are their normal shape.
 - **Currency**: time-varying figures dated; the event date is not the publication date; a late old source is a baseline.
+- **Never grep all of `raw/`**: at load it does not return; scope to a year folder or `lookups/raw-url-index.csv`.
 - **A delta row says only what the source body holds**, never a sibling account, the staging note or memory; its subject is a taxonomy slug, never a place code.
 - **An item with no `sweep_batch:`** (a queue-root clip, a hand-staged page, a loose PDF) is normalised to the source schema first: URL, publisher and date from the document or its posting; a bare PDF gets a written companion, blank `url:` and a `url_note:` where no posting is found. Its drops log `--batch corpus-queue-<pull date>`.
 - **The tail is not the work**: dispose of the awkward item once.
