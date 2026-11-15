@@ -9,7 +9,7 @@ every night's close (`SWEEP-CYCLE.md`).
             several times the longest read-back (drop-digest.py: one rotation). **Never a folder's newest manifest or drop-log**:
             `STATUS.md` reads those against `state.json` to spot a sweep that died between
             staging and state.
-   3 days   the night's parent-to-slice handoffs: `sweep/ingest-lists-*/`, `sweep/ingest/lists-*/`, `sweep/acquire-lists-*/`,
+   3 days   the night's parent-to-slice handoffs: `sweep/ingest-lists-*/`, `sweep/ingest/lists-*/`, `sweep/acquire-lists-*/`, `sweep/reconcile-lists-*/`,
             `sweep/phaseb-lists-*/`, and `sweep/_*-YYYY-MM-DD*` (briefs, lint scope). No
             pass reads them after the night that wrote them; 3 days covers a resumed night.
 
@@ -35,7 +35,7 @@ HANDOFF_DAYS = 3
 DATE = re.compile(r'(\d{4}-\d{2}-\d{2})')
 RUN_RECORD = re.compile(r'^(manifest|drop-log|drops|tally|notes|row-health|batch|rows|monitor|qa'
                         r'|topic-decisions|region-unmapped)-(\d{4}-\d{2}-\d{2})')
-HANDOFF_DIR = re.compile(r'^(ingest-lists|phaseb-lists|acquire-lists|lists)-(\d{4}-\d{2}-\d{2})')
+HANDOFF_DIR = re.compile(r'^(ingest-lists|phaseb-lists|acquire-lists|reconcile-lists|lists)-(\d{4}-\d{2}-\d{2})')
 HANDOFF_ROOTS = ("sweep", os.path.join("sweep", "ingest"))
 HANDOFF_FILE = re.compile(r'^_[a-z-]+-(\d{4}-\d{2}-\d{2})')
 LIVE_NAMES = {"seen.csv", "state.json", "history.md", "README.md", ".gitkeep", "row-health.csv",

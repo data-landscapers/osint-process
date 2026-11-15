@@ -23,7 +23,7 @@ One CC run; the parent is a **thin loop** — it selects the day, runs its proce
 
 ### What every sub-agent prompt carries
 
-**A slice's brief is its template verbatim** ([`wiki/brief-sweep.md`](wiki/brief-sweep.md), [`wiki/brief-ingest.md`](wiki/brief-ingest.md)) under the night's facts, **written once per step to `sweep/_<step>-brief-<date>.md`**, which the spawn prompt names and the slice reads first: for a sweep the window, high-water mark and **`drop-digest.py`'s output**; for ingest the lane, iteration, lists and origin tally. **A rule a slice needs goes into its template, never into a night's copy.** **A list the parent writes for a slice is LF**: a carriage return rides into every path read under bash.
+**A slice's brief is its template verbatim** ([`wiki/brief-sweep.md`](wiki/brief-sweep.md), [`wiki/brief-ingest.md`](wiki/brief-ingest.md)) under the night's facts, **written once per step to `sweep/_<step>-brief-<date>.md`**, which the spawn prompt names and the slice reads first: for a sweep the window, high-water mark and **`drop-digest.py`'s output**; for ingest the lane, iteration, lists and origin tally. **A rule a slice needs goes into its template, never into a night's copy.** **A run on a date an earlier run used suffixes it with the next letter in every per-run name** (`<date>b`, `<date>c`); `sweep_batch:` keeps the bare date. **A list the parent writes for a slice is LF**: a carriage return rides into every path read under bash.
 
 **`python scripts/stall-watch.py --quiet-minutes 25`**, armed under `Monitor` at step 0 and left all night: on waking, if the outstanding step has not moved, **kill that spawn and re-spawn it once**.
 
@@ -88,7 +88,7 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 **Notes first, unconditional**: act on and close every open note in `X:\notes-for-osint.md` under `X:\README.md` → *Conventions*; write to `X:\` and commit nothing there. A fix reaching this repo commits at the `notes` boundary (write-set `*`, the deny set still standing).
 
-**`python scripts/pull-new-queue.py --apply --hold-above 70`, unconditional**: every `X:\new-queue\` folder carrying `READY` moves flat into `new/`, and so does every `X:\prepared\maturity-study-*\` folder carrying one, its `BRIEF.md` left for CORPUS, held above 70 % (*Budget and usage*); delivery is not admission — the night's one Phase A adjudicates it, backfill lane open for the whitelisted batches. It commits nothing of its own.
+**`python scripts/pull-new-queue.py --apply --hold-above 70`, unconditional**: every `X:\new-queue\` folder carrying `READY` moves flat into `new/`, and so does every `X:\prepared\maturity-study-*\` folder carrying one, its `BRIEF.md` left for CORPUS, held above 70 % (*Budget and usage*); delivery is not admission, and Phase A adjudicates it. It commits nothing of its own.
 
 **`python scripts/status-acquire.py --absorb` at the close, unconditional**: closes a pulled country's rows into `X:\acquire-done.csv` and writes permanent negatives to `lookups/rejected-urls.csv` (hence the close's `--allow-extra`). `STATUS-ACQUIRE.md` holds the rest.
 
@@ -114,11 +114,11 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 ## The change log
 
-A change a site reader could notice — a new sweep list, source type or country, a taxonomy change, a bulk correction — goes to CORPUS as a note titled *Add to change log*. Routine sweeping and ingest earn nothing.
+A change a site reader could notice — a new sweep list, source type or country, a taxonomy change, a bulk correction — goes to CORPUS as an *Add to change log* note.
 
 ## The process mirror
 
-`python scripts/export-process-mirror.py` after the final push copies the process layer to `data-landscapers/osint-process`. **A refusal goes on the closing line and never fails the night**; its ruling is a housekeeping or rules act.
+`python scripts/export-process-mirror.py` after the final push copies the process layer to `data-landscapers/osint-process`. A refusal's ruling is a housekeeping or rules act.
 
 ## The cycle log
 
@@ -130,4 +130,4 @@ A change a site reader could notice — a new sweep list, source type or country
 
 ## Concurrency and logging
 
-One cycle at a time, no other session writing the vault. Each process writes its own `logs/log.md` line; the cycle adds one closing line and closes on screen with `STATUS.md`'s count line.
+One cycle at a time; no other session writes the vault. Each process writes its own `logs/log.md` line; the cycle adds one closing line and closes on screen with `STATUS.md`'s count line.
