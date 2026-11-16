@@ -39,7 +39,7 @@ drain X:\notes-for-osint.md                         # § Draining notes-for-osin
 assert-containment.py --stage notes ; git commit ; usage-log.py --stage notes   # only if this repo changed
 pull-new-queue.py --apply --hold-above 70           # § Pulling X:\new-queue\; studies wait above 70 %
 
-Exa canary — on failure skip every line marked [exa]; the rest of the night runs
+Exa canary, retried every 2 min, 5 attempts — on the fifth failure message Bill and skip every line marked [exa]; the rest of the night runs
 arm stall-watch.py under Monitor, all night
 select day D; New-Start = now                                                      [exa]
 window from D's (old) Start                                                        [exa]
@@ -73,7 +73,7 @@ assert-containment.py --stage housekeeping ; git commit ; usage-log.py --stage b
 RULES.md over reviews/rule-candidates.md — the parent's own work, no sub-agent
 assert-containment.py --stage rules --allow-extra <each process file amended> ; git commit ; usage-log.py --stage rules
 
-reader-visible change tonight? -> "Add to change log" note in X:\notes-for-corpus.md
+reader-visible change tonight (a new sweep list, source type or country, a taxonomy change, a bulk correction)? -> "Add to change log" note in X:\notes-for-corpus.md
 usage-log.py --stage end --csv                      # after the night's LAST commit
 cycle-manifest.py --pass "sweep cycle" --usage --drops --hygiene --count items_in=N --count admitted=N --count dropped=N --count screened=N --count screen_dropped=N --count pages_over_line=N
 git push ; mirror to O:\
@@ -82,7 +82,7 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 ## Step 0 — the Exa canary
 
-**First act after the notes and the queue pull**: `ToolSearch("select:mcp__claude_ai_Exa__web_search_exa")` (or `mcp__exa__…`, whichever the session lists), then one search: `"data protection Africa"`, `numResults: 1`, `objective: "confirm the search tool returns a result"`. **On failure the collecting half does not run and the processing half does** *(Bill, 2026-09-08)*: no sweep, day's job, `RECONCILE` or `ACQUIRE`; everything else runs. **No fallback tool, no reduced sweep, no rotation move, no `--stamp`.** The fatal line, the error exactly as returned: `**SWEEP-CYCLE** · FATAL: Exa canary <the error> — sweeps skipped, processing ran`.
+**First act after the notes and the queue pull**: `ToolSearch("select:mcp__claude_ai_Exa__web_search_exa")` (or the session's `mcp__exa__…`), then one search: `"data protection Africa"`, `numResults: 1`, `objective: "confirm the search tool returns a result"`. **A failure is retried every two minutes, five attempts in all** *(Bill, 2026-11-16)*, waiting in a bounded foreground loop. **After the fifth, tell Bill at once**: a block in `X:\messages-for-bill.md` and a `PushNotification`, each carrying the error as returned. **Then the collecting half does not run and the processing half does** *(Bill, 2026-09-08)*: every `[exa]` line skips. **No fallback tool, no reduced sweep, no rotation move, no `--stamp`.** The fatal line, the error exactly as returned: `**SWEEP-CYCLE** · FATAL: Exa canary <the error> after 5 attempts — sweeps skipped, Bill messaged`.
 
 ## Draining notes-for-osint, pulling the queue, absorbing
 
@@ -111,10 +111,6 @@ export-process-mirror.py                            # a refusal goes on the clos
 ## Mirror
 
 `"C:\Program Files\FreeFileSync\FreeFileSync.exe" SyncSettings.ffs_batch`, a one-way copy of `C:\OSINT` to `O:\` — **CORPUS's read-only copy, not a backup**. Assert with `python scripts/lint-mirror-head.py`, never on stdout, after FreeFileSync exits; a failed mirror is re-run by hand.
-
-## The change log
-
-A change a site reader could notice — a new sweep list, source type or country, a taxonomy change, a bulk correction — goes to CORPUS as an *Add to change log* note.
 
 ## The process mirror
 
