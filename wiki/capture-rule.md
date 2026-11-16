@@ -35,6 +35,8 @@ curl --resolve <host>:443:<ip> https://<host>/path
 
 A **paywall that still serves a free lede** (HTTP 200, first 1–3 paragraphs) is a distinct case: keep the verbatim free portion as `body_completeness: paywalled`, but **only where the free content excluding the title adds value** — drop headline-only stubs rather than stage them. A `paywalled` item needs a manual subscriber clip before promotion where its payload depends on the withheld body; one whose payload sits in the free lede promotes normally.
 
+**A staged body is UTF-8, and decoding errors are not the source's words.** Mojibake (a double-encoded capture, `Ã©` for `é`, common in Internet Archive replays) and stray single bytes (a cp1252 or Latin-1 text layer, common in PDFs) are re-decoded before the file is written, and the result is checked to read as the language it is in. Characters already lost as U+FFFD cannot be recovered by decoding: keep them as captured and say so in a `note:`.
+
 ---
 
 ## Look a controlled value up; never assert one
