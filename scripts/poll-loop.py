@@ -23,6 +23,16 @@ that night only, and a night with no row keeps the default. The file is read at 
 every pause, so an edit needs no restart of a loop running this version. CORPUS's poll has the
 same file in its own `lookups/`.
 
+**A night whose Exa canary failed is reopened once** *(Bill, 2026-11-16)*. A connector that
+fails at sign-in stays failed for the whole session, so the canary's in-session retries
+(`SWEEP-CYCLE.md` step 0) cannot recover it; a fresh session can. On a night the loop opened, it
+opens a second session if the cycle logged its `FATAL: Exa canary` line after opening, the cycle
+has since finished (`cycle-manifest.json` rewritten after that line, `TAIL_GRACE` ago, so the
+tail's push and mirror are done), at least `RELAUNCH_AFTER` has passed since the failure, and
+the window is still open. Once a night:
+a second failure is the night's last word. The rerun is an ordinary "run the sweep cycle", so
+it repeats the processing half too, over queues the first run emptied.
+
 Only the trigger checks a clock; the cycle still never does (`SWEEP-CYCLE.md`).
 
 Usage:  python scripts/poll-loop.py               # in the OSINT-POLL tab
@@ -34,6 +44,7 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as dt
+import json
 import os
 import re
 import subprocess
@@ -44,11 +55,18 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CYCLE_LOG = os.path.join(ROOT, "logs", "sweep-cycle_log.md")
 WINDOWS = os.path.join(ROOT, "lookups", "poll-window.csv")
+LOG = os.path.join(ROOT, "logs", "log.md")
+MANIFEST = os.path.join(ROOT, "cycle-manifest.json")
 CLAIM = os.path.join(tempfile.gettempdir(), "osint-poll-claim.txt")
 PROMPT = "run the sweep cycle"
 
 # The window: the cycle opens from START to STOP, across midnight (Bill, 2026-10-30; start 20:00, 2026-11-10).
 START, STOP = dt.time(20, 0), dt.time(1, 0)
+# The least time from a failed canary to the relaunch: a rate limit wants a cool-off.
+RELAUNCH_AFTER = dt.timedelta(minutes=15)
+# The least time from the failed cycle's manifest to the relaunch: its push and mirror follow it.
+TAIL_GRACE = dt.timedelta(minutes=10)
+CANARY_FATAL = re.compile(r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}) · \*\*SWEEP-CYCLE\*\* · FATAL: Exa canary")
 
 ROW = re.compile(r"^\|\s*\d+\s*\|")
 STAMP = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}")
@@ -112,12 +130,76 @@ def run_tonight(night: dt.date) -> list[str]:
     return hits
 
 
-def claimed(night: dt.date) -> bool:
+def read_claim() -> list[str]:
+    """The claim file's lines: the night, then `opened <local ISO>`, then `relaunched <…>`."""
     try:
         with open(CLAIM, encoding="utf-8") as fh:
-            return fh.read().strip() == night.isoformat()
+            return [ln.strip() for ln in fh if ln.strip()]
     except OSError:
-        return False
+        return []
+
+
+def claimed(night: dt.date) -> bool:
+    lines = read_claim()
+    return bool(lines) and lines[0] == night.isoformat()
+
+
+def claim_field(name: str) -> dt.datetime | None:
+    for ln in read_claim()[1:]:
+        if ln.startswith(name + " "):
+            try:
+                return dt.datetime.fromisoformat(ln.split(" ", 1)[1])
+            except ValueError:
+                return None
+    return None
+
+
+def utc_to_local(stamp: str) -> dt.datetime:
+    """A `YYYY-MM-DD HH:MM` UTC stamp (`logs/log.md`, the manifest) as naive local time."""
+    t = dt.datetime.strptime(stamp, "%Y-%m-%d %H:%M").replace(tzinfo=dt.timezone.utc)
+    return t.astimezone().replace(tzinfo=None)
+
+
+def canary_failed_since(opened: dt.datetime, log: str = LOG) -> dt.datetime | None:
+    """The newest `FATAL: Exa canary` line in `logs/log.md` (UTC, newest first), as local
+    time, if it is at or after `opened`; else None. Stamps are to the minute, so the opening
+    minute counts."""
+    floor = opened.replace(second=0, microsecond=0)
+    try:
+        with open(log, encoding="utf-8") as fh:
+            for line in fh:
+                m = CANARY_FATAL.match(line)
+                if m:
+                    t = utc_to_local(m.group(1))
+                    return t if t >= floor else None
+    except OSError:
+        pass
+    return None
+
+
+def manifest_written(manifest: str = MANIFEST) -> dt.datetime | None:
+    """When `cycle-manifest.json` was last written, as local time: the cycle's tail has run."""
+    try:
+        with open(manifest, encoding="utf-8") as fh:
+            return utc_to_local(json.load(fh).get("written_utc", ""))
+    except (OSError, ValueError):
+        return None
+
+
+def relaunch_due(now: dt.datetime, log: str = LOG, manifest: str = MANIFEST) -> str:
+    """Why tonight's claimed cycle should be reopened, or "" if it should not."""
+    opened = claim_field("opened")
+    if opened is None or claim_field("relaunched") is not None:
+        return ""
+    failed = canary_failed_since(opened, log)
+    if failed is None or now - failed < RELAUNCH_AFTER:
+        return ""
+    # The manifest precedes the tail's push, mirror and export by a few minutes, so the
+    # relaunch also waits TAIL_GRACE after it: never two sessions writing the vault at once.
+    written = manifest_written(manifest)
+    if written is None or written <= failed or now - written < TAIL_GRACE:
+        return ""
+    return f"Exa canary failed {failed:%H:%M}, cycle finished {written:%H:%M}"
 
 
 def open_claude(title: str, prompt: str) -> None:
@@ -128,9 +210,19 @@ def open_claude(title: str, prompt: str) -> None:
 
 
 def check() -> str:
-    night = night_of(dt.datetime.now())
+    now = dt.datetime.now()
+    night = night_of(now)
     if claimed(night):
-        return "opened tonight, standing down"
+        why = relaunch_due(now)
+        if not why:
+            return "opened tonight, standing down"
+        try:
+            open_claude("OSINT-CYCLE-2", PROMPT)
+        except OSError as e:
+            return f"relaunch failed, retrying next check · {e}"
+        with open(CLAIM, "a", encoding="utf-8") as fh:
+            fh.write(f"relaunched {now:%Y-%m-%dT%H:%M}\n")
+        return f"sweep cycle reopened in a new tab · {why}"
     hits = run_tonight(night)
     if hits:
         return "already ran or running tonight, standing down · " + " · ".join(hits)
@@ -139,7 +231,7 @@ def check() -> str:
     except OSError as e:
         return f"launch failed, retrying next check · {e}"
     with open(CLAIM, "w", encoding="utf-8") as fh:
-        fh.write(night.isoformat() + "\n")
+        fh.write(f"{night.isoformat()}\nopened {now:%Y-%m-%dT%H:%M}\n")
     return "sweep cycle opened in a new tab"
 
 
