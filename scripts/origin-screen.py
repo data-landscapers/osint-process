@@ -135,6 +135,21 @@ def track_record(raw="raw"):
     admitted once.
     """
     c = Counter()
+    # Read from `lookups/raw-url-index.csv`, not by opening every `raw/` file: at
+    # ~50k sources the walk ran past 200 s and the screen never returned. The index
+    # is a pure derivation of `raw/`, rebuilt by the parent at every ingest close.
+    # It cannot see `origin_status: hold`, so a held source counts toward `seen`;
+    # since the hold retired (2026-08-26) NOVEL is a report and gates nothing, so
+    # that costs nothing. The walk below survives only as the no-index fallback.
+    index = os.path.join(ROOT, "lookups", "raw-url-index.csv")
+    if raw == "raw" and os.path.isfile(index):
+        with open(index, encoding="utf-8-sig", newline="") as fh:
+            for row in csv.DictReader(fh):
+                d = registrable(row.get("url_normalized", ""))
+                if d:
+                    c[d] += 1
+        c.update(_budget_companion_domains())
+        return c
     for _, path in raw_sources(os.path.join(ROOT, raw)):
         try:
             with open(path, encoding="utf-8", errors="replace") as fh:
