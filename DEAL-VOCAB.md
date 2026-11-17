@@ -14,7 +14,7 @@ Trigger: **"run deal vocab"**. The controlled vocabularies for the four controll
 - **Instrument** — Bond, Buyer's Credit, Commercial Loan, Concessional Loan, Equity, Grant, Guarantee, Joint Venture, Line of Credit, Mezzanine, MoU, PPP, Self Funded, Technical Assistance, Unknown.
 - **Status** — Pipeline, Approved, Active, Completed, Cancelled, Suspended, Unknown.
 - **Beneficiary type** — Public Sector, Private Sector, NGO, Multilateral, Research, Fund, Multi-stakeholder, Individuals, PPP, Unknown.
-- **Amount quality** — Exact, Rounded, Stated, Reported, Verified, Estimated, Imputed, Interpolated, Unknown *(added 2026-09-26, notes-for-osint 176: a published column needs a closed list)*. No map file: its legacy wordings were sentences, each ruled once and moved to the record's Notes.
+- **Amount quality** — Exact, Rounded, Stated, Reported, Verified, Estimated, Imputed, Interpolated, Unknown *(added 2026-09-26, osint-notes 176: a published column needs a closed list)*. No map file: its legacy wordings were sentences, each ruled once and moved to the record's Notes.
 
 **Five values carry a rule rather than a description.** `Concessional Loan` takes IDA credits. `MoU` is only for an agreement whose instrument is genuinely unstated — never shorthand for unclear. `Unknown` is not the same as blank. `Fund` is deliberately not `Private Sector`: it is one step removed from the ultimate recipient. `NGO` takes not-for-profit membership bodies and industry associations.
 
@@ -40,7 +40,7 @@ Trigger: **"run deal vocab"**. The controlled vocabularies for the four controll
 
 **A wording that maps to nothing takes a ruling, recorded as a map row**: a value from the vocabulary, a new vocabulary value — added to `deal-vocabs.csv` and the map in the same edit — or a decision that the record is not a deal at all (money flowing *to* the state for a spectrum or licence award runs the opposite direction from everything else in the register). A value outside the vocabulary after a pass is a bug in the pass, not a new vocabulary member.
 
-**The misreadings the 2026-09-26 audit found most** *(407 of 1,493 records corrected; notes-for-osint 176)*. Classify the recipient named, not the programme around it, and never read a value off the source's own label:
+**The misreadings the 2026-09-26 audit found most** *(407 of 1,493 records corrected; osint-notes 176)*. Classify the recipient named, not the programme around it, and never read a value off the source's own label:
 
 - **A named recipient is never `Unknown`.** A ministry, a state-owned operator or a named company has a type; `Unknown` is only for a recipient no source names.
 - **An LP commitment into a VC, PE, debt or infrastructure fund is `Fund`**, never `Private Sector`, whoever manages it.

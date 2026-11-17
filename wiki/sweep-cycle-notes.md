@@ -33,7 +33,7 @@ A status-acquire country is due for absorbing once its batch folder no longer ca
 
 ## Ingest, once, at the close
 
-`sweep_closed` is the sweep-stage commit because the staging sweeps have all returned, so nothing more could be caught. The `@`-prefixed jobs run after ingest and stage for the next night, so they never move it. CORPUS reads `collection.sweep_closed` with no fall-back (notes-for-osint 132): the rotation's close is no substitute, since its jobs finish hours after collection stops, and publishing that as *Last updated* would overstate coverage. `logs/sweep-url_log.md` is written per item at disposition, which is why every sweep also cross-checks `new/`.
+`sweep_closed` is the sweep-stage commit because the staging sweeps have all returned, so nothing more could be caught. The `@`-prefixed jobs run after ingest and stage for the next night, so they never move it. CORPUS reads `collection.sweep_closed` with no fall-back (osint-notes 132): the rotation's close is no substitute, since its jobs finish hours after collection stops, and publishing that as *Last updated* would overstate coverage. `logs/sweep-url_log.md` is written per item at disposition, which is why every sweep also cross-checks `new/`.
 
 ## Reconcile and acquire
 
@@ -53,7 +53,7 @@ It is git-ignored and written after the last commit because `head` must name the
 
 ## The change log
 
-CORPUS publishes the log and writes its own entries; only this side knows when one of ours has happened. The entry's shape is `X:\README.md`'s, and notes-for-corpus 29 is the worked example. A night that drafts none says nothing.
+CORPUS publishes the log and writes its own entries; only this side knows when one of ours has happened. The entry's shape is `X:\README.md`'s, and corpus-notes 29 is the worked example. A night that drafts none says nothing.
 
 ## The process mirror
 

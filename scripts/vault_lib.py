@@ -362,7 +362,7 @@ def _split_top(inner):
     return parts + [cur]
 
 
-# One numbered note in an exchange file (`notes-for-osint.md`, `notes-for-corpus.md`):
+# One numbered note in an exchange file (`osint-notes.md`, `corpus-notes.md`):
 # `### 141. [ACT] …` or `**141** [ACT] (date) …`. The house shape opens a note with both,
 # so a reader treats a repeat of the number just seen as the same note. Shared by
 # `status.py` and `lint-deterministic.py`, whose two copies drifted into opposite bugs (R74).

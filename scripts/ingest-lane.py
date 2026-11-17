@@ -38,7 +38,7 @@ import sys
 # `budget-poll-`: CORPUS's `budget-watch.py poll` stages budget documents already screened
 # against the held URL and md5 indexes (strategic review 5 R103, R105).
 # `maturity-study-`: CORPUS selects each study's documents against what `raw/` holds and hands them
-# over on `X:\prepared\maturity-study-{id}\` (notes-for-osint 215).
+# over on `X:\prepared\maturity-study-{id}\` (osint-notes 215).
 BACKFILL_PREFIXES = ("status-acquire-", "progress-filler-", "dataset-", "budget-poll-", "maturity-study-")
 
 

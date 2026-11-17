@@ -35,7 +35,7 @@ One CC run; the parent is a **thin loop** — it selects the day, runs its proce
 
 ```
 usage-log.py --reset --stage start --csv
-drain X:\notes-for-osint.md                         # § Draining notes-for-osint
+drain X:\osint-notes.md                         # § Draining osint-notes
 assert-containment.py --stage notes ; git commit ; usage-log.py --stage notes   # only if this repo changed
 pull-new-queue.py --apply --hold-above 70           # § Pulling X:\new-queue\; studies wait above 70 %
 
@@ -73,7 +73,7 @@ assert-containment.py --stage housekeeping ; git commit ; usage-log.py --stage b
 RULES.md over reviews/rule-candidates.md — the parent's own work, no sub-agent
 assert-containment.py --stage rules --allow-extra <each process file amended> ; git commit ; usage-log.py --stage rules
 
-reader-visible change tonight (a new sweep list, source type or country, a taxonomy change, a bulk correction)? -> "Add to change log" note in X:\notes-for-corpus.md
+reader-visible change tonight (a new sweep list, source type or country, a taxonomy change, a bulk correction)? -> "Add to change log" note in X:\corpus-notes.md
 usage-log.py --stage end --csv                      # after the night's LAST commit
 cycle-manifest.py --pass "sweep cycle" --usage --drops --hygiene --count items_in=N --count admitted=N --count dropped=N --count screened=N --count screen_dropped=N --count pages_over_line=N
 git push ; mirror to O:\
@@ -82,11 +82,11 @@ export-process-mirror.py                            # a refusal goes on the clos
 
 ## Step 0 — the Exa canary
 
-**First act after the notes and the queue pull**: `ToolSearch("select:mcp__claude_ai_Exa__web_search_exa")` (or the session's `mcp__exa__…`), then one search: `"data protection Africa"`, `numResults: 1`, `objective: "confirm the search tool returns a result"`. **A failure is retried every two minutes, five attempts in all** *(Bill, 2026-11-16)*, waiting in a bounded foreground loop. **After the fifth, tell Bill at once**: a block in `X:\messages-for-bill.md` and a `PushNotification`, each carrying the error as returned; `poll-loop.py` then reopens the night once, freshly, after the close. **Then the collecting half does not run and the processing half does** *(Bill, 2026-09-08)*: every `[exa]` line skips. **No fallback tool, no reduced sweep, no rotation move, no `--stamp`.** The fatal line, error verbatim: `**SWEEP-CYCLE** · FATAL: Exa canary <the error> after 5 attempts — sweeps skipped, Bill messaged`.
+**First act after the notes and the queue pull**: `ToolSearch("select:mcp__claude_ai_Exa__web_search_exa")` (or the session's `mcp__exa__…`), then one search: `"data protection Africa"`, `numResults: 1`, `objective: "confirm the search tool returns a result"`. **A failure is retried every two minutes, five attempts in all** *(Bill, 2026-11-16)*, waiting in a bounded foreground loop. **After the fifth, tell Bill at once**: a block in `X:\bill-notes.md` and a `PushNotification`, each carrying the error as returned; `poll-loop.py` then reopens the night once, freshly, after the close. **Then the collecting half does not run and the processing half does** *(Bill, 2026-09-08)*: every `[exa]` line skips. **No fallback tool, no reduced sweep, no rotation move, no `--stamp`.** The fatal line, error verbatim: `**SWEEP-CYCLE** · FATAL: Exa canary <the error> after 5 attempts — sweeps skipped, Bill messaged`.
 
-## Draining notes-for-osint, pulling the queue, absorbing
+## Draining osint-notes, pulling the queue, absorbing
 
-**Notes first, unconditional**: act on and close every open note in `X:\notes-for-osint.md` under `X:\README.md` → *Conventions*; write to `X:\` and commit nothing there. A fix reaching this repo commits at the `notes` boundary (write-set `*`, the deny set still standing).
+**Notes first, unconditional**: act on and close every open note in `X:\osint-notes.md` under `X:\README.md` → *Conventions*; write to `X:\` and commit nothing there. A fix reaching this repo commits at the `notes` boundary (write-set `*`, the deny set still standing).
 
 **`python scripts/pull-new-queue.py --apply --hold-above 70`, unconditional**: every `X:\new-queue\` folder carrying `READY` moves flat into `new/`, and so does every `X:\prepared\maturity-study-*\` folder carrying one, its `BRIEF.md` left for CORPUS, held above 70 % (*Budget and usage*); delivery is not admission, and Phase A adjudicates it. It commits nothing of its own.
 

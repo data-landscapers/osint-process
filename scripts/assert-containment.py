@@ -64,7 +64,7 @@ if hasattr(sys.stdout, "reconfigure"):
 # legitimately reaches anywhere and the deny set below is the only real constraint.
 STAGES = {
     "notes": (["*"],
-              "acting on a notes-for-osint entry reaches wherever its fix lives"),
+              "acting on a osint-notes entry reaches wherever its fix lives"),
     "sweep": (["new", "sweep", "logs"],
               "sweeps stage candidates and nothing else"),
     # The sweep/ globs are the parent's own ingest wiring — its brief, slice lists, the

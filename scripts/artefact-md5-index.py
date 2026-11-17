@@ -60,7 +60,7 @@ def declared(value, rest):
     empty key — that last is how a multi-page image capture or a bilingual edition is
     always written. Reading only the bare form reports every file of a multi-file record
     as declared by nobody, which is what this did when it was written (R38) and what
-    `notes-for-osint` 150 caught. A value is also allowed to be a path, so what comes back
+    `osint-notes` 150 caught. A value is also allowed to be a path, so what comes back
     is basenames: the index joins on the name, and a declaration that has to resolve
     against the record's own directory is a second way to be wrong about the same file.
     """

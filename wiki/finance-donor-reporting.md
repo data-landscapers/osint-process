@@ -1,7 +1,7 @@
 <!-- reader: cc; type: spec -->
 # finance-donor-reporting.md — the method donor-reporting datasets share
 
-IATI and the OECD CRS are the same kind of data: the donors' own reporting, structured, with amounts and dates attached. **They run one method with two drivers, so that a change to selection, classification or the drop rules is made once, here** *(Bill, 2026-11-05; notes-for-osint 291)*.
+IATI and the OECD CRS are the same kind of data: the donors' own reporting, structured, with amounts and dates attached. **They run one method with two drivers, so that a change to selection, classification or the drop rules is made once, here** *(Bill, 2026-11-05; osint-notes 291)*.
 
 | Dataset | Run by | Driver | Arrives as |
 |---|---|---|---|
@@ -29,7 +29,7 @@ The record shape is `wiki/finance-record-spec.md`. **This file says what is kept
 
 **1. No monetary value, no record — and nothing staged.** A deal that carries no value is dropped and never reaches `new/`. **This is a deliberate, scoped departure from `finance-record-spec.md` → *Failing the test is a routing decision, not a rejection*.** An amount-less dataset row is a database row, not a piece of reporting. The general rule stands everywhere else; a prose source reporting a financing development without a figure is still a source.
 
-**2. Committed before 2015, dropped.** The test is the deal's **commitment year**, and where it publishes none, its start year, as `finance-record-spec.md` fact 4 says *(Bill, 2026-11-05; notes-for-osint 292)*. A deal that started before 2015 but was committed in or after it is kept. The driver names the fields.
+**2. Committed before 2015, dropped.** The test is the deal's **commitment year**, and where it publishes none, its start year, as `finance-record-spec.md` fact 4 says *(Bill, 2026-11-05; osint-notes 292)*. A deal that started before 2015 but was committed in or after it is kept. The driver names the fields.
 
 **The floor is 2015 and it is a constant, not a rolling window.** It matches the range `lookups/fx-imf-annual.csv` carries rates for, so a kept deal is a convertible one. Moving the floor means extending that table first.
 

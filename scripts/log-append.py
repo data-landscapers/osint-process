@@ -31,7 +31,7 @@ Usage:
 
 `--at` exists for one case only: the parent correcting a nested line against **its own
 measurement** (`SWEEP-CYCLE.md`). It takes UTC, and it is never an estimate. **A `--at` ahead of
-now is refused** *(2026-08-22, notes-for-osint 36)*: a measurement is of something that has
+now is refused** *(2026-08-22, osint-notes 36)*: a measurement is of something that has
 already happened, so a future one is a narrated estimate or a local clock read as UTC, and both
 are the fault this script exists to remove. A past `--at` is not checked — correcting a nested
 line legitimately reaches backwards, sometimes hours.

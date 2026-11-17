@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""promote-budget-companions.py — catalogue held budget documents into raw/ (BUDGET-COLLECT.md, notes-for-osint 168 step 5).
+"""promote-budget-companions.py — catalogue held budget documents into raw/ (BUDGET-COLLECT.md, osint-notes 168 step 5).
 
     promote-budget-companions.py                 dry run over every country, in order
     promote-budget-companions.py ETH KEN         dry run, those countries only
     promote-budget-companions.py --write [ISO3]  write the raw/ records and the URL index/log lines
     promote-budget-companions.py --slug S [--slug S ...] [--write]
-                                                 promote the named companions whatever their class (notes-for-osint 171:
+                                                 promote the named companions whatever their class (osint-notes 171:
                                                  a companion a published figure has to cite, outside the four classes below)
 
 **What it promotes.** A `budget-archive/` companion page is promoted when it describes one of four classes:
@@ -102,7 +102,7 @@ def promote(comp, raw_slugs, idx, scope):
         out.append(f'catalogue_hero: "{hero}"')
     out.insert(next(i for i, l in enumerate(out) if l.startswith("topics:")), f"ingested: {TODAY}")
     if "hub_line_none" not in keys:                          # the brief's companion shape may carry it already
-        out.append(f"hub_line_none: {TODAY}  # budget-document companion, catalogued for citation (notes-for-osint {'171' if FORCE else '168, step 5'})")
+        out.append(f"hub_line_none: {TODAY}  # budget-document companion, catalogued for citation (osint-notes {'171' if FORCE else '168, step 5'})")
     lead = (f"**Companion source page for a budget document.** Its artefact is filed at `budget-archive/{iso}/{fy}/` "
             f"and declared by its row in `new-budget/manifest.csv`. It is catalogued so that a figure read from the document can cite it by name.")
     if "**Companion source page for a budget document.**" in body:

@@ -38,7 +38,7 @@ The caller merges each country's `manifest-rows.csv` into `new-budget/manifest.c
 
 - rebuilds `lookups/artefact-md5-index.csv` (`python scripts/artefact-md5-index.py --rebuild`);
 - commits, pushes and mirrors, because CORPUS reads only the mirror;
-- writes one `[ACT]` note to `X:\notes-for-corpus.md` per group, with `Affects: budgets/{ISO3}/`, listing the companion slugs per country-year and every year where nothing is published.
+- writes one `[ACT]` note to `X:\corpus-notes.md` per group, with `Affects: budgets/{ISO3}/`, listing the companion slugs per country-year and every year where nothing is published.
 
 It logs one line to `logs/log.md` and ends on the standing status line.
 
@@ -46,7 +46,7 @@ It logs one line to `logs/log.md` and ends on the standing status line.
 
 **One writer at a time is the rule.** Standalone, the batch runs one country after another in the main session, and nothing else writes the vault meanwhile.
 
-**The budget sprint is the one exception** (notes-for-osint 168, from Bill's "start the budget sprint" until the weekly reset at 20:00 on 2026-09-26). Three countries run at once, one sub-agent each. Each agent writes only:
+**The budget sprint is the one exception** (osint-notes 168, from Bill's "start the budget sprint" until the weekly reset at 20:00 on 2026-09-26). Three countries run at once, one sub-agent each. Each agent writes only:
 
 - its own `new-budget/{ISO3}/`;
 - its own `budget-archive/{ISO3}/`;

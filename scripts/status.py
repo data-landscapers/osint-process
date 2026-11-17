@@ -127,8 +127,8 @@ counts = {
     # and the `### N. [TAG]` heading their writers moved to - so match either. Pinning to one
     # is how osint-notes read 0 against a real queue of four (found by Bill, 2026-08-24): the
     # pattern went stale when the shape changed, and a zero looks exactly like an empty queue.
-    "osint-notes": count_notes(X + "notes-for-osint.md", NOTE_ENTRY),
-    "corpus-notes": count_notes(X + "notes-for-corpus.md", NOTE_ENTRY),
+    "osint-notes": count_notes(X + "osint-notes.md", NOTE_ENTRY),
+    "corpus-notes": count_notes(X + "corpus-notes.md", NOTE_ENTRY),
     "fetch": count_lines(X + "fetch-list.md", r"^[0-9]+[a-z]?\. "),
     "commits": len([l for l in sh("git status --porcelain").splitlines() if l.strip()]),
 }

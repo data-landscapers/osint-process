@@ -13,7 +13,7 @@ out of bounds anyway. This file states them instead, as data, once per close.
 writes). The `collection` block survives it: CORPUS reads `collection.sweep_closed` directly
 with no fall-back behind it (`rotation.newest_close.end` is not a substitute — the rotation's
 jobs finish hours after collection stops, so publishing it as *Last updated* would overstate
-coverage, which the byline may never do — notes-for-osint 132). Rather than parse a heading
+coverage, which the byline may never do — osint-notes 132). Rather than parse a heading
 back out of a file about to disappear, the pass that closes ingest now **stamps its own
 measured values** with `--stamp`, into `logs/collection-stamp.json` — a single overwritten
 object, not a rolling log, so it carries no retention rule of its own. `--pass` reads it at
@@ -139,7 +139,7 @@ def rotation():
 
     **`start`/`end` are local machine-clock time, copied out of `logs/sweep-cycle_log.md`
     unconverted — not UTC, despite sitting in the same document as `written_utc` and
-    `head_committed_utc`, which are.** notes-for-osint 55 raised exactly this ambiguity;
+    `head_committed_utc`, which are.** osint-notes 55 raised exactly this ambiguity;
     settled here rather than by converting, since a conversion is a process change and
     `CLAUDE.md`'s process freeze (to 2026-09-27) holds it. A reader wanting UTC applies the
     machine's known offset itself in the meantime."""

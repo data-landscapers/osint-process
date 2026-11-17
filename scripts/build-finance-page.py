@@ -219,7 +219,7 @@ def scan_all():
                    topics=[x.strip() for x in tm.group(1).split(",")] if tm else [],
                    url=fm_get(fm, "url"), title=fm_get(fm, "title"),
                    deal_id=fm_get(fm, "deal_id"), currency=fm_get(fm, "currency"))
-        # The 2015 floor (finance-record-spec fact 4; notes-for-osint 178, Bill 2026-09-26):
+        # The 2015 floor (finance-record-spec fact 4; osint-notes 178, Bill 2026-09-26):
         # the non-state dataset covers commitments made since 2015. The 16 older deal records
         # stay in raw/ because reports cite them, so they are skipped here, by the same test
         # the spec states: Commitment year, else Start year. (First written Start-first, as

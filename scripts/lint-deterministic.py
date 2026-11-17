@@ -74,7 +74,7 @@ NOTE_OPEN_CAP = 10          # at the cap CC rules for itself and logs it
 # a note's block is measured whole, annotations included, because a dated comment prepended to
 # a note is part of what the reader has to get through to reach the ask.
 XCHG = "X:" + os.sep if os.name == "nt" else "/x/"
-XCHG_NOTES = ("notes-for-osint.md", "notes-for-corpus.md")
+XCHG_NOTES = ("osint-notes.md", "corpus-notes.md")
 XCHG_INBOX, XCHG_OUTBOX = XCHG_NOTES
 # The `Affects:` line, from 2026-08-28 (strategic review task 16). The three things a check
 # can honestly count: present, not a way of saying nothing, and naming something a reader can
@@ -109,9 +109,9 @@ XCHG_PREAMBLE_CAP = 250
 XCHG_PREAMBLES = {
     "osint-housekeeping.md": ("## Rough sizing", False),
     "osint-housekeeping-resolved.md": ("## Done", False),
-    "notes-for-corpus.md": ("### ", False),
-    "notes-for-corpus-resolved.md": ("## ", False),
-    "notes-for-osint.md": ("## Standing constraints", True),
+    "corpus-notes.md": ("### ", False),
+    "corpus-notes-resolved.md": ("## ", False),
+    "osint-notes.md": ("## Standing constraints", True),
 }
 # Fingerprints of the conventions, normalised the way `xchg_fold` normalises: a distinctive
 # clause each, long enough that ordinary prose does not trip it and short enough to survive a
@@ -702,7 +702,7 @@ def read_xchg_notes(path):
 
 
 def check_xchg_note_caps(d):
-    """#24's second half — the 60-word cap over `notes-for-osint.md` and `notes-for-corpus.md`.
+    """#24's second half — the 60-word cap over `osint-notes.md` and `corpus-notes.md`.
 
     **Soft, and never listed in full.** Both files are written by CORPUS, RESEARCH and OSINT,
     so an over-length note is as often another writer's message as OSINT's, and OSINT trimming
@@ -738,7 +738,7 @@ def check_xchg_affects(d):
     against a short vocabulary. Whether the line is **true** is not a lint's to say, and a
     check built to try would either pass everything or argue with its own writer.
 
-    **Hard on `notes-for-corpus.md`, which is OSINT's outbox, and soft on the inbox.** The
+    **Hard on `corpus-notes.md`, which is OSINT's outbox, and soft on the inbox.** The
     rule does its work before a note is written, and the writer is the only one who can
     apply it; failing on CORPUS's or RESEARCH's note would be failing on work this run may
     not edit. CORPUS asserts the mirror of this from `scripts/lint-notes.py`."""
@@ -872,7 +872,7 @@ def check_proc_length(d, today=None):
 
 DEAL_FIELDS = {"Instrument": "instrument", "Status": "status",
                "Beneficiary type": "beneficiary_type",
-               "Amount quality": "amount_quality"}   # notes-for-osint 176
+               "Amount quality": "amount_quality"}   # osint-notes 176
 
 
 def check_deal_vocab(rows, d):
@@ -905,7 +905,7 @@ def check_deal_vocab(rows, d):
                       f"`{field}` value in lookups/deal-vocabs.csv",
                       "map the wording in the field's map file, or rule it a new "
                       "vocabulary value; the extra wording belongs in ## Notes")
-        # The three shapes the 2026-09-26 audit kept finding (notes-for-osint 176,
+        # The three shapes the 2026-09-26 audit kept finding (osint-notes 176,
         # DEAL-VOCAB.md -> the misreadings): cheap to catch here, costly to find by reading.
         fm = r["fm"]
         fin, rec = str(fm.get("financier_slug") or ""), str(fm.get("recipient_slug") or "")
@@ -916,7 +916,7 @@ def check_deal_vocab(rows, d):
             d.add("28", r["path"], f"financier and recipient are both `{fin}` and the instrument is not Self Funded",
                   "an issuer-level aggregate is not a deal (finance-record-spec -> Store of record); "
                   "retire it, or it is Self Funded")
-        # The 2015 floor (finance-record-spec fact 4; notes-for-osint 178). The 16 older records
+        # The 2015 floor (finance-record-spec fact 4; osint-notes 178). The 16 older records
         # predate the ruling and are kept for the reports that cite them; a new one is a builder slip.
         ym = (re.search(r"^\|\s*Commitment year\s*\|\s*(\d{4})", text, re.M)
               or re.search(r"^\|\s*Start year\s*\|\s*(\d{4})", text, re.M))

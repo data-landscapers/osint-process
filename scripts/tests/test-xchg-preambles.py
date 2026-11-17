@@ -71,7 +71,7 @@ assert run({"osint-housekeeping.md": CLEAN}) == []
 LONG = "# Register\n\n" + "word " * 400 + "\n\n## Rough sizing\n\nreal substance\n"
 rows = run({"osint-housekeeping.md": LONG})
 assert len(rows) == 1 and "preamble runs 402 words" in rows[0][1] and rows[0][2] is False
-rows = run({"notes-for-osint.md": "# Notes\n\n" + "word " * 400
+rows = run({"osint-notes.md": "# Notes\n\n" + "word " * 400
             + "\n\n## Standing constraints\n\nx\n"})
 assert len(rows) == 1 and rows[0][2] is True, rows
 
