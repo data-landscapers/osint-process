@@ -1461,28 +1461,54 @@ def main():
     rows = [r for r in all_rows if r["fm"]]
 
     d = Defects()
-    check_schema(rows, schema, d)
-    check_linklists(all_rows, d)
-    check_vocabulary(rows, places, topics, d)
-    check_filenames(rows, schema, d)
-    check_links(all_rows, links, d)
-    check_unreadable_records(d)
-    check_drop_domains(rows, d)
-    check_completeness(rows, d)
-    check_freshness(rows, today, d)
-    check_region_place(rows, d)
-    check_stranded(d)
-    check_note_caps(d)
-    check_xchg_note_caps(d)
-    check_xchg_preambles(d)
-    check_xchg_affects(d)
-    check_proc_length(d, today)
-    check_deal_vocab(rows, d)
-    check_entity_referents(rows, d)
-    check_catalogue_hero(rows, d)
-    check_deaccented_titles(rows, d)
-    check_artefact_md5(d)
-    check_page_bloat(all_rows, d)
+    # --check N runs only the functions that emit check N; everything else runs them all.
+    def wanted(emits):
+        return not a.check or a.check in emits.split()
+
+    if wanted("1"):
+        check_schema(rows, schema, d)
+    if wanted("1 12"):
+        check_linklists(all_rows, d)
+    if wanted("2"):
+        check_vocabulary(rows, places, topics, d)
+    if wanted("11"):
+        check_filenames(rows, schema, d)
+    if wanted("4 12"):
+        check_links(all_rows, links, d)
+    if wanted("40"):
+        check_unreadable_records(d)
+    if wanted("6"):
+        check_drop_domains(rows, d)
+    if wanted("15"):
+        check_completeness(rows, d)
+    if wanted("3"):
+        check_freshness(rows, today, d)
+    if wanted("23"):
+        check_region_place(rows, d)
+    if wanted("10"):
+        check_stranded(d)
+    if wanted("24"):
+        check_note_caps(d)
+    if wanted("24"):
+        check_xchg_note_caps(d)
+    if wanted("24"):
+        check_xchg_preambles(d)
+    if wanted("24"):
+        check_xchg_affects(d)
+    if wanted("25"):
+        check_proc_length(d, today)
+    if wanted("28"):
+        check_deal_vocab(rows, d)
+    if wanted("36"):
+        check_entity_referents(rows, d)
+    if wanted("34"):
+        check_catalogue_hero(rows, d)
+    if wanted("38"):
+        check_deaccented_titles(rows, d)
+    if wanted("39"):
+        check_artefact_md5(d)
+    if wanted("8"):
+        check_page_bloat(all_rows, d)
 
     if a.json:
         json.dump(d.rows, sys.stdout, ensure_ascii=False, indent=1)
