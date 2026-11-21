@@ -97,6 +97,12 @@
           "minLength": 1,
           "description": "§4: the record's subtitle in the public catalogue. Required on every source ingested from 2026-09-05; earlier sources carry none and are the backfill lane, which is why it is not in `required` here. One line, English, terse, no markdown, no terminal full stop, and complementing the title rather than repeating it. Lint #34 is what asserts all of that; #1 asserts only the length, because a hero over the cap is truncated by the catalogue page."
         },
+        "author": { "type": "string",
+                    "description": "§4 → Authors: the people who wrote an authored piece (publications.csv kind newspaper, trade, agency, academic, thinktank, ngo, self), as printed, honorifics off, one string joined by '; ' — the catalogue reads a string. \"\" means checked and no person named; absent means never checked. Written by scripts/author-meta.py; CORPUS's Who's Who builds author rows from it." },
+        "byline": { "type": "string",
+                    "description": "§4 → Authors: a credit that is not a person — Staff Writer, La Rédaction, an agency, the outlet — beside author: \"\"." },
+        "author_roles": { "type": "array", "items": { "type": "string", "pattern": "^[^|]+ [|] [^|]+ [|] [^|]+$" },
+                    "description": "§4 → Authors: Name | Position | Organisation, only where the piece itself states the author's post." },
         "origin_status": { "enum": ["hold", "cleared"] },
         "origin_held": { "$ref": "#/$defs/date" },
         "cite_through": { "type": ["string", "array"], "items": { "type": "string" },

@@ -22,7 +22,7 @@ Usage:
                                                    #   silently drops a live candidate
   raw-url-index.py --reject REASON URL [URL ...]   # a permanent negative adjudication
   raw-url-index.py --check URL [URL ...]           # or `--check -` to read URLs on stdin
-  raw-url-index.py --lint                          # row count vs raw/ — mismatch: rebuild
+  raw-url-index.py --lint                          # URL set vs raw/ — mismatch: rebuild
 
 `--check` prints one tab-separated line per URL, in order:
   DUP-EXACT <url> <file>   same normalised URL held        -> drop, `duplicate-raw`
@@ -315,7 +315,9 @@ def cmd_lint():
     held = {V.normalise_url(url) for _rel, url, _pub in raw_sources()}
     rows = load()
     urls = {r["url_normalized"] for r in rows}
-    if len(rows) == len(urls) == len(held):
+    # Sets, not sizes: a `url:` edited in place leaves the counts equal and the
+    # index row stale, so equal lengths alone would pass it.
+    if len(rows) == len(urls) and urls == held:
         print(f"raw-url-index: OK — {len(held)} URLs, {len(rows)} rows")
         return
     missing, stale = len(held - urls), len(urls - held)

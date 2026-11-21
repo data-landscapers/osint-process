@@ -58,17 +58,28 @@ catalogue_hero: "GPU cluster for African model training; first NVIDIA deployment
 
 **The contract runs from 2026-09-05.** A source ingested before it carries none, is not a defect, and is the backfill lane's work: lint #34 counts that backlog and never fails on it.
 
+#### Authors
+
+**A piece from an authored outlet carries `author:`** — `lookups/publications.csv` `kind` `newspaper`, `trade`, `agency`, `academic`, `thinktank`, `ngo` or `self`. Who's Who publishes them: a wrong person is worse than none.
+
+- **`author:`** — writers as printed, honorifics off, joined by `; `: stored text first, else the page.
+- **`byline:`** — non-person credit (*Staff Writer*, APS), with `author: ""`: checked and none. Absent means never checked.
+- **`author_roles:`** — block list of `"Name | Position | Organisation"`, only as the piece states it.
+- **`publications.csv`**: `domain,publication,kind,country`, one spelling per outlet. `publisher:` still names the issuer.
+
+`author-meta.py --apply` writes them.
+
 **Optional source keys.**
 
 - **`artefact:`** — the binary document this page is companion to (`layout.md` §3), by filename. **Accepts one value or a list**: an announcement publishing two PDFs has two artefacts and *one* companion page. The key is `artefact:`, never `artefacts:`.
-- **`origin_status:` / `origin_held:` — never write either key.** `hold` does not exist as a value. Sources still carrying `origin_status: cleared` keep it as a historical value that asserts nothing; nothing reads it.
+- **`origin_status:` / `origin_held:` — never write either key.** `hold` does not exist; a legacy `cleared` asserts nothing.
 - **`cite_through:`** — this capture is **retained**, but the claim it carries should be cited from the named source: the primary the wiki went on to acquire. **It records both duplicate outcomes that keep the file**: *keep-both*, where citations consolidate on the primary, and *Replace* (`CLAUDE.md` → *Duplicates*) where the retired record is the sole evidence for something the survivor lacks — the `published` date, a DOI, a register entry. **Delete a replaced record only where it carries no unique payload; otherwise `cite_through` it.** The value is the survivor's slug, bare, never a `[[link]]`; a list only where the record is retired into more than one survivor. Either way no pass may treat it as a deletion candidate — but a `cite_through` record **carries no `hub_line:`**: move the line to the survivor and name the retired capture in `hub_line_sources:`, or the hub re-cites the retired capture at every recompile.
 
 **A held record whose body is a landing page, an excerpt or a cap-truncated capture is completed, never duplicated.** The bounded verbatim re-capture overwrites the body and `body_completeness:` in place and adds the `artefact:`, whether or not the completing capture shares the held record's URL — `url:` is immutable evidence of where the held text came from. This is the ordinary end state of an acquisition that succeeds against a landing page, and why a `DUP-EXACT` or `FLAG-SLUG` against such a record routes here rather than to a drop (`INGEST.md` step 2).
 
 **There is deliberately no `superseded_by:`.** Supersession (`CLAUDE.md` → *Currency*) is a **value** moving — a date, a figure, a ceiling — applied to the pages stating the old value by `INGEST.md` step 2b, which finds them by grep from the amending source's own text. It leaves no key on either source.
 
-**These keys, and `hub_line`/`hub_line_sources`/`catalogue_hero`, are CC's own bookkeeping and are not frozen by immutability.** `raw/` is immutable to protect the **evidence** — body, `url`, `published`, `publisher`, dates, `body_completeness`. Correcting a field that records CC's analysis or how to cite the page is maintenance.
+**These keys, `hub_line`/`hub_line_sources`/`catalogue_hero` and the author fields are CC's own bookkeeping and are not frozen by immutability.** `raw/` is immutable to protect the **evidence** — body, `url`, `published`, `publisher`, dates, `body_completeness`. Correcting a field that records CC's analysis or how to cite the page is maintenance.
 
 **Finance records extend this schema.** A source built by a finance driver adds `deal_id`, `finance_origin`, the **required `financier_slug`** and — where a recipient is named — **`recipient_slug`** (canonical entity slugs that also appear in `entities:`), plus whichever driver-supplied fields the compile pass aggregates — see `wiki/finance-record-spec.md` → *Entities* and the drivers. Lint does not validate the driver-specific fields, **but it does validate the two slug fields**: `financier_slug` resolution is **lint #16** (`scripts/lint-finance-slugs.py`), which fails loudly on a missing or non-canonical financier key, since a bad key fragments a hub Financing aggregate.
 

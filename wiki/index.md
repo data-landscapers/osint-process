@@ -10,6 +10,7 @@ Built and maintained by the agent per [CLAUDE.md](../CLAUDE.md) (principles) and
 - **Places** — [countries.csv](../lookups/countries.csv) — 54 ISO-3 countries + 8 `X__` regions.
 - **Subjects** — [taxonomy.md](../lookups/taxonomy.md) — 10 Level-1 categories, ~36 Level-2 slugs.
 - **Entity types** — `company` `organisation` `government-body` `initiative` `person` `deal` `resource` (a standing data asset — database/dataset/registry/tool/portal, e.g. PeeringDB) `instrument` (a published standard, taxonomy, framework, or policy/legal instrument, e.g. the World Bank's theme taxonomy, POPIA). **Tag only — no page is ever minted.**
+- **Outlets** — [publications.csv](../lookups/publications.csv) — each source domain's outlet, `kind` and home (`schemas.md` §4).
 
 Values outside the vocabularies are rejected.
 
@@ -51,7 +52,7 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 
 | Trigger | File | Function |
 |---|---|---|
-| `run ingest` | [INGEST.md](../INGEST.md) | Drains `new/` — the one door into `raw/` — then runs `WIKI-SYNC.md` Phase B in the same sitting, never stopping between; inside the nightly cycle Phase B waits for its lint stage. Four dispositions: admitted, contradiction brief, acquisition line, deleted. Two lanes, assigned per item by `scripts/ingest-lane.py`: backfill (`status-acquire-*`, `progress-filler-*`, `dataset-*` batches) skips origin adjudication, tier-3 dedup and the authored `hub_line`; news screens origins and dedups tier 3 drop-by-default. Schemas in [schemas.md](schemas.md). |
+| `run ingest` | [INGEST.md](../INGEST.md) | Drains `new/`, then runs `WIKI-SYNC.md` Phase B in the same sitting; inside the nightly cycle Phase B waits for its lint stage. Four dispositions: admitted, contradiction brief, acquisition line, deleted. Two lanes, assigned per item by `scripts/ingest-lane.py`: backfill (`status-acquire-*`, `progress-filler-*`, `dataset-*` batches) skips origin adjudication, tier-3 dedup and the authored `hub_line`; news screens origins and dedups tier 3 drop-by-default. |
 | `run reconcile` | [RECONCILE.md](../RECONCILE.md) | Resolves `reviews/contradictions/open/`: one research attempt per brief, then a dated resolution or a dated statement on the page. Nightly when the queue has items, or on demand. |
 | `run acquisitions` | [ACQUIRE.md](../ACQUIRE.md) | Works the whole `reviews/acquisitions.md` list — one automated attempt per line, then ingest-and-strike or drop. Owns the gap probe ([intake.md](intake.md) §7a), stamping `probe_at`. Nightly when the list has open lines, or on demand. |
 | `full lint` | [LINT.md](../LINT.md) | The hygiene checks, numbered #1–#38 (numbers permanent). Acts and logs; surfaces only genuine contradictions. A nightly close step, or on demand. Thresholds in [operations.md](operations.md) §8. |

@@ -7,12 +7,12 @@
 
 ## Your list is your slice, and it is closed
 
-Your spawn names one list file: every path in it is yours, none outside it. Never enumerate `new/` or reconcile it against `raw/`. **Remove a candidate only by its exact path from your list, one file at a time** — never a glob, a `find`, or a match on frontmatter.
+Your spawn names one list file: every path in it is yours, none outside it. Never enumerate `new/` or reconcile it against `raw/`. **Remove a candidate only by its exact path from your list, one file at a time** — never a glob, `find` or frontmatter match.
 
 ## Shared registers
 
 - `logs/sweep-url_log.md` — **you** write it, at each disposition, only through `url-log-append.py` (an admission carries `--ingest`, a drop `--code` and `--batch`, step 11).
-- `lookups/raw-url-index.csv`, `lookups/artefact-md5-index.csv`, `logs/ingest-pending-writes.md`, `reviews/acquisitions.md`, `logs/drop-list.csv`, `new-budget/manifest.csv`, `lookups/financier-names.csv` — **the parent** writes them; no index `--append`: the parent rebuilds both. Your rows go to a slice-named file, one heading per register, and you return its path (`INGEST.md` → *The shape, the slicing*).
+- `lookups/raw-url-index.csv`, `lookups/artefact-md5-index.csv`, `logs/ingest-pending-writes.md`, `reviews/acquisitions.md`, `logs/drop-list.csv`, `new-budget/manifest.csv`, `lookups/financier-names.csv`, `lookups/publications.csv` — **the parent** writes them; no index `--append`: the parent rebuilds both. Your rows go to a slice-named file, one heading per register, and you return its path (`INGEST.md` → *The shape, the slicing*). New `publications.csv` rows: your own CSV, for `author-meta.py --apply --extra`.
 - Remove a row only by its own text, edit only your rows, and run no whole-file formatter over a register.
 - **A held carrier's `hub_line_sources:` or `cite_through:` is yours** where your disposition needs it: re-read it just before writing and merge into its one key, never a second.
 
@@ -24,7 +24,7 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 - **Currency**: time-varying figures dated; the event date is not the publication date; a late old source is a baseline.
 - **Never grep all of `raw/`**: at load it does not return; scope to a year folder or `lookups/raw-url-index.csv`.
 - **A delta row says only what the source body holds**, never a sibling account, the staging note or memory; its subject is a taxonomy slug, never a place code.
-- **An item with no `sweep_batch:`** (a queue-root clip, a hand-staged page, a loose PDF) is normalised to the source schema first: URL, publisher and date from the document or its posting; a bare PDF gets a written companion, blank `url:` and a `url_note:` where no posting is found. Its drops log `--batch corpus-queue-<pull date>`.
+- **An item with no `sweep_batch:`** (queue-root clip, hand-staged page, loose PDF) is normalised to the source schema first: URL, publisher and date from the document or its posting; a bare PDF gets a written companion, blank `url:` and a `url_note:` where no posting is found. Its drops log `--batch corpus-queue-<pull date>`.
 - **The tail is not the work**: dispose of the awkward item once.
 
 ## Never
@@ -36,7 +36,7 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 
 ## Files
 
-Line endings as at `git show HEAD:<path>`, tested with bytes (`python -c "b=open(PATH,'rb').read(); print('CRLF' if b.count(b'\r\n') else 'LF')"`); scratch only in your own slice-named scratchpad subdirectory. A `date_source` outside the schema's values (`source`, `proxy`, `inferred`, `derived`) is corrected at admission: a byline date is `source`.
+Line endings as at `git show HEAD:<path>`, tested with bytes (`python -c "b=open(PATH,'rb').read(); print('CRLF' if b.count(b'\r\n') else 'LF')"`); scratch only in your own slice-named scratchpad subdirectory. A `date_source` outside the schema is corrected at admission; a byline date is `source`.
 
 ## Your return
 

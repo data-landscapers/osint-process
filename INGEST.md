@@ -15,7 +15,7 @@ Schemas: `layout.md`, `schemas.md` §4–5, `intake.md` §6–7; reasoning: `wik
 
 **Ingest never opens a place hub** (`hub_line`, 4a; `HUB-COMPILE.md` at the close). **Phase A decides per item; Phase B** (steps 5, 6, 9, 10, draining `logs/ingest-pending-writes.md`) **is `WIKI-SYNC.md`'s**.
 
-Above ~15 items, **slice Phase A into sub-agents of ~10** on explicit file lists, **spawned by the parent in parallel batches**; each slice gets `wiki/brief-ingest.md` and returns its tally and delta lines **verbatim, never a summary**. No slice writes `logs/log.md` or spawns another.
+Above ~15 items, **slice Phase A into sub-agents of ~10** on explicit file lists, **in parallel batches**; each slice gets `wiki/brief-ingest.md` and returns its tally and delta lines **verbatim, never a summary**. No slice writes `logs/log.md` or spawns another.
 
 **In a parallel run a slice writes only `logs/sweep-url_log.md`, through its locking appender**; its URL- and md5-index, pending-write and acquisition rows go to a slice-named file, which the parent appends and reconciles before Phase B (`ingest-judgment.md` §1). Run alone, a slice writes the registers directly; register and deletion rules are the brief's.
 
@@ -55,7 +55,7 @@ Above ~15 items, **slice Phase A into sub-agents of ~10** on explicit file lists
 
 ## 2a. Finance branch
 
-`finance.new` or `finance.mou` runs `wiki/finance-news-driver.md` first: its five-fact test decides merge, a new deal record into `new/`, or an ordinary source stating the failed fact unestablished. `finance.budget` runs no driver. A deal record gets no hub bullet or place delta; FINANCE-COMPILE carries it. Any other item is an ordinary source.
+`finance.new` or `finance.mou` runs `wiki/finance-news-driver.md` first: its five-fact test decides merge, a new deal record into `new/`, or an ordinary source stating the failed fact unestablished. `finance.budget` runs no driver. A deal record gets no hub bullet or place delta; FINANCE-COMPILE carries it.
 
 ## 2b. Amendment branch
 
@@ -69,10 +69,11 @@ Frontmatter per `schemas.md` §4, **`catalogue_hero:` included** (3a), facets pe
 - **Staged `published:`, `places:`, `topics:` and `body_completeness:` are guesses: check them against the document's own imprint**, which wins; a disagreement goes in `note:` (`ingest-judgment.md` §3).
 - **Read the body against its title**: another document, navigation or a stub is not the source; nor is a fetch-failure note an `excerpt`.
 - **Download the primary document** an item announces or links, as artefact plus companion (`layout.md` §3); one attempt, then step 8's line naming the document.
+- **Authors** (`schemas.md` §4): `scripts/author-meta.py --apply <file>`; exit 2 wants a `lookups/publications.csv` row.
 
 ## 3a. Write the catalogue hero
 
-**Every source gets a `catalogue_hero:`, gated by nothing, never refused** — contract `schemas.md` §4. A slice writes its batch with `python scripts/catalogue-hero-set.py`.
+**Every source gets a `catalogue_hero:`, gated by nothing, never refused** — contract `schemas.md` §4. A slice writes them with `scripts/catalogue-hero-set.py`.
 
 ## 4a. Author the hub line
 
@@ -102,6 +103,6 @@ Move it to **`raw/YYYY/`**, prefixed `YYYY-MM-DD` from `published`; an artefact 
 
 # Ending the run
 
-**Run `FINANCE-COMPILE.md` if any finance record was admitted, then `HUB-COMPILE.md` scoped to the places touched** — whatever invoked ingest. Confirm every adjudicated item has its URL-log line.
+**Run `FINANCE-COMPILE.md` if any finance record was admitted, then `HUB-COMPILE.md` scoped to the places touched** — whatever invoked ingest. Every adjudicated item has its URL-log line.
 
 **Write the run's one `logs/log.md` line**, folding every slice's tally, **then stamp the collection window**: `python scripts/cycle-manifest.py --stamp --sweep-closed <> --ingest-started <> --last-admission <that line's stamp>` (`intake.md` §6a). **Report the one line of `STATUS.md` → *The close report*.** **Then Phase B, in the same sitting and without a stop** *(Bill, 2026-10-10)*: commit Phase A and run `WIKI-SYNC.md` Phase B. Only inside `SWEEP-CYCLE.md`, whose lint stage runs Phase B, does ingest end at Phase A.
