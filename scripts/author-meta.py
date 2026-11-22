@@ -178,7 +178,7 @@ def from_body(body):
 # Normalising: raw byline strings -> (people, non-person byline)
 # --------------------------------------------------------------------------- #
 
-HONORIFIC = re.compile(r"^(?:(?:H\.?E\.?|His Excellency|Her Excellency|S\.?E\.?|Hon(?:ourable)?\.?|Rt\.? Hon\.?|Dr\.?|Prof(?:essor)?\.?|Pr\.?|Mr\.?|Mrs\.?|Ms\.?|Miss|Mme\.?|Mlle\.?|M\.|Me\.?|Sir|Dame|Rev(?:erend)?\.?|Eng\.?|Engr\.?|Ing\.?|Arch\.?|Amb\.?|Ambassador|Chief|Alhaji|Alh\.?|Hajia|Sheikh|Col\.?|Gen\.?|Maj\.?|Capt\.?|Lt\.?)\s+)+", re.I)
+HONORIFIC = re.compile(r"^(?:(?:L[’']Honorable|Honorable|Commissaire|H\.?E\.?|His Excellency|Her Excellency|S\.?E\.?|Hon(?:ourable)?\.?|Rt\.? Hon\.?|Dr\.?|Prof(?:essor)?\.?|Pr\.?|Mr\.?|Mrs\.?|Ms\.?|Miss|Mme\.?|Mlle\.?|M\.|Me\.?|Sir|Dame|Rev(?:erend)?\.?|Eng\.?|Engr\.?|Ing\.?|Arch\.?|Amb\.?|Ambassador|Chief|Alhaji|Alh\.?|Hajia|Sheikh|Col\.?|Gen\.?|Maj\.?|Capt\.?|Lt\.?)\s+)+", re.I)
 SPLIT = re.compile(r"\s*(?:;|\||\s&\s|\b(?:and|And|AND|et|ET|e|y|with|avec|com|na)\b|,)\s*")
 NONPERSON = re.compile(r"\b(staff|editor(?:s|ial)?|r[ée]daction|redac|admin(?:istrator)?|team|desk|newsroom|correspondents?|reporters?|contributors?|guest|writer|webmaster|journalist|communication|communiqu[ée]|press|presse|media|m[ée]dias|news|nouvelles|not[ií]cias|agency|agence|ag[êe]ncia|online|digital|times|daily|herald|post|tribune|journal|magazine|review|radio|tv|television|t[ée]l[ée]vision|channel|group|groupe|grupo|ltd|limited|inc|llc|llp|plc|sa|sarl|corp|company|bank|banque|banco|ministry|minist[èe]re|minist[ée]rio|government|gouvernement|governo|department|office|bureau|unit|authority|autorit[ée]|commission|council|conseil|secretariat|programme|program|project|projet|initiative|foundation|fondation|institute|institut|instituto|university|universit[ée]|universidade|centre|center|association|network|r[ée]seau|forum|union|alliance|partnership|coalition|society|organisation|organization|world|africa|afrique|[áa]frica|african|africain|international|national|global|nations|consulting|partners|associates|solutions|technologies|systems|services|research|policy|lab|labs|hub|platform|wire|aps|afp|reuters|xinhua|bloomberg|apa|pana|map|mena|angop|anp|acp|aip|agp|ani|gna|nan|tap|aps|anadolu|sputnik|allafrica|rfi|bbc|cnn|apo|prnewswire|businesswire|wam|kna|ena|suna|lusa|efe|dpa|ips|unknown|anonymous|author|auteur|autor|[ée]quipe|waandishi|mwandishi|wetu|wandishi|comms|analyst|analysts|wire|mediapart)\b", re.I)
 PARTICLE = {"de","da","do","dos","das","du","des","van","von","der","den","el","al","bin","ibn","ben","bint","la","le","di","del","y","wa","ould","ag","mac","st","st."}
@@ -189,7 +189,11 @@ def _clean(s):
     s = html_lib.unescape(html_lib.unescape(s)).replace(" ", " ")
     s = re.sub(r"<[^>]+>|https?://\S+|\S+@\S+|@\w+", " ", s)
     s = re.sub(r"\((?:[^)]*)\)", " ", s)                      # bracketed notes: (PDF metadata), (photos …)
-    s = re.sub(r"^\s*(?:by|par|por|written by|posted by|author|auteur|autor|authors|auteurs)\s*[:\-–]?\s+", "", s, flags=re.I)
+    if CREDIT.search(s):
+        return ""                                            # "Theme by Theme Horse", "Echo by Darren"
+    s = re.sub(r"^\s*(?:publi[ée] par|posted by|issued by|by|par|por|written by|author|auteur|autor|authors|auteurs)\s*[:\-–]?\s+", "", s, flags=re.I)
+    s = re.sub(r"\s+(?:on|le)\s+(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\b.*$", "", s, flags=re.I)
+    s = re.sub(r"\s+in\s+(?:french|english|portuguese|arabic|spanish)\b.*$", "", s, flags=re.I)
     s = re.sub(r"\s+[—–-]\s+.*$", "", s)                     # "Name — Outlet — date"
     s = re.sub(r"\b(?:\d{1,2}(?:st|nd|rd|th)?\s+\w+,?\s+\d{4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d\d-\d\d|\d+\s+min read.*)$", "", s, flags=re.I)
     s = re.sub(r"\bet al\.?", "", s, flags=re.I)
@@ -202,10 +206,26 @@ def _clean(s):
     return "" if s.lower() in ("par", "por", "by", "de", "written", "posted", "log", "auteur", "author") else s
 
 
+CREDIT = re.compile(r"^\s*(?:theme|echo|powered|designed|developed|built)\s+by\b", re.I)
+FUNCWORD = re.compile(r"\b(?:the|of|for|to|and|by|par|posted|said|says|told|that|next|una)\b")    # lower-case only: "Long Seng To", "Mariam Said"
+NOTNAME = re.compile(r"\b(publi[ée]|says|told|year|time|site|web|visitez|linkedin|info|pays|marketing|report|order|receiver|registrar|directorate|centro|integridade|autoridade|reguladora|nacional|court|registry|monitoring|implementation|gulf|child)\b", re.I)
+
+
+NAMELIKE = {"junior", "engineer", "chair"}                       # a post that is also a given name or suffix
+TRIMS = [
+    lambda p: re.sub(r"\s+for\s+[A-Z].*$", "", p),                                    # "Abby May for Open Secrets"
+    lambda p: re.sub(r"[.,]?\s+(?:On|Published|Updated|Report|Email|Share|Follow)$", "", p),  # "James Taban On"
+    lambda p: re.sub(r"\s+in\s+[A-Z][\w-]+$", "", p),                                  # "Matern Kayera in Arusha"
+    lambda p: p[:m.start()] if (m := POSWORD.search(p)) and m.start() and m.group(0).lower() not in NAMELIKE else p,        # "Martha Marcuson Senior Communications Consultant"
+]
+
+
 def is_person(n):
     w = n.split()
-    if not 2 <= len(w) <= 5 or re.search(r"\d", n) or NONPERSON.search(n):
+    if not 2 <= len(w) <= 5 or re.search(r"\d", n) or NONPERSON.search(n) or NOTNAME.search(n) or FUNCWORD.search(n):
         return False
+    if not w[0][:1].isupper() or any(m.group(0).lower() not in NAMELIKE for m in POSWORD.finditer(n)):
+        return False                                         # "that time", "lead of Lefa AI", an office
     if re.fullmatch(r"[A-Z]{2,4}", w[0]):
         return False                                         # DRF Comms, ONEP: an acronym leads
     caps = [x for x in w if x.lower() not in PARTICLE]
@@ -257,12 +277,19 @@ def normalise(strings, publication="", citation=False, domain=""):
         got = []
         for p in parts:
             p = HONORIFIC.sub("", re.sub(r"(?<![A-Z])\.$", "", p.strip())).strip()
+            for trim in TRIMS:                               # kept only where what is left is a person
+                q = trim(p).strip(" ,")
+                if q != p and is_person(q):
+                    p = q
+                    break
             if is_person(p) and not _is_outlet(p, publication, domain):
                 got.append(_case(p))
             elif got and (NONPERSON.search(p) or (publication and p.lower() in publication.lower())):
                 continue                                     # trailing outlet/role after a name
-            elif got:
-                continue
+            elif got or ";" in s:
+                if not got and not other:
+                    other.append(raw.strip())                # the credit, should no part prove a name
+                continue                                     # "Marketing Report; Bob Koigi": the next may be a name
             else:
                 other.append(raw.strip())
                 break
@@ -275,14 +302,19 @@ def normalise(strings, publication="", citation=False, domain=""):
     return [], byl[:120]
 
 
-POSWORD = re.compile(r"\b(director|head|chief|officer|manager|lead|leader|editor|professor|lecturer|researcher|fellow|associate|analyst|adviser|advisor|consultant|specialist|coordinator|founder|co-founder|ceo|cto|coo|chair|chairman|chairperson|president|vice|secretary|minister|partner|counsel|lawyer|attorney|economist|scientist|engineer|expert|student|candidate|programme|program|policy|senior|junior|principal|deputy|executive|correspondent|reporter|journalist|writer|commissioner|governor|ambassador|representative|directeur|directrice|chef|responsable|chercheur|chercheuse|professeur|enseignant|conseiller|conseill[eè]re|chargé|chargée|fondateur|fondatrice|président|présidente|secrétaire|ministre|avocat|avocate|ingénieur|analyste|doctorant|doctorante|diretor|diretora|investigador|investigadora)\b", re.I)
+POSWORD = re.compile(r"\b(r[ée]dact(?:eur|rice)|director|head|chief|officer|manager|lead|leader|editor|professor|lecturer|researcher|fellow|associate|analyst|adviser|advisor|consultant|specialist|coordinator|founder|co-founder|ceo|cto|coo|chair|chairman|chairperson|president|vice|secretary|minister|partner|counsel|lawyer|attorney|economist|scientist|engineer|expert|student|candidate|programme|program|policy|senior|junior|principal|deputy|executive|correspondent|reporter|journalist|writer|commissioner|governor|ambassador|representative|directeur|directrice|chef|responsable|chercheur|chercheuse|professeur|enseignant|conseiller|conseill[eè]re|chargé|chargée|fondateur|fondatrice|président|présidente|secrétaire|ministre|avocat|avocate|ingénieur|analyste|doctorant|doctorante|diretor|diretora|investigador|investigadora)\b", re.I)
 
 
 ROLE_VERB = re.compile(r",?\s+(?P<v>is|was|serves as|est|é)\s+(?:currently\s+|actuellement\s+)?(?:(?:a|an|the|le|la|un|une|o|um|uma)\s+|l['’])?(?P<rest>[^.;:\n()]{5,220})")
 ROLE_STOP = re.compile(r",\s+(?:where|and|a|an|which|who|based|with|où|et|qui)\b|\s+(?:where|who|focusing|with over|based in|since|depuis|currently)\b")
 SEP_EN = [re.compile(r"\s+at\s+(?:the\s+)?"), re.compile(r"\s+with\s+(?:the\s+)?"), re.compile(r"\s+(?:of|for|in)\s+(?:the\s+)?")]
 SEP_FR = [re.compile(r"\s+chez\s+"), re.compile(r"\s+(?:à\s+la|à\s+l['’]|au|aux|à)\s+"), re.compile(r"\s+(?:de\s+la|de\s+l['’]|du|des|de|da|do)\s+")]
-ROLE_NOT = re.compile(r"\b(said|says|told|added|according|announced|déclaré|indiqué|expected|set to|likely)\b", re.I)
+ROLE_NOT = re.compile(r"\b(said|says|told|added|according|announced|obtained|holds|earned|déclaré|indiqué|expected|set to|likely)\b", re.I)
+
+
+BODY = re.compile(r"(?:the\s+)?(?:Ministry|Minist[eè]re|Department|State Department|Office|Presidency|Government|Embassy|Agency|Commission|Council|Bureau|Authority)\b")
+ORG_CUT = re.compile(r"\s+and\s+(?:a|an|the|is|was|founder|co-founder|editor|editor-in-chief|author)\b|,\s+(?:the|a|an|and|where|which|who)\b|\s+(?:and|the|of|is|a)\s*$")
+ORG_NOT = re.compile(r"[’']s$|\b(?:report|series)\b|^(?:the\s+)?(?:global\s+south|(?:north|south|east|west|southern|northern|eastern|western|central|sub-saharan)\s+africa|africa(?:\s+program(?:me)?)?)$", re.I)
 
 
 def roles_from_body(body, people):
@@ -290,7 +322,8 @@ def roles_from_body(body, people):
     a bio line — "X is Director of Y at Z", "X est chercheur au Z". Nothing is inferred.
     The split is on the last "at" ("Professor of AI at Umeå University"), else the first "of"."""
     out = []
-    text = re.sub(r"[*_]{1,3}", "", body)
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", re.sub(r"[*_]{1,3}", "", body))   # [Adjunct Professor](url)
+    text = re.sub(r"[ \t]*\r?\n(?![ \t]*\r?\n)[ \t]*", " ", text)   # a hard-wrapped bio runs on past the line; a paragraph break still ends it
     for n in people:
         m = re.search(r"\b" + re.escape(n) + r"\s*(?:\([^)]*\)\s*)?" + ROLE_VERB.pattern, text)
         if not m:
@@ -304,9 +337,12 @@ def roles_from_body(body, people):
                 h = hits[-1] if i < 2 else hits[0]
                 pos, org = rest[:h.start()], rest[h.end():]
                 break
-        pos, org = pos.strip(" ,"), org.strip(" ,")
+        pos = re.sub(r"^(?:(?:and|a|an)\s+)+", "", pos.strip(" ,\"'"), flags=re.I)
+        org = ORG_CUT.split(org)[0].strip(" ,\"'")
         if not pos or not org or not org[0].isupper() or not POSWORD.search(pos):
             continue
+        if ORG_NOT.search(org) or (i == 2 and re.search(r"\b(minister|secretary)\b", pos, re.I) and not BODY.match(org)):
+            continue                                     # a region, a report, or a portfolio not a body
         if len(pos.split()) > 12 or len(org.split()) > 10 or ROLE_NOT.search(pos):
             continue
         out.append(f"{n} | {pos[0].upper() + pos[1:]} | {org}")
