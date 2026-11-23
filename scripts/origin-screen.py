@@ -57,14 +57,40 @@ DROP_LIST = os.path.join(ROOT, "logs", "drop-list.csv")
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
+def host_of(url_or_host):
+    """Lower-cased host, `www.` stripped — the key a drop-list row is matched on."""
+    h = (url_or_host or "").strip().lower()
+    if "//" in h:
+        h = h.split("//", 1)[1]
+    h = h.split("/", 1)[0].split("?", 1)[0].split(":", 1)[0]
+    return h[4:] if h.startswith("www.") else h
+
+
+def listed_key(host, listed):
+    """The drop-list key covering this host: the host itself or its nearest parent.
+
+    A row keyed on a publisher's domain catches every subdomain; a row keyed on one
+    subdomain (a dev alias, a CMS test host, one tenant) catches that host and its
+    children only, never its siblings or the parent. Collapsing such a row to its
+    registrable domain made a `dev.` alias's watch row fire on the canonical `www.`
+    host, and a test-CMS row on a revenue authority fire on the authority's own site.
+    """
+    parts = host.split(".")
+    for i in range(len(parts) - 1):
+        k = ".".join(parts[i:])
+        if k in listed:
+            return k
+    return ""
+
+
 def load_list(path=DROP_LIST):
-    """{registrable domain: (status, network)} from logs/drop-list.csv."""
+    """{host key: (status, network)} from logs/drop-list.csv — keyed as written, `www.` stripped."""
     out = {}
     if not os.path.isfile(path):
         return out
     with open(path, encoding="utf-8-sig", newline="") as fh:
         for row in csv.DictReader(fh):
-            d = registrable(row.get("domain", ""))
+            d = host_of(row.get("domain", ""))
             if d:
                 out[d] = ((row.get("status") or "").strip().lower(),
                           (row.get("network") or "").strip())
@@ -181,7 +207,7 @@ def candidates(dirname):
                 text = fh.read()
             fm = frontmatter(text)
             url = fm_val(fm, "url") or fm_val(fm, "source_url") or fm_val(fm, "source")
-            out.append((os.path.relpath(p, ROOT), registrable(url)))
+            out.append((os.path.relpath(p, ROOT), registrable(url), host_of(url)))
     return out
 
 
@@ -197,13 +223,13 @@ def held_sources(raw="raw"):
     return out
 
 
-def verdict(domain, listed, seen):
+def verdict(domain, listed, seen, host=None):
     if not domain:
         return "NOMAIN", "no url on the candidate — screen it by hand"
     # `listed_domain()`, not `listed.get()`: a row keyed on a bare multi-tenant
     # platform has to catch every tenant under it, while a row keyed on one tenant
     # catches only that tenant (`vault_lib.MULTI_TENANT`).
-    st = listed.get(listed_domain(domain, listed))
+    st = listed.get(listed_key(host or domain, listed))
     if st and st[0] == "drop":
         return "DROP", st[1] or "adjudicated inadmissible"
     if st and st[0] == "watch":
@@ -239,7 +265,7 @@ def main():
         given = a.domain
         if given == ["-"]:
             given = [ln.strip() for ln in sys.stdin if ln.strip()]
-        items = [(d if "/" in d else "(--domain)", registrable(d)) for d in given]
+        items = [(d if "/" in d else "(--domain)", registrable(d), host_of(d)) for d in given]
     else:
         items = candidates(a.dir)
         if not items:
@@ -247,8 +273,8 @@ def main():
             return 0
 
     tally = Counter()
-    for name, dom in items:
-        v, why = verdict(dom, listed, seen)
+    for name, dom, host in items:
+        v, why = verdict(dom, listed, seen, host)
         tally[v] += 1
         print("  %-6s %-28s %s" % (v, dom or "-", name))
         if v in ("DROP", "WATCH", "NOVEL"):

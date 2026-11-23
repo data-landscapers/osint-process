@@ -41,7 +41,15 @@ def usage():
         req = urllib.request.Request(URL, headers={"Authorization": f"Bearer {token}", "anthropic-beta": "oauth-2025-04-20"})
         with urllib.request.urlopen(req, timeout=30) as r:
             data = json.load(r)
-        return float(data["seven_day"]["utilization"]), float(data["five_hour"]["utilization"])
+        def util(key):
+            # A window the plan does not report comes back null: read it as n/a, never
+            # let it void the other (2026-11-22: five_hour null voided a valid seven_day).
+            block = data.get(key)
+            return float(block["utilization"]) if block and block.get("utilization") is not None else None
+        week, five = util("seven_day"), util("five_hour")
+        if week is None and five is None:
+            raise ValueError("no seven_day or five_hour utilization in response")
+        return week, five
     except Exception as e:
         print(f"usage-log: could not read usage ({type(e).__name__}: {e}); writing n/a", file=sys.stderr)
         return None, None
