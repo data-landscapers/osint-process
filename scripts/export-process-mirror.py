@@ -85,6 +85,7 @@ PUBLISH = [
     "lookups/fx-imf-annual.csv", "lookups/region-membership.csv",
     "lookups/report-region-sections.csv", "lookups/sweep-*.csv",
     "lookups/budget-doc-types.csv", "lookups/intersection-names.csv", "lookups/donor-keywords.csv",
+    "lookups/publications.csv",
     # Wiki specs — by name; the compiled pages beside them are the product, not the process.
     "wiki/index.md", "wiki/intake.md", "wiki/schemas.md", "wiki/facets.md", "wiki/layout.md",
     "wiki/reference.md", "wiki/capture-rule.md", "wiki/origin-screen.md", "wiki/operations.md",
