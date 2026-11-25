@@ -744,19 +744,31 @@ def ensure_fresh(roots=INDEX_ROOTS, db=False, quiet=True):
     return meta
 
 
+def _read_jsonl(path, tries=6):
+    """Rows of a JSONL index. A concurrent rebuild can leave a half-written line for a
+    moment, so a decode error is retried after a short wait rather than crashing the reader."""
+    import time
+    for i in range(tries):
+        try:
+            with open(path, encoding="utf-8") as fh:
+                return [json.loads(line) for line in fh if line.strip()]
+        except json.JSONDecodeError:
+            if i == tries - 1:
+                raise
+            time.sleep(2)
+
+
 def load_index(auto=True, quiet=True):
     """[row, ...] — every indexed artefact. Rebuilds first if the vault moved."""
     if auto:
         ensure_fresh(quiet=quiet)
-    with open(FILES_JSONL, encoding="utf-8") as fh:
-        return [json.loads(line) for line in fh if line.strip()]
+    return _read_jsonl(FILES_JSONL)
 
 
 def load_links(auto=True, quiet=True):
     if auto:
         ensure_fresh(quiet=quiet)
-    with open(LINKS_JSONL, encoding="utf-8") as fh:
-        return [json.loads(line) for line in fh if line.strip()]
+    return _read_jsonl(LINKS_JSONL)
 
 
 def slug_map(rows=None):

@@ -1,7 +1,7 @@
 <!-- reader: cc; type: brief -->
 # Standing brief — ingest Phase A slice
 
-*(Pasted verbatim into every Phase A slice's brief, under the night's facts: lane, iteration, lists, origin tally. Rules only.)*
+*(Pasted verbatim under the night's facts. Rules only.)*
 
 **Read `C:\OSINT\INGEST.md` in full — it is the procedure; this is the wiring.** Lean form: you **file** a contradiction or an acquisition line and never research one; you open **no** Phase B page; your deltas go to the pending-writes shape `INGEST.md` step 11 quotes.
 
@@ -12,8 +12,8 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 ## Shared registers
 
 - `logs/sweep-url_log.md` — **you** write it, at each disposition, only through `url-log-append.py` (an admission carries `--ingest`, a drop `--code` and `--batch`, step 11).
-- `lookups/raw-url-index.csv`, `lookups/artefact-md5-index.csv`, `logs/ingest-pending-writes.md`, `reviews/acquisitions.md`, `logs/drop-list.csv`, `new-budget/manifest.csv`, `lookups/financier-names.csv`, `lookups/publications.csv` — **the parent** writes them; no index `--append`: the parent rebuilds both. Your rows go to a slice-named file, one heading per register, and you return its path (`INGEST.md` → *The shape, the slicing*). New `publications.csv` rows: your own CSV, for `author-meta.py --apply --extra`.
-- Remove a row only by its own text, edit only your rows, and run no whole-file formatter over a register.
+- Every other register — URL and md5 indexes, pending writes, acquisitions, drop list, budget manifest, financier names, publications — **the parent** writes; no index `--append`. Your rows go to a slice-named file, one heading per register, and you return its path (`INGEST.md` → *The shape, the slicing*). New `publications.csv` rows: that file's `## publications`, as `domain,publication,kind,country`.
+- Remove only your own rows, by their text; no whole-file formatter over a register.
 - **A held carrier's `hub_line_sources:` or `cite_through:` is yours** where your disposition needs it: re-read it just before writing and merge into its one key, never a second.
 
 ## Judgment, briefly
@@ -21,6 +21,7 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 - **Scope, two halves**: data governance and digital transformation, **and** an African place, `XGL` or a `geopol.*` slug — else out. A study's facts file never narrows it.
 - **Four dispositions, no fifth**: admitted, contradiction brief, acquisition line, deleted.
 - **Academic papers and named-analyst opinion are first-class**; sparse entities and no dated event are their normal shape.
+- **A `finance.new` item passing the five-fact test** is admitted as a source and returned as `deal-owed=<slug>`; the parent mints the deal record.
 - **Currency**: time-varying figures dated; the event date is not the publication date; a late old source is a baseline.
 - **Never grep all of `raw/`**: at load it does not return; scope to a year folder or `lookups/raw-url-index.csv`.
 - **A delta row says only what the source body holds**, never a sibling account, the staging note or memory; its subject is a taxonomy slug, never a place code.
@@ -46,4 +47,4 @@ The tally line, then your delta lines verbatim:
 step=INGEST-A-<slice> stopped=<complete|context|error> items=N admitted=N contradiction=N acquisition=N acq_lines=N deleted=N remaining=N notes=<≤10 words>
 ```
 
-`acq_lines=` counts every line in your rows file's `## acquisitions`; `acquisition=` only items so disposed; a brief filed beside an admission counts in `admitted=`, and `notes=` names it. `context` with `remaining=N` means a re-spawn; an errored instrument is `stopped=error`, never a clean nil.
+`acq_lines=` counts your `## acquisitions` lines, `acquisition=` only items so disposed; a brief beside an admission counts in `admitted=`. `context` with `remaining=N` means a re-spawn; a broken instrument is `stopped=error`.
