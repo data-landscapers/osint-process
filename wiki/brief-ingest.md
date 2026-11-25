@@ -23,7 +23,7 @@ Your spawn names one list file: every path in it is yours, none outside it. Neve
 - **Academic papers and named-analyst opinion are first-class**; sparse entities and no dated event are their normal shape.
 - **A `finance.new` item passing the five-fact test** is admitted as a source and returned as `deal-owed=<slug>`; the parent mints the deal record.
 - **Currency**: time-varying figures dated; the event date is not the publication date; a late old source is a baseline.
-- **Never grep all of `raw/`**: at load it does not return; scope to a year folder or `lookups/raw-url-index.csv`.
+- **Never list or grep `raw/` or a year folder like `raw/2026`**: neither returns. Check twins in `lookups/raw-url-index.csv`, paths by exact glob.
 - **A delta row says only what the source body holds**, never a sibling account, the staging note or memory; its subject is a taxonomy slug, never a place code.
 - **An item with no `sweep_batch:`** (queue-root clip, hand-staged page, loose PDF) is normalised to the source schema first: URL, publisher and date from the document or its posting; a bare PDF gets a written companion, blank `url:` and a `url_note:` where no posting is found. Its drops log `--batch corpus-queue-<pull date>`.
 - **The tail is not the work**: dispose of the awkward item once.
