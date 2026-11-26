@@ -95,6 +95,8 @@ PUBLISH = [
     # Strategic review 5 R90/R93: the slice briefs and the runbooks' reasoning specs.
     "wiki/brief-sweep.md", "wiki/brief-ingest.md", "wiki/ingest-judgment.md",
     "wiki/lint-checks.md", "wiki/sweep-cycle-notes.md", "wiki/append-log-trim.md",
+    # Strategic review 8 R189/R191: the lint stage's nightly measure and rewrite runbooks.
+    "wiki/blind-classify.md", "wiki/prose-rotation.md",
 ]
 
 # Ruled out, with the reason. Anything at these levels in neither list is reported.
