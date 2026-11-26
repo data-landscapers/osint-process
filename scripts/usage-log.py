@@ -6,6 +6,8 @@ usage-log.py — read the weekly and 5-hour plan limits used, and record the rea
 
 **Where the numbers come from.** The same endpoint Claude Code's `/usage` reads, `api.anthropic.com/api/oauth/usage`, authorised by the login in `~/.claude/.credentials.json`; the fields are `seven_day.utilization` and `five_hour.utilization`. The endpoint is undocumented, so a failure never blocks the cycle: the reading is written as `n/a` (CSV) or `null` (buffer) and the script exits 0.
 
+**A silent n/a is an unarmed gate** *(strategic review 8 R197, 2026-11-26)*: from 31 October to 22 November every reading was n/a and nothing said so. When a CSV row is the second n/a in a row, the script writes a fatal line through `log-append.py` and one block to `X:\bill-notes.md`, then carries on. It fires once per outage, on the second n/a, never on the rows after; `logs/log.md` alone would not do, since it is truncated at every close.
+
 Usage:
   python scripts/usage-log.py                               a CSV row only (the original call)
   python scripts/usage-log.py --stage sweep                 a buffer reading only
@@ -23,6 +25,8 @@ import csv
 import datetime as dt
 import json
 import pathlib
+import re
+import subprocess
 import sys
 import urllib.request
 
@@ -32,6 +36,8 @@ STAGES = REPO / "logs" / "usage-stages.jsonl"
 CREDS = pathlib.Path.home() / ".claude" / ".credentials.json"
 URL = "https://api.anthropic.com/api/oauth/usage"
 HEADER = ["Date", "Time (UTC)", "7d usage", "Session usage"]
+NOTES = pathlib.Path("X:/bill-notes.md")
+MARKER = "<!-- newest first: a new block goes directly below this line -->"
 
 
 def usage():
@@ -74,6 +80,37 @@ def write_csv(now, week, five):
     rows = [r + [session(r[2], rows[i + 1][2] if i + 1 < len(rows) else None)] for i, r in enumerate(rows)]
     with LOG.open("w", newline="", encoding="utf-8") as f:
         csv.writer(f, lineterminator="\n").writerows([HEADER] + rows)
+    return rows
+
+
+def outage_began(rows):
+    """True when the newest two rows are n/a and the one below them is not: the second n/a of an outage, so the alarm fires once per outage, not on every row after."""
+    na = lambda i: i < len(rows) and rows[i][2] == "n/a"
+    return na(0) and na(1) and not na(2)
+
+
+def raise_alarm(now):
+    """R197: a fatal log line and one block in `X:\\bill-notes.md`. Either failing is reported on stderr and never fails the night."""
+    what = "FATAL: two n/a usage readings in a row; R140's stand-down gate is unarmed, Bill messaged"
+    try:
+        subprocess.run([sys.executable, str(REPO / "scripts" / "log-append.py"), "sweep cycle", what, "none (nothing changed)"], check=True)
+    except Exception as e:
+        print(f"usage-log: alarm log line failed ({type(e).__name__}: {e})", file=sys.stderr)
+    try:
+        text = NOTES.read_text(encoding="utf-8")
+        nl = "\r\n" if "\r\n" in text else "\n"
+        n = int(re.search(r"Next message takes \*\*(\d+)\*\*", text).group(1))
+        block = (f"## {n} · {now:%Y-%m-%d %H:%M} · OSINT usage log (R197){nl}{nl}"
+                 f"- The plan-usage reading has come back n/a twice in a row, so R140's gate cannot stand work down above 70 % and nights run regardless. "
+                 f"Nothing is stopped. The endpoint is undocumented; `usage-log.py` and `logs/usage-log.csv` show the first missing reading.{nl}{nl}")
+        if MARKER not in text:
+            raise ValueError("insertion marker not found")
+        text = text.replace(MARKER + nl, MARKER + nl + block, 1)
+        text = text.replace(f"Next message takes **{n}**", f"Next message takes **{n + 1}**", 1)
+        NOTES.write_bytes(text.encode("utf-8"))
+        print(f"usage-log: bill-notes block {n} written")
+    except Exception as e:
+        print(f"usage-log: bill-notes block failed ({type(e).__name__}: {e})", file=sys.stderr)
 
 
 def write_stage(stage, now, week, five, reset):
@@ -121,7 +158,8 @@ def main():
     if a.stage:
         write_stage(a.stage, now, week, five, a.reset)
     if a.csv or not a.stage:
-        write_csv(now, week, five)
+        if outage_began(write_csv(now, week, five)):
+            raise_alarm(now)
     shown = lambda v: "n/a" if v is None else f"{v:.1f}%"
     tail = f" · stage {a.stage}" if a.stage else ""
     print(f"usage-log: {now:%Y-%m-%d %H:%M} UTC · 7d {shown(week)} · 5h {shown(five)}{tail}")

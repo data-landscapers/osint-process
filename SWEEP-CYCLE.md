@@ -57,7 +57,8 @@ assert-containment.py --stage ingest ; git commit ; usage-log.py --stage ingest
 D's @-prefixed Jobs, in order                                                     [exa]
 quick lint ; RECONCILE if open/ has items [exa] ; ACQUIRE if acquisitions.md has open lines [exa]
 INGEST Phase A over any catch reconcile/acquire staged, before Phase B
-WIKI-SYNC Phase B if logs/ingest-pending-writes.md is non-empty
+WIKI-SYNC: Phase B if logs/ingest-pending-writes.md is non-empty, then the rotation (R191)
+usage-log.py --opened-above 70 && wiki/blind-classify.md   # 30 of tonight's admissions read blind (R189)
 full lint's batched checks ; prune-dated.py --apply --today <New-Start's date>   # never the clock: a night runs past midnight
 assert-containment.py --stage lint ; git commit ; usage-log.py --stage lint
 
@@ -78,6 +79,7 @@ usage-log.py --stage end --csv                      # after the night's LAST com
 cycle-manifest.py --pass "sweep cycle" --usage --drops --hygiene --count items_in=N --count admitted=N --count dropped=N --count screened=N --count screen_dropped=N --count pages_over_line=N
 git push ; mirror to O:\
 export-process-mirror.py                            # a refusal goes on the closing line, never blocks
+inventory.py                                        # X:\documentation\inventory-osint.csv + .html, never edited; never blocks
 ```
 
 ## Step 0 — the Exa canary

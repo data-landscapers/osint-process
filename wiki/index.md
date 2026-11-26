@@ -23,11 +23,11 @@ Values outside the vocabularies are rejected.
 ## Operations
 
 - [log.md](../logs/log.md) — operation log.
-- [sweep-url_log.md](../logs/sweep-url_log.md) — machine index of every URL already adjudicated, with its disposition; sweeps `grep` it before fetching. Pruned to **one rotation** by `SWEEP-CYCLE.md`.
+- [sweep-url_log.md](../logs/sweep-url_log.md) — machine index of every URL already adjudicated; sweeps `grep` it before fetching. Pruned to **one rotation** by `SWEEP-CYCLE.md`.
 - `reviews/contradictions/` — the reconcile worklist.
 - `reviews/acquisitions.md` — the fetch list.
 - `X:\osint-housekeeping.md` — the housekeeping register: lint-type jobs too big for a batch, worked one session at a time. Open jobs only; `X:\osint-housekeeping-resolved.md` beside it. Not in this repository — OSINT writes it, CORPUS commits it.
-- `X:\strategic-reviews\` — the review series and numbered task lists, both systems', oldest 2026-07-24. On the share, not in this repository. A dated record: read for the commissioning of a task, never edited after its own date.
+- `X:\strategic-reviews\` — the review series and registers, both systems', on the share. A dated record: read for a task's commissioning, never edited after its date.
 - `Y:\` and `R:\` — CORPUS (`C:\CORPUS`) and RESEARCH (`C:\research`), read-only for OSINT since 2026-10-29. Read only the file a note or Bill points to — never CORPUS's `logs/` or runbooks, never RESEARCH's projects unless named. Never search either drive whole: `Y:\scripts\.workroot\` holds junctions into `O:\` that loop on themselves, and `R:\index\` is a 2.3 GB search index. Write nothing there; everything sent still goes through `X:\`.
 
 ## Processes
@@ -104,6 +104,8 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 | Lint checks | [lint-checks.md](lint-checks.md) | The reasoning and finer detail behind `LINT.md`'s checks, by check number. |
 | Sweep cycle notes | [sweep-cycle-notes.md](sweep-cycle-notes.md) | The reasoning and finer detail behind `SWEEP-CYCLE.md`'s wiring, by its own headings. |
 | Standing briefs | [brief-sweep.md](brief-sweep.md), [brief-ingest.md](brief-ingest.md) | What every sweep slice and ingest Phase A slice is given, pasted verbatim by the cycle parent (`SWEEP-CYCLE.md` → *What every sub-agent prompt carries*). |
+| Prose rotation | [prose-rotation.md](prose-rotation.md) | Ten intersection pages a night rewritten to the prose sheet, after `WIKI-SYNC.md` Phase B. |
+| Blind classification | [blind-classify.md](blind-classify.md) | Thirty admissions a night re-filed blind. |
 | The specs | [reference.md](reference.md) | Directory of the five shared specs — [facets.md](facets.md) §1, [layout.md](layout.md) §2–3, [schemas.md](schemas.md) §4–5a, [intake.md](intake.md) §6–7a, [operations.md](operations.md) §8–11a. |
 
 **Reporting**
@@ -123,7 +125,7 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 | *(`BUDGET-COLLECT.md`, between groups)* | [scripts/promote-budget-companions.py](../scripts/promote-budget-companions.py) | Catalogues held `budget-archive/` companions into `raw/`, skipping anything already held. Dry-run by default; `--write` applies. |
 | *(step zero of `full lint`)* | [scripts/lint-deterministic.py](../scripts/lint-deterministic.py) | The mechanical checks in one command: #1 schema, #2 vocabulary, #3 `last_reviewed`, #4 wikilinks, #10 stranded `new/`, #11 filenames and shards, #12 link-list convention, #15 `body_completeness`, #24 register caps, #25 `CLAUDE.md` line cap, #28 deal-record fields, #34 catalogue hero, #38 de-accented Romance titles. Reports, never edits; `--check N`, `--all`, `--json`; exit 1 on any hard finding. |
 | *(any script that reads the vault)* | [scripts/build-index.py](../scripts/build-index.py) | Rebuilds `index/` — frontmatter verbatim plus a derived block per artefact, and `links.jsonl` — untracked, from scratch, never appended to; `--sql` builds `index/vault.db` on demand and any rebuild that does not refresh it deletes it; `--check` exits 1 if stale. |
-| *(unwired)* | [scripts/build-catalogue.py](../scripts/build-catalogue.py) | Retired from the cycle — CORPUS builds its own catalogue. Left standing. |
+| *(unwired)* | [scripts/build-catalogue.py](../scripts/build-catalogue.py) | Retired from the cycle; CORPUS builds its own. |
 | *(lint #26)* | [scripts/lint-output-freshness.py](../scripts/lint-output-freshness.py) | Newest mtime in `outputs\non-state-finance\` against the last cycle close in `logs/sweep-cycle_log.md`. Report-only. |
 | *(`SWEEP-CYCLE.md`, after the notes commit)* | [scripts/pull-new-queue.py](../scripts/pull-new-queue.py) | Moves every `X:\new-queue\` and `X:\prepared\maturity-study-*\` folder carrying `READY` flat into `new/`, adds `sweep_batch:` where a backfill folder's candidates carry none, leaves a `delivered-YYYY-MM-DD` marker; a name already in `new/` stays queued; `--hold-above PCT` leaves the studies queued on a night that opened over `PCT` (R140). Dry run by default, `--apply` moves. |
 | *(`SWEEP-CYCLE.md`'s close)* | [scripts/rotate-log.py](../scripts/rotate-log.py) | Truncates `logs/log.md` to its newest ~400 lines. `--apply` acts, `--keep N` sets the budget. |
@@ -131,7 +133,7 @@ Every runnable process, its trigger phrase, and what it does. Each has a procedu
 | *(helper, by hand)* | [scripts/uncited-sources.py](../scripts/uncited-sources.py) | Lists admitted sources no `wiki/` page cites. `--recent 1` after a run should read 0. Read-only. |
 | *(`WIKI-SYNC.md` step 9)* | [scripts/wiki-index-gen.py](../scripts/wiki-index-gen.py) | Regenerates the *Every intersection* block in `places-index.md` and `topics-index.md` from `wiki/intersections/`; owns its markers, asserts nothing outside them moved, refuses a page carrying no `place:` or `topic:`. `--check` exits 1 when a block is stale, `--diff` shows the change, `--shape` picks the row form, `--gaps` writes the per-page measurement. |
 
-**Retired processes are deleted, not archived; git holds them.** `archived-procs/` (the non-state load, budget consolidation, country ingest workflow, backfill and backfill batch) was deleted 2026-10-28; `git log --diff-filter=D -- archived-procs/` finds each.
+**Retired processes are deleted, not archived; git holds them.** `git log --diff-filter=D -- archived-procs/` finds each.
 
 ## Page types & folders
 

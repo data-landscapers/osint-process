@@ -14,11 +14,12 @@ Phase B batches: draining the queue opens each page **once per run**, so a night
 if new/ is non-empty:                    run INGEST     — Phase A only (INGEST.md)
 if logs/ingest-pending-writes.md
    is non-empty:                         run Phase B    — below
+then, under 70 % at open:                the rotation   — wiki/prose-rotation.md
 ```
 
-**One pass, no loop.** Phase A files what is staged, Phase B writes the deltas that produces; anything still in `new/` at the end is the next cycle's ingest.
+**One pass, no loop.** Phase A files what is staged, Phase B writes its deltas; what is still in `new/` is the next cycle's.
 
-**Announce every pass before it runs**, per `STATUS.md` (`▶ running: phase B — wiki sync`). Emit a broad progress line too (`STATUS.md` → *Progress*).
+**Announce every pass before it runs**, per `STATUS.md` (`▶ running: phase B — wiki sync`). Emit a progress line too (`STATUS.md` → *Progress*).
 
 ## Phase B — write (per page)
 
@@ -42,13 +43,13 @@ Drain `logs/ingest-pending-writes.md` **grouped by target page**, opening each o
 
 ## Splitting Phase B
 
-**The partition is by target page, computed from the deltas — never by subject.** A subject's own routing rules send its writes onto pages another subject holds, so two subject-sliced agents edit one file concurrently, and the pages no subject owns — place hubs, indexes, `{place}--{topic}` intersections — are left with no slice to write them. **Before dispatch, the parent writes the page map**: every landing page (after step-6 routing) is assigned to exactly one slice, and every row goes to exactly one slice, the one that owns its page. A row that names several pages is split into one row per page, never copied into each slice that touches one. This covers the pages every slicing touches too: concept `## By place` cells, a page two topics route to, a multi-place row.
+**The partition is by target page, computed from the deltas — never by subject.** A subject's own routing rules send its writes onto pages another subject holds, so two subject-sliced agents edit one file concurrently, and the pages no subject owns — place hubs, indexes, `{place}--{topic}` intersections — are left with no slice to write them. **Before dispatch, the parent writes the page map**: every landing page (after step-6 routing) is assigned to exactly one slice, and every row goes to exactly one slice, the one that owns its page. A row that names several pages is split into one row per page, never copied into each slice that touches one. This covers the pages every slicing touches too: concept `## By place` cells, a page two topics route to, a multi-place row, and a row naming no page, landing on its source's first place as `{place}--{subject}`, or an `XGL` source's concept.
 
 **Where a page-based partition is genuinely impractical, the residue is named and owned, not dropped.** Each slice writes the instructions it cannot own to a file the parent collects, **each one the queued row verbatim with its page named after it**, so the drain still matches it, and **the parent works them as a closing step before the stage commit** — they are part of the queue, not leftovers from it. A slice that has deferred work says so in its return, as does one that met a conflict, written on the page both ways, attributed and dated, for the parent to brief; a slice that reports `remaining=0` has written everything its rows instructed, including the cross-page ones, or it has told the parent who will.
 
 **A slice may mint a page its rows require.** A missing intersection or concept page is no reason to leave material on the wrong page: the containment line bars writing outside the slice's own pages, never bringing one into existence. Index the page in the same edit, so it is never an orphan.
 
-**A slice keeps its scratch in a scratchpad subfolder named for itself**: siblings share the scratchpad, and a shared helper name is overwritten mid-run.
+**A slice keeps its scratch in a scratchpad subfolder named for itself**, since siblings share the scratchpad.
 
 ## Termination
 

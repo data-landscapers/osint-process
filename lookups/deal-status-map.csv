@@ -22,3 +22,5 @@ Pipeline,"Pipeline — MoU signed, detailed technical studies and administrative
 Pipeline,Pipeline/identification,,
 Unknown,(not stated),ADDED,"the third null idiom in this column, alongside blank and the sentence-length one."
 Unknown,Not stated; project's own dates (2023-03-01 to 2024-04-30) have elapsed as of this capture,,
+Active,Implementation (activity-status 2),,IATI activity-status 2 as the IATI driver writes it.
+Completed,Finalisation (activity-status 3),NOTE,IATI activity-status 3 as the IATI driver writes it; Completed per deal-vocabs.csv's own definition.

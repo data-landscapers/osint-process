@@ -67,6 +67,19 @@ two counters, and both should read near zero. Only the sweep cycle passes it, so
 previous manifest" is the night. The first manifest to carry the block has nothing to
 compare with and writes the counters alone.
 
+**Schema 4 (2026-11-26, strategic review 8 R190; additive): two night totals in `drops`.**
+The 30 % drop-rate target is dropped (Bill, 2026-11-26): most ingest drops are already-held
+twins under a URL the index does not hold, which no screen before reading catches. In its
+place `drops` carries `admitted`, the night's admissions over every sweep, and
+`already_held_share`, already-held ingest drops over all ingest drops (absent where the night
+coded none). The per-sweep `ingest_drop_rate` stays. **Schema 4 starts with the night of
+2026-11-27** (`SCHEMA_4_FROM`): CORPUS was told the night before, by `corpus-notes`, and a
+manifest written earlier stays schema 3, so a reader that refuses a schema it does not know
+never meets one unannounced. `--check` accepts either. **The `classify` block (R189, same
+schema)**: with `--drops`, the night's blind second reading of place and subject from
+`logs/blind-classify.csv` — `records`, `place_agree`, `subject_agree` as fractions — absent
+where the night scored none or stood down (`scripts/blind-classify.py`).
+
 Usage:
   python scripts/cycle-manifest.py --pass "sweep cycle" --usage \
       --count items_in=294 --count admitted=185 --count dropped=108
@@ -103,7 +116,8 @@ CYCLE_LOG = os.path.join(V.ROOT, "logs", "sweep-cycle_log.md")
 STAMP = os.path.join(V.ROOT, "logs", "collection-stamp.json")
 STAGES = os.path.join(V.ROOT, "logs", "usage-stages.jsonl")
 SWEEP_DIR = os.path.join(V.ROOT, "sweep")
-SCHEMA = 3
+SCHEMA = 4
+SCHEMA_4_FROM = "2026-11-27"   # R190: announced to CORPUS the night before; see the module note
 DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 CODE_RE = re.compile(r"[a-z]+(-[a-z]+)*")
 
@@ -333,7 +347,24 @@ def drops_block(night):
             continue
         n = sum(e["ingest"].values())
         e["ingest_drop_rate"] = round(n / (n + e["admitted"]), 3) if n + e["admitted"] else None
-    return {"night": night, "ingest_coded": coded, "sweeps": dict(sorted(sweeps.items()))}
+    block = {"night": night, "ingest_coded": coded, "sweeps": dict(sorted(sweeps.items()))}
+    if night >= SCHEMA_4_FROM:
+        block["admitted"] = sum(e["admitted"] for e in sweeps.values())
+        drops = sum(sum(e.get("ingest", {}).values()) for e in sweeps.values())
+        held = sum(e.get("ingest", {}).get("already-held", 0) for e in sweeps.values())
+        if coded and drops:
+            block["already_held_share"] = round(held / drops, 3)
+    return block
+
+
+def classify_block(night):
+    """The night's blind-classification agreement (R189), read from blind-classify.py's log."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "blind_classify", os.path.join(os.path.dirname(os.path.abspath(__file__)), "blind-classify.py"))
+    bc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bc)
+    return bc.night_block(night)
 
 
 HOUSEKEEPING = "X:\\osint-housekeeping.md" if os.name == "nt" else "/x/osint-housekeeping.md"
@@ -378,8 +409,9 @@ def hygiene_block(prev):
 
 def build(pass_name, counts, usage=False, night=None, hygiene=False):
     head = git("rev-parse", "HEAD")
+    today = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
     m = {
-        "schema": SCHEMA,
+        "schema": SCHEMA if (night or today) >= SCHEMA_4_FROM else 3,
         "written_utc": datetime.datetime.now(datetime.timezone.utc)
                        .strftime("%Y-%m-%d %H:%M"),
         "pass": pass_name,
@@ -396,6 +428,10 @@ def build(pass_name, counts, usage=False, night=None, hygiene=False):
             m["usage"] = block
     if night:
         m["drops"] = drops_block(night)
+        if night >= SCHEMA_4_FROM:
+            block = classify_block(night)
+            if block:
+                m["classify"] = block
     if hygiene:
         m["hygiene"] = hygiene_block(read())
     return m
@@ -420,7 +456,7 @@ def check():
         print("cycle-manifest.json: absent or unreadable — CORPUS has nothing to read "
               "about this run. Write it at the close, after the final commit.")
         return 1
-    if m.get("schema") != SCHEMA:
+    if m.get("schema") not in (3, SCHEMA):
         print(f"cycle-manifest.json: schema {m.get('schema')} against {SCHEMA} — "
               "the reader and the writer disagree about the shape.")
         return 1

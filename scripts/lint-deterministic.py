@@ -832,7 +832,11 @@ def check_xchg_preambles(d):
                       "stated twice is a rule that will disagree with itself", soft=soft)
 
 
-CLAUDE_MD_CAP = 123
+# 123 until 2026-11-26. Raised to 139, the file's length since R88 (2026-09-25) added the
+# reader-caps table that `lint-docs.py` reads (a table CORPUS's global-claude.md carries too):
+# those sixteen lines are the table and its spacing, not accreted rules, and the file has
+# sat under lint-docs' 3,000-word spec cap since the October trims. Any growth still fails.
+CLAUDE_MD_CAP = 139
 # A standing rule with an end date is the one kind that can rot quietly: nothing fails when it
 # lapses, it simply stops being true while still being read. So the date is asserted.
 FREEZE_RE = re.compile(r"frozen until (\d{4}-\d{2}-\d{2})")
@@ -1061,7 +1065,7 @@ def check_catalogue_hero(rows, d):
 
 ACCENTED = re.compile(r"[À-ɏ]")
 FLATTENED = re.compile(
-    r"\b(?:\w+(?:cao|coes)|n\.o|politic[ao]s?|publico|publica|servicos?|seguranca|"
+    r"\b(?:(?!(?:cacao|icao)\b)\w+(?:cao|coes)|n\.o|politic[ao]s?|publico|publica|servicos?|seguranca|"
     r"tecnic[ao]s?|estatistic[ao]s?|relatorios?|anuario|codigo|numero|orcamento|"
     r"juridic[ao]s?|regiao|orgao|"
     r"donnees|numeriques?|arretes?|societe|ministere|annee|securite|identite)\b",
@@ -1078,6 +1082,29 @@ DEACCENT_EXEMPT = {
     "2023-12-15-sen-lfi-2024-loi-2023-18-companion",
     # oneci.ci prints the heading in unaccented caps; the title is faithful (2026-11-08).
     "2025-11-12-civ-l-oneci-et-la-sgci-scellent-un-partenariat-strategique-pour-une-authen",
+    # OECD CRS and IATI publish these project titles unaccented; the held row is the
+    # source and its body carries no accents either (checked 2026-11-26).
+    "2015-01-01-crs-963-2015001380-2015-collecte-et-analyse-des-donnees",
+    "2016-12-31-iati-xm-dac-41301-637423-appui-la-cartographie-numerique-des-sols-et-la-mise-en-place",
+    "2018-01-01-crs-4-2018300511-2018-deploiement-de-la-tv-numerique-terrestre",
+    "2019-08-01-crs-7-2019000238-2019-initiative-donnees-du-mali-idm",
+    "2019-08-26-iati-xm-dac-7-ppr-4000003036-initiative-donnees-du-mali-idm",
+    "2022-01-01-crs-959-2022002213-2022-transition-numerique",
+    "2023-01-31-crs-4-2023300111-2023-deploiement-tv-numerique-terrestre",
+    "2023-04-30-iati-xm-dac-41301-737202-appui-la-mise-en-place-d-une-base-de-donnees-sur-l-elevage-e",
+    "2023-07-31-iati-xm-dac-41301-745924-tcpf-appui-la-lutte-contre-le-vol-de-betail-par-le-developpe",
+    "2024-01-01-crs-959-2024001149-2024-transition-numerique-undp-mrt-00129839",
+    # The source prints its own heading unaccented; the title is faithful (2026-11-26):
+    # finances.gouv.cf and primature.td refetched, the Benin DPPD and the Kinshasa
+    # consultancy note carry the unaccented heading verbatim in their held bodies.
+    "2021-09-16-caf-digitalisation-du-ministere-charge-des-finances-et-du-budget-le-minist",
+    "2024-01-11-tcd-securite-nationale-le-premier-ministre-recoit-une-delegation-de-l-inte",
+    "2023-12-01-ben-dppd-2024-2026-ministere-de-la-sante-019",
+    "2025-08-01-cod-mission-de-consultance-scientifique-harmonisation-des-textes-legislati",
+    # The publisher's domain does not resolve (one attempt, 2026-11-26): nothing to
+    # refetch the heading from, so the title is left as held.
+    "2022-01-01-bdi-minisante-guide-analyse-revue-donnees-snis",
+    "2024-06-10-bdi-decret-n100-091-du-30-mai-2024-portant-octroi-d-une-licence-d-etabliss",
 }
 
 

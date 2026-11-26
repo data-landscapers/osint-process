@@ -122,6 +122,8 @@ write()
 assert cm.check() == 0
 write(head="0" * 40)
 assert cm.check() == 1, "a stale head must fail"
+write(schema=3)
+assert cm.check() == 0, "schema 3 is still read: manifests before SCHEMA_4_FROM stay 3 (R190)"
 write(schema=cm.SCHEMA + 1)
 assert cm.check() == 1, "a schema the reader does not know must fail"
 open(cm.MANIFEST, "w", encoding="utf-8").write("{not json")
@@ -140,7 +142,11 @@ b = cm.usage_block()
 assert list(b) == ["start", "sweep"], "stages keep their order; a malformed line is skipped"
 assert b["sweep"]["seven_day"] == 64.0, "a stage read twice keeps its last reading"
 assert "usage" not in cm.build("t", {}), "without --usage there is no block, buffer or not"
+cm.SCHEMA_4_FROM = "0000-00-00"
 m = cm.build("t", {}, usage=True)
 assert m["schema"] == cm.SCHEMA and m["usage"] == b
+cm.SCHEMA_4_FROM = "9999-12-31"
+assert cm.build("t", {})["schema"] == 3, "before SCHEMA_4_FROM the manifest stays schema 3 (R190)"
+assert cm.build("t", {}, night="9999-12-31")["schema"] == cm.SCHEMA, "the night, not the clock, decides when it has one"
 
 print("test-cycle-manifest: all assertions pass")
