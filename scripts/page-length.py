@@ -78,8 +78,17 @@ def record(rel, before, after):
         if kept and not kept[-1].endswith("\n"):
             kept[-1] += "\n"
         kept.append("%s%d,%d\n" % (key, before, after))
-        with open(TRIMS, "w", encoding="utf-8", newline="") as fh:
-            fh.writelines(kept)
+        # Windows can refuse the open transiently (OSError 22) while another process holds
+        # a read handle; the lock above covers writers only, so retry briefly.
+        for attempt in range(10):
+            try:
+                with open(TRIMS, "w", encoding="utf-8", newline="") as fh:
+                    fh.writelines(kept)
+                break
+            except OSError:
+                if attempt == 9:
+                    raise
+                time.sleep(0.3)
     finally:
         try:
             os.remove(LOCK)
